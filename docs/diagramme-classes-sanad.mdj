@@ -1,0 +1,622 @@
+{
+  "_type": "Project",
+  "_id": "SANAD_PROJECT",
+  "name": "Sanad - Diagramme de classes",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "_id": "SANAD_MODEL",
+      "name": "Modele Sanad",
+      "ownedElements": [
+        {
+          "_type": "UMLClassDiagram",
+          "_id": "SANAD_CLASS_DIAGRAM",
+          "name": "Diagramme de classes - Sanad",
+          "ownedViews": [
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_UTILISATEUR",
+              "model": { "$ref": "CLASS_UTILISATEUR" },
+              "left": 40,
+              "top": 40,
+              "width": 240,
+              "height": 250
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_ASSOCIATION",
+              "model": { "$ref": "CLASS_ASSOCIATION" },
+              "left": 360,
+              "top": 40,
+              "width": 280,
+              "height": 310
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_CATEGORIE",
+              "model": { "$ref": "CLASS_CATEGORIE" },
+              "left": 720,
+              "top": 40,
+              "width": 230,
+              "height": 180
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_DEMANDE",
+              "model": { "$ref": "CLASS_DEMANDE" },
+              "left": 40,
+              "top": 410,
+              "width": 300,
+              "height": 360
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_JUSTIFICATIF",
+              "model": { "$ref": "CLASS_JUSTIFICATIF" },
+              "left": 390,
+              "top": 430,
+              "width": 260,
+              "height": 180
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_CAMPAGNE",
+              "model": { "$ref": "CLASS_CAMPAGNE" },
+              "left": 720,
+              "top": 360,
+              "width": 300,
+              "height": 330
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_DON",
+              "model": { "$ref": "CLASS_DON" },
+              "left": 40,
+              "top": 850,
+              "width": 300,
+              "height": 300
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_NOTIFICATION",
+              "model": { "$ref": "CLASS_NOTIFICATION" },
+              "left": 390,
+              "top": 850,
+              "width": 260,
+              "height": 210
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_FAVORI",
+              "model": { "$ref": "CLASS_FAVORI" },
+              "left": 720,
+              "top": 780,
+              "width": 230,
+              "height": 160
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_OFFRE_AIDE",
+              "model": { "$ref": "CLASS_OFFRE_AIDE" },
+              "left": 1040,
+              "top": 760,
+              "width": 280,
+              "height": 260
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_RESERVATION",
+              "model": { "$ref": "CLASS_RESERVATION" },
+              "left": 1040,
+              "top": 1080,
+              "width": 260,
+              "height": 180
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_EVALUATION",
+              "model": { "$ref": "CLASS_EVALUATION" },
+              "left": 390,
+              "top": 1120,
+              "width": 260,
+              "height": 190
+            },
+            {
+              "_type": "UMLClassView",
+              "_id": "VIEW_MAJ_DEMANDE",
+              "model": { "$ref": "CLASS_MAJ_DEMANDE" },
+              "left": 720,
+              "top": 1120,
+              "width": 280,
+              "height": 180
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_USER_ASSOC",
+              "model": { "$ref": "REL_USER_ASSOC" },
+              "tail": { "$ref": "VIEW_UTILISATEUR" },
+              "head": { "$ref": "VIEW_ASSOCIATION" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_CAT_ASSOC",
+              "model": { "$ref": "REL_CAT_ASSOC" },
+              "tail": { "$ref": "VIEW_CATEGORIE" },
+              "head": { "$ref": "VIEW_ASSOCIATION" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_CAT_DEMANDE",
+              "model": { "$ref": "REL_CAT_DEMANDE" },
+              "tail": { "$ref": "VIEW_CATEGORIE" },
+              "head": { "$ref": "VIEW_DEMANDE" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_CAT_CAMPAGNE",
+              "model": { "$ref": "REL_CAT_CAMPAGNE" },
+              "tail": { "$ref": "VIEW_CATEGORIE" },
+              "head": { "$ref": "VIEW_CAMPAGNE" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_USER_DEMANDE",
+              "model": { "$ref": "REL_USER_DEMANDE" },
+              "tail": { "$ref": "VIEW_UTILISATEUR" },
+              "head": { "$ref": "VIEW_DEMANDE" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_ASSOC_DEMANDE",
+              "model": { "$ref": "REL_ASSOC_DEMANDE" },
+              "tail": { "$ref": "VIEW_ASSOCIATION" },
+              "head": { "$ref": "VIEW_DEMANDE" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_DEMANDE_DOC",
+              "model": { "$ref": "REL_DEMANDE_DOC" },
+              "tail": { "$ref": "VIEW_DEMANDE" },
+              "head": { "$ref": "VIEW_JUSTIFICATIF" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_ASSOC_CAMPAGNE",
+              "model": { "$ref": "REL_ASSOC_CAMPAGNE" },
+              "tail": { "$ref": "VIEW_ASSOCIATION" },
+              "head": { "$ref": "VIEW_CAMPAGNE" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_DEMANDE_CAMPAGNE",
+              "model": { "$ref": "REL_DEMANDE_CAMPAGNE" },
+              "tail": { "$ref": "VIEW_DEMANDE" },
+              "head": { "$ref": "VIEW_CAMPAGNE" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_USER_DON",
+              "model": { "$ref": "REL_USER_DON" },
+              "tail": { "$ref": "VIEW_UTILISATEUR" },
+              "head": { "$ref": "VIEW_DON" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_DEMANDE_DON",
+              "model": { "$ref": "REL_DEMANDE_DON" },
+              "tail": { "$ref": "VIEW_DEMANDE" },
+              "head": { "$ref": "VIEW_DON" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_CAMPAGNE_DON",
+              "model": { "$ref": "REL_CAMPAGNE_DON" },
+              "tail": { "$ref": "VIEW_CAMPAGNE" },
+              "head": { "$ref": "VIEW_DON" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_USER_NOTIFICATION",
+              "model": { "$ref": "REL_USER_NOTIFICATION" },
+              "tail": { "$ref": "VIEW_UTILISATEUR" },
+              "head": { "$ref": "VIEW_NOTIFICATION" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_USER_FAVORI",
+              "model": { "$ref": "REL_USER_FAVORI" },
+              "tail": { "$ref": "VIEW_UTILISATEUR" },
+              "head": { "$ref": "VIEW_FAVORI" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_DEMANDE_FAVORI",
+              "model": { "$ref": "REL_DEMANDE_FAVORI" },
+              "tail": { "$ref": "VIEW_DEMANDE" },
+              "head": { "$ref": "VIEW_FAVORI" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_USER_OFFRE",
+              "model": { "$ref": "REL_USER_OFFRE" },
+              "tail": { "$ref": "VIEW_UTILISATEUR" },
+              "head": { "$ref": "VIEW_OFFRE_AIDE" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_OFFRE_RESERVATION",
+              "model": { "$ref": "REL_OFFRE_RESERVATION" },
+              "tail": { "$ref": "VIEW_OFFRE_AIDE" },
+              "head": { "$ref": "VIEW_RESERVATION" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_ASSOC_EVAL",
+              "model": { "$ref": "REL_ASSOC_EVAL" },
+              "tail": { "$ref": "VIEW_ASSOCIATION" },
+              "head": { "$ref": "VIEW_EVALUATION" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_USER_EVAL",
+              "model": { "$ref": "REL_USER_EVAL" },
+              "tail": { "$ref": "VIEW_UTILISATEUR" },
+              "head": { "$ref": "VIEW_EVALUATION" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_DEMANDE_MAJ",
+              "model": { "$ref": "REL_DEMANDE_MAJ" },
+              "tail": { "$ref": "VIEW_DEMANDE" },
+              "head": { "$ref": "VIEW_MAJ_DEMANDE" }
+            },
+            {
+              "_type": "UMLAssociationView",
+              "_id": "VIEW_REL_ASSOC_MAJ",
+              "model": { "$ref": "REL_ASSOC_MAJ" },
+              "tail": { "$ref": "VIEW_ASSOCIATION" },
+              "head": { "$ref": "VIEW_MAJ_DEMANDE" }
+            }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_UTILISATEUR",
+          "name": "Utilisateur",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_USER_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_USER_FULLNAME", "name": "fullName", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_USER_EMAIL", "name": "email", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_USER_PASSWORD", "name": "passwordHash", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_USER_PHONE", "name": "phone", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_USER_ROLE", "name": "role", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_USER_AVATAR", "name": "avatarUrl", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_USER_BIO", "name": "bio", "type": "text" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_ASSOCIATION",
+          "name": "Association",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_USER_ID", "name": "userId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_CATEGORY_ID", "name": "categoryId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_NAME", "name": "organizationName", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_RESP", "name": "responsibleName", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_EMAIL", "name": "email", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_PHONE", "name": "phone", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_LOCATION", "name": "location", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_DOC", "name": "documentPath", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_STATUS", "name": "status", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_ASSOC_VERIFIED", "name": "verified", "type": "boolean" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_CATEGORIE",
+          "name": "Categorie",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_CAT_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAT_NAME", "name": "name", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAT_SLUG", "name": "slug", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAT_DESCRIPTION", "name": "description", "type": "text" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAT_ICON", "name": "icon", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAT_COLOR", "name": "color", "type": "string" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_DEMANDE",
+          "name": "Demande",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_USER_ID", "name": "userId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_ASSOC_ID", "name": "associationId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_PARENT_ID", "name": "parentRequestId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_CATEGORY_ID", "name": "categoryId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_TITLE", "name": "title", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_DESC", "name": "description", "type": "text" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_LOCATION", "name": "location", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_URGENCY", "name": "urgency", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_TARGET", "name": "targetAmount", "type": "decimal" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_COLLECTED", "name": "collectedAmount", "type": "decimal" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_MONEY", "name": "needsMoney", "type": "boolean" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_OBJECT", "name": "needsObject", "type": "boolean" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_SERVICE", "name": "needsService", "type": "boolean" },
+            { "_type": "UMLAttribute", "_id": "ATTR_REQ_STATUS", "name": "status", "type": "string" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_JUSTIFICATIF",
+          "name": "JustificatifDemande",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_DOC_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DOC_REQUEST_ID", "name": "requestId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DOC_PATH", "name": "filePath", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DOC_TYPE", "name": "fileType", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DOC_NAME", "name": "fileName", "type": "string" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_CAMPAGNE",
+          "name": "Campagne",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_ASSOC_ID", "name": "associationId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_PARENT_ID", "name": "parentRequestId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_CATEGORY_ID", "name": "categoryId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_TITLE", "name": "title", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_DESC", "name": "description", "type": "text" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_LOCATION", "name": "location", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_URGENCY", "name": "urgency", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_TARGET", "name": "targetAmount", "type": "decimal" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_COLLECTED", "name": "collectedAmount", "type": "decimal" },
+            { "_type": "UMLAttribute", "_id": "ATTR_CAMP_STATUS", "name": "status", "type": "string" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_DON",
+          "name": "Don",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_DONOR_ID", "name": "donorId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_REQUEST_ID", "name": "requestId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_CAMPAIGN_ID", "name": "campaignId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_ASSOC_ID", "name": "associationId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_AMOUNT", "name": "amount", "type": "decimal" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_CURRENCY", "name": "currency", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_STATUS", "name": "status", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_PAYMENT", "name": "paymentMethod", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_DON_ANON", "name": "anonymous", "type": "boolean" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_NOTIFICATION",
+          "name": "Notification",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_NOTIF_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_NOTIF_USER_ID", "name": "userId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_NOTIF_TYPE", "name": "type", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_NOTIF_TITLE", "name": "title", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_NOTIF_DETAIL", "name": "detail", "type": "text" },
+            { "_type": "UMLAttribute", "_id": "ATTR_NOTIF_READ", "name": "isRead", "type": "boolean" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_FAVORI",
+          "name": "Favori",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_FAV_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_FAV_USER_ID", "name": "userId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_FAV_REQUEST_ID", "name": "requestId", "type": "int <<FK>>" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_OFFRE_AIDE",
+          "name": "OffreAide",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_OFFER_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_OFFER_USER_ID", "name": "userId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_OFFER_REQUEST_ID", "name": "requestId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_OFFER_CAMPAIGN_ID", "name": "campaignId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_OFFER_TYPE", "name": "type", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_OFFER_DESC", "name": "description", "type": "text" },
+            { "_type": "UMLAttribute", "_id": "ATTR_OFFER_QTY", "name": "quantity", "type": "int" },
+            { "_type": "UMLAttribute", "_id": "ATTR_OFFER_STATUS", "name": "status", "type": "string" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_RESERVATION",
+          "name": "Reservation",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_RES_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_RES_OFFER_ID", "name": "helpOfferId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_RES_REQUEST_ID", "name": "requestId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_RES_USER_ID", "name": "reservedBy", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_RES_STATUS", "name": "status", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_RES_EXPIRES", "name": "expiresAt", "type": "datetime" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_EVALUATION",
+          "name": "Evaluation",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_EVAL_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_EVAL_ASSOC_ID", "name": "associationId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_EVAL_DONOR_ID", "name": "donorId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_EVAL_RATING", "name": "rating", "type": "int" },
+            { "_type": "UMLAttribute", "_id": "ATTR_EVAL_REVIEW", "name": "review", "type": "text" }
+          ]
+        },
+        {
+          "_type": "UMLClass",
+          "_id": "CLASS_MAJ_DEMANDE",
+          "name": "MiseAJourDemande",
+          "attributes": [
+            { "_type": "UMLAttribute", "_id": "ATTR_MAJ_ID", "name": "id", "type": "int <<PK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_MAJ_REQUEST_ID", "name": "requestId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_MAJ_ASSOC_ID", "name": "associationId", "type": "int <<FK>>" },
+            { "_type": "UMLAttribute", "_id": "ATTR_MAJ_TITLE", "name": "title", "type": "string" },
+            { "_type": "UMLAttribute", "_id": "ATTR_MAJ_DESC", "name": "description", "type": "text" }
+          ]
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_USER_ASSOC",
+          "name": "possede",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_USER_ASSOC_E1", "reference": { "$ref": "CLASS_UTILISATEUR" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_USER_ASSOC_E2", "reference": { "$ref": "CLASS_ASSOCIATION" }, "multiplicity": "0..1" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_CAT_ASSOC",
+          "name": "classe",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_CAT_ASSOC_E1", "reference": { "$ref": "CLASS_CATEGORIE" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_CAT_ASSOC_E2", "reference": { "$ref": "CLASS_ASSOCIATION" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_CAT_DEMANDE",
+          "name": "classe",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_CAT_DEMANDE_E1", "reference": { "$ref": "CLASS_CATEGORIE" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_CAT_DEMANDE_E2", "reference": { "$ref": "CLASS_DEMANDE" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_CAT_CAMPAGNE",
+          "name": "classe",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_CAT_CAMPAGNE_E1", "reference": { "$ref": "CLASS_CATEGORIE" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_CAT_CAMPAGNE_E2", "reference": { "$ref": "CLASS_CAMPAGNE" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_USER_DEMANDE",
+          "name": "publie",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_USER_DEMANDE_E1", "reference": { "$ref": "CLASS_UTILISATEUR" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_USER_DEMANDE_E2", "reference": { "$ref": "CLASS_DEMANDE" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_ASSOC_DEMANDE",
+          "name": "gere",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_ASSOC_DEMANDE_E1", "reference": { "$ref": "CLASS_ASSOCIATION" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_ASSOC_DEMANDE_E2", "reference": { "$ref": "CLASS_DEMANDE" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_DEMANDE_DOC",
+          "name": "contient",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_DOC_E1", "reference": { "$ref": "CLASS_DEMANDE" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_DOC_E2", "reference": { "$ref": "CLASS_JUSTIFICATIF" }, "multiplicity": "1..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_ASSOC_CAMPAGNE",
+          "name": "cree",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_ASSOC_CAMPAGNE_E1", "reference": { "$ref": "CLASS_ASSOCIATION" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_ASSOC_CAMPAGNE_E2", "reference": { "$ref": "CLASS_CAMPAGNE" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_DEMANDE_CAMPAGNE",
+          "name": "peutGenerer",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_CAMPAGNE_E1", "reference": { "$ref": "CLASS_DEMANDE" }, "multiplicity": "0..1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_CAMPAGNE_E2", "reference": { "$ref": "CLASS_CAMPAGNE" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_USER_DON",
+          "name": "effectue",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_USER_DON_E1", "reference": { "$ref": "CLASS_UTILISATEUR" }, "multiplicity": "0..1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_USER_DON_E2", "reference": { "$ref": "CLASS_DON" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_DEMANDE_DON",
+          "name": "recoit",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_DON_E1", "reference": { "$ref": "CLASS_DEMANDE" }, "multiplicity": "0..1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_DON_E2", "reference": { "$ref": "CLASS_DON" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_CAMPAGNE_DON",
+          "name": "recoit",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_CAMPAGNE_DON_E1", "reference": { "$ref": "CLASS_CAMPAGNE" }, "multiplicity": "0..1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_CAMPAGNE_DON_E2", "reference": { "$ref": "CLASS_DON" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_USER_NOTIFICATION",
+          "name": "recoit",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_USER_NOTIFICATION_E1", "reference": { "$ref": "CLASS_UTILISATEUR" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_USER_NOTIFICATION_E2", "reference": { "$ref": "CLASS_NOTIFICATION" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_USER_FAVORI",
+          "name": "ajoute",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_USER_FAVORI_E1", "reference": { "$ref": "CLASS_UTILISATEUR" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_USER_FAVORI_E2", "reference": { "$ref": "CLASS_FAVORI" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_DEMANDE_FAVORI",
+          "name": "estFavorisee",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_FAVORI_E1", "reference": { "$ref": "CLASS_DEMANDE" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_FAVORI_E2", "reference": { "$ref": "CLASS_FAVORI" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_USER_OFFRE",
+          "name": "propose",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_USER_OFFRE_E1", "reference": { "$ref": "CLASS_UTILISATEUR" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_USER_OFFRE_E2", "reference": { "$ref": "CLASS_OFFRE_AIDE" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_OFFRE_RESERVATION",
+          "name": "reserveePar",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_OFFRE_RESERVATION_E1", "reference": { "$ref": "CLASS_OFFRE_AIDE" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_OFFRE_RESERVATION_E2", "reference": { "$ref": "CLASS_RESERVATION" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_ASSOC_EVAL",
+          "name": "estEvaluee",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_ASSOC_EVAL_E1", "reference": { "$ref": "CLASS_ASSOCIATION" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_ASSOC_EVAL_E2", "reference": { "$ref": "CLASS_EVALUATION" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_USER_EVAL",
+          "name": "redige",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_USER_EVAL_E1", "reference": { "$ref": "CLASS_UTILISATEUR" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_USER_EVAL_E2", "reference": { "$ref": "CLASS_EVALUATION" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_DEMANDE_MAJ",
+          "name": "possede",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_MAJ_E1", "reference": { "$ref": "CLASS_DEMANDE" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_DEMANDE_MAJ_E2", "reference": { "$ref": "CLASS_MAJ_DEMANDE" }, "multiplicity": "0..*" }
+        },
+        {
+          "_type": "UMLAssociation",
+          "_id": "REL_ASSOC_MAJ",
+          "name": "publie",
+          "end1": { "_type": "UMLAssociationEnd", "_id": "REL_ASSOC_MAJ_E1", "reference": { "$ref": "CLASS_ASSOCIATION" }, "multiplicity": "1" },
+          "end2": { "_type": "UMLAssociationEnd", "_id": "REL_ASSOC_MAJ_E2", "reference": { "$ref": "CLASS_MAJ_DEMANDE" }, "multiplicity": "0..*" }
+        }
+      ]
+    }
+  ]
+}

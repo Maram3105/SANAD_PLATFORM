@@ -45,11 +45,12 @@ try {
 
     $query = "SELECT d.id, d.donor_name, d.donor_email, d.amount, d.currency,
                      d.status, d.payment_method, d.anonymous, d.created_at,
-                     a.organization_name,
-                     r.title as request_title
+                     COALESCE(a.organization_name, 'Plateforme Sanad') AS organization_name,
+                     COALESCE(camp.title, r.title, 'Don libre') AS request_title
               FROM donations d
-              INNER JOIN associations a ON d.association_id = a.id
+              LEFT JOIN associations a ON d.association_id = a.id
               LEFT JOIN requests r ON d.request_id = r.id
+              LEFT JOIN campaigns camp ON d.campaign_id = camp.id
               WHERE $where
               ORDER BY d.created_at DESC
               LIMIT :limit OFFSET :offset";
@@ -63,7 +64,7 @@ try {
     $stmt->execute();
     $donations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $countQuery = "SELECT COUNT(*) FROM donations d INNER JOIN associations a ON d.association_id = a.id WHERE $where";
+    $countQuery = "SELECT COUNT(*) FROM donations d WHERE $where";
     $countStmt  = $pdo->prepare($countQuery);
     foreach ($params as $k => $v) {
         $countStmt->bindValue($k, $v);

@@ -1,272 +1,290 @@
 <?php
-/**
- * create_donation.php - Endpoint pour créer une donation
- * 
- * POST /backend/api/create_donation.php
- * 
- * Body JSON:
- * {
- *   "type": "request|campaign|association|platform",
- *   "amount": 25,
- *   "message": "Soutien sincère",
- *   "isAnonymous": false,
- *   "requestId": 1 (optional),
- *   "campaignId": 1 (optional),
- *   "associationId": 1 (optional)
- * }
- */
+
+declare(strict_types=1);
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-require_once __DIR__ . '/../config.php';
+$config = require __DIR__ . '/config.php';
+$pdo = require __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';
+
+function read_json_body(): array
+{
+    $rawBody = file_get_contents('php://input') ?: '';
+    $input = json_decode($rawBody, true);
+
+    if (!is_array($input)) {
+        json_response(['success' => false, 'message' => 'Donnees invalides.'], 400);
+    }
+
+    return $input;
+}
+
+function nullable_positive_int($value): ?int
+{
+    if ($value === null || $value === '') {
+        return null;
+    }
+
+    if (is_int($value) && $value > 0) {
+        return $value;
+    }
+
+    if (is_string($value) && ctype_digit($value) && (int) $value > 0) {
+        return (int) $value;
+    }
+
+    if (is_float($value) && floor($value) === $value && $value > 0) {
+        return (int) $value;
+    }
+
+    return null;
+}
+
+function clean_message($message): ?string
+{
+    if (!is_string($message)) {
+        return null;
+    }
+
+    $message = trim($message);
+    if ($message === '') {
+        return null;
+    }
+
+    if (function_exists('mb_substr')) {
+        return mb_substr($message, 0, 500);
+    }
+
+    return substr($message, 0, 500);
+}
 
 try {
-    // Validation de la requête
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        http_response_code(405);
-        echo json_encode(['success' => false, 'message' => 'Méthode non autorisée']);
-        exit;
+        json_response(['success' => false, 'message' => 'Methode non autorisee.'], 405);
     }
 
-    // Récupérer les données JSON
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = read_json_body();
 
-    if (!$input) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Données invalides']);
-        exit;
+    $type = (string) ($input['type'] ?? '');
+    $validTypes = ['request', 'campaign', 'association', 'platform'];
+    if (!in_array($type, $validTypes, true)) {
+        json_response(['success' => false, 'message' => 'Type de don invalide.'], 400);
     }
 
-    // Valider les champs obligatoires
-    $type = $input['type'] ?? null;
-    $amount = $input['amount'] ?? null;
-    $isAnonymous = $input['isAnonymous'] ?? false;
-    $message = $input['message'] ?? '';
-$requestId = $input['requestId'] ?? null;
-$campaignId = $input['campaignId'] ?? null;
-$associationId = $input['associationId'] ?? null;
+    $amount = filter_var($input['amount'] ?? null, FILTER_VALIDATE_FLOAT);
+    if ($amount === false || $amount < 5 || $amount > 100000) {
+        json_response(['success' => false, 'message' => 'Montant invalide. Minimum 5 TND, maximum 100000 TND.'], 400);
+    }
+    $amount = round((float) $amount, 2);
 
-// Validation du type
-$validTypes = ['request', 'campaign', 'association', 'platform'];
-    if (!in_array($type, $validTypes)) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Type de don invalide']);
-        exit;
+    $isAnonymous = filter_var($input['isAnonymous'] ?? false, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+    $message = clean_message($input['message'] ?? null);
+    $paymentMethod = is_string($input['paymentMethod'] ?? null)
+        ? substr(trim((string) $input['paymentMethod']), 0, 50)
+        : 'simulation';
+    if ($paymentMethod === '') {
+        $paymentMethod = 'simulation';
     }
 
-    // Validation du montant
-    if (!$amount || !is_numeric($amount) || $amount < 5) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Montant invalide (minimum 5 TND)']);
-        exit;
-    }
+    $requestId = nullable_positive_int($input['requestId'] ?? null);
+    $campaignId = nullable_positive_int($input['campaignId'] ?? null);
+    $associationId = nullable_positive_int($input['associationId'] ?? null);
 
-    // Validation des IDs
-if ($type === 'request' && !$requestId) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'ID de demande requis']);
-        exit;
-}
-
-if ($type === 'campaign' && !$campaignId) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'ID de campagne requis']);
-    exit;
-}
-
-    if ($type === 'association' && !$associationId) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'ID d\'association requis']);
-        exit;
-    }
-
-    // Déterminer l'association
-    if ($type === 'request') {
-        // Récupérer l'association de la demande
-        $stmt = $pdo->prepare('SELECT association_id FROM requests WHERE id = ?');
-        $stmt->execute([$requestId]);
-        $request = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$request) {
-            http_response_code(404);
-            echo json_encode(['success' => false, 'message' => 'Demande non trouvée']);
-            exit;
-        }
-
-        $associationId = $request['association_id'];
-    } elseif ($type === 'campaign') {
-        $stmt = $pdo->prepare('SELECT association_id FROM campaigns WHERE id = ?');
-        $stmt->execute([$campaignId]);
-        $campaign = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$campaign) {
-            http_response_code(404);
-            echo json_encode(['success' => false, 'message' => 'Campagne non trouvée']);
-            exit;
-        }
-
-        $associationId = $campaign['association_id'];
-    } elseif ($type === 'association') {
-        // Vérifier que l'association existe
-        $stmt = $pdo->prepare('SELECT id FROM associations WHERE id = ?');
-        $stmt->execute([$associationId]);
-
-        if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
-            http_response_code(404);
-            echo json_encode(['success' => false, 'message' => 'Association non trouvée']);
-            exit;
-        }
-    } else {
-        // Pour les dons libres, créer une association fictive ou utiliser null
-        $associationId = null;
-    }
-
-    // Récupérer les infos de l'utilisateur (si connecté)
     $donorId = null;
     $donorEmail = null;
     $donorName = null;
 
-    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-    if (preg_match('/Bearer\s+(.+)/i', $authHeader, $matches)) {
-        $token = $matches[1];
-        // Validation du token JWT (simplifié)
-        // Dans un vrai système, décoder et valider le JWT
-        // Pour maintenant, on utilise la session ou l'email du cookie
-    }
+    $token = get_bearer_token();
+    $payload = $token ? verify_jwt($token, $config['jwt_secret']) : null;
+    $payloadUserId = nullable_positive_int($payload['sub'] ?? null);
 
-    // Récupérer depuis la session ou les paramètres
-    if (isset($_SESSION['user_id'])) {
-        $donorId = $_SESSION['user_id'];
-
-        // Récupérer l'email et le nom de l'utilisateur
-        $stmt = $pdo->prepare('SELECT email, full_name FROM users WHERE id = ?');
-        $stmt->execute([$donorId]);
+    if ($payloadUserId) {
+        $stmt = $pdo->prepare('SELECT id, email, full_name FROM users WHERE id = :id LIMIT 1');
+        $stmt->execute([':id' => $payloadUserId]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
-            $donorEmail = $user['email'];
-            $donorName = !$isAnonymous ? $user['full_name'] : null;
+            $donorId = (int) $user['id'];
+            $donorEmail = $user['email'] ?: null;
+            $donorName = $isAnonymous ? null : ($user['full_name'] ?: null);
         }
     }
 
-    // Si pas connecté et pas anonyme, permettre un don anonyme
-    if (!$donorId && !$isAnonymous) {
-        // Optionnel: Rediriger vers la connexion
-        // Pour maintenant, convertir en don anonyme
+    if (!$donorId) {
         $isAnonymous = true;
     }
 
-    // Créer la donation
-    $stmt = $pdo->prepare('
-        INSERT INTO donations (
-            donor_id,
-            donor_email,
-            donor_name,
-            request_id,
-            campaign_id,
-            association_id,
-            amount,
-            currency,
-            status,
-            message,
-            anonymous,
-            created_at
-        ) VALUES (
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            \'TND\',
-            \'completed\',
-            ?,
-            ?,
-            NOW()
-        )
-    ');
+    $targetAssociationId = null;
+    $targetRequestId = null;
+    $targetCampaignId = null;
 
+    if ($type === 'request') {
+        if (!$requestId) {
+            json_response(['success' => false, 'message' => 'ID de demande requis.'], 400);
+        }
+
+        $stmt = $pdo->prepare(
+            'SELECT id, association_id, target_amount, collected_amount, status
+             FROM requests
+             WHERE id = :id
+             LIMIT 1'
+        );
+        $stmt->execute([':id' => $requestId]);
+        $target = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$target) {
+            json_response(['success' => false, 'message' => 'Demande introuvable.'], 404);
+        }
+
+        if (in_array((string) $target['status'], ['cancelled', 'paused'], true)) {
+            json_response(['success' => false, 'message' => 'Cette demande ne peut pas recevoir de don actuellement.'], 409);
+        }
+
+        $targetRequestId = (int) $target['id'];
+        $targetAssociationId = $target['association_id'] !== null ? (int) $target['association_id'] : null;
+    } elseif ($type === 'campaign') {
+        if (!$campaignId) {
+            json_response(['success' => false, 'message' => 'ID de campagne requis.'], 400);
+        }
+
+        $stmt = $pdo->prepare(
+            'SELECT id, association_id, target_amount, collected_amount, status
+             FROM campaigns
+             WHERE id = :id
+             LIMIT 1'
+        );
+        $stmt->execute([':id' => $campaignId]);
+        $target = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$target) {
+            json_response(['success' => false, 'message' => 'Campagne introuvable.'], 404);
+        }
+
+        if (in_array((string) $target['status'], ['cancelled', 'paused'], true)) {
+            json_response(['success' => false, 'message' => 'Cette campagne ne peut pas recevoir de don actuellement.'], 409);
+        }
+
+        $targetCampaignId = (int) $target['id'];
+        $targetAssociationId = (int) $target['association_id'];
+    } elseif ($type === 'association') {
+        if (!$associationId) {
+            json_response(['success' => false, 'message' => 'ID association requis.'], 400);
+        }
+
+        $stmt = $pdo->prepare('SELECT id, status FROM associations WHERE id = :id LIMIT 1');
+        $stmt->execute([':id' => $associationId]);
+        $association = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$association) {
+            json_response(['success' => false, 'message' => 'Association introuvable.'], 404);
+        }
+
+        if (($association['status'] ?? '') !== 'approved') {
+            json_response(['success' => false, 'message' => 'Cette association ne peut pas recevoir de don actuellement.'], 409);
+        }
+
+        $targetAssociationId = (int) $association['id'];
+    }
+
+    $transactionId = 'SANAD-' . date('YmdHis') . '-' . bin2hex(random_bytes(4));
+
+    $pdo->beginTransaction();
+
+    $stmt = $pdo->prepare(
+        'INSERT INTO donations (
+            donor_id, donor_email, donor_name, request_id, campaign_id, association_id,
+            amount, currency, status, payment_method, transaction_id, message, anonymous, created_at
+        ) VALUES (
+            :donor_id, :donor_email, :donor_name, :request_id, :campaign_id, :association_id,
+            :amount, "TND", "completed", :payment_method, :transaction_id, :message, :anonymous, NOW()
+        )'
+    );
     $stmt->execute([
-        $donorId,
-        $donorEmail,
-        $donorName,
-        $type === 'request' ? $requestId : null,
-        $type === 'campaign' ? $campaignId : null,
-        $associationId,
-        $amount,
-        $message ?: null,
-        $isAnonymous ? 1 : 0
+        ':donor_id' => $donorId,
+        ':donor_email' => $donorEmail,
+        ':donor_name' => $donorName,
+        ':request_id' => $targetRequestId,
+        ':campaign_id' => $targetCampaignId,
+        ':association_id' => $targetAssociationId,
+        ':amount' => $amount,
+        ':payment_method' => $paymentMethod,
+        ':transaction_id' => $transactionId,
+        ':message' => $message,
+        ':anonymous' => $isAnonymous ? 1 : 0
     ]);
 
-    $donationId = $pdo->lastInsertId();
+    $donationId = (int) $pdo->lastInsertId();
 
-    // Mettre à jour les statistiques de l'association
-    if ($associationId) {
-        $stmt = $pdo->prepare('
-            UPDATE association_stats
-            SET total_donations = total_donations + ?,
-                donors_count = donors_count + 1
-            WHERE association_id = ?
-        ');
-        $stmt->execute([$amount, $associationId]);
-
-        // Si c'est une première donation, insérer la ligne de stats
-        if ($stmt->rowCount() === 0) {
-            $stmt = $pdo->prepare('
-                INSERT INTO association_stats (association_id, total_donations, donors_count)
-                VALUES (?, ?, 1)
-            ');
-            $stmt->execute([$associationId, $amount]);
-        }
+    if ($targetAssociationId) {
+        $stmt = $pdo->prepare(
+            'INSERT INTO association_stats (association_id, total_donations, donors_count)
+             VALUES (:association_id, :amount, 1)
+             ON DUPLICATE KEY UPDATE
+                total_donations = total_donations + VALUES(total_donations),
+                donors_count = donors_count + 1'
+        );
+        $stmt->execute([':association_id' => $targetAssociationId, ':amount' => $amount]);
     }
 
-    // Mettre à jour le montant collecté de la demande
-    if ($type === 'request' && $requestId) {
-        $stmt = $pdo->prepare('
-            UPDATE requests
-            SET collected_amount = collected_amount + ?
-            WHERE id = ?
-        ');
-        $stmt->execute([$amount, $requestId]);
+    if ($targetRequestId) {
+        $stmt = $pdo->prepare(
+            'UPDATE requests
+             SET collected_amount = collected_amount + :amount,
+                 status = CASE
+                    WHEN target_amount > 0 AND collected_amount + :amount >= target_amount THEN "completed"
+                    ELSE status
+                 END
+             WHERE id = :id'
+        );
+        $stmt->execute([':amount' => $amount, ':id' => $targetRequestId]);
     }
 
-    if ($type === 'campaign' && $campaignId) {
-        $stmt = $pdo->prepare('
-            UPDATE campaigns
-            SET collected_amount = collected_amount + ?
-            WHERE id = ?
-        ');
-        $stmt->execute([$amount, $campaignId]);
+    if ($targetCampaignId) {
+        $stmt = $pdo->prepare(
+            'UPDATE campaigns
+             SET collected_amount = collected_amount + :amount,
+                 status = CASE
+                    WHEN target_amount > 0 AND collected_amount + :amount >= target_amount THEN "completed"
+                    ELSE status
+                 END
+             WHERE id = :id'
+        );
+        $stmt->execute([':amount' => $amount, ':id' => $targetCampaignId]);
     }
 
-    // Répondre avec succès
-    http_response_code(201);
-    echo json_encode([
+    $pdo->commit();
+
+    json_response([
         'success' => true,
-        'message' => 'Don créé avec succès',
+        'message' => 'Don enregistre avec succes.',
         'data' => [
             'id' => $donationId,
             'amount' => $amount,
+            'currency' => 'TND',
             'type' => $type,
+            'request_id' => $targetRequestId,
+            'campaign_id' => $targetCampaignId,
+            'association_id' => $targetAssociationId,
+            'anonymous' => $isAnonymous,
+            'payment_method' => $paymentMethod,
+            'transaction_id' => $transactionId,
             'timestamp' => date('c')
         ]
-    ]);
+    ], 201);
+} catch (Throwable $e) {
+    if ($pdo instanceof PDO && $pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
 
-} catch (Exception $e) {
     error_log($e->getMessage());
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Erreur serveur: ' . $e->getMessage()
-    ]);
+    json_response(['success' => false, 'message' => 'Erreur serveur.'], 500);
 }
-?>

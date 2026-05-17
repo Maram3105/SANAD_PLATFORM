@@ -214,10 +214,13 @@ export class AssociationDetailComponent implements OnInit, OnDestroy {
     this.isDonationModalOpen = false;
   }
 
-  onDonationCompleted(donation: any) {
-    console.log('Donation completed:', donation);
+  onDonationCompleted(donation: { amount: number; type?: string }) {
     // Mettre à jour les stats de l'association
     if (this.association) {
+      if (donation.type && donation.type !== 'association') {
+        return;
+      }
+
       this.association.stats.totalDonations += donation.amount;
       this.association.stats.donorsCount += 1;
     }

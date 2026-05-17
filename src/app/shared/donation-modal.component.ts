@@ -1,9 +1,10 @@
-import { Component, inject, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, inject, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../auth/auth.service';
 
 interface DonationData {
   type: 'request' | 'campaign' | 'association' | 'platform';
@@ -725,7 +726,7 @@ interface DonationData {
     }
   `]
 })
-export class DonationModalComponent implements OnInit {
+export class DonationModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false;
   @Input() requestId?: number;
   @Input() campaignId?: number;
@@ -736,6 +737,7 @@ export class DonationModalComponent implements OnInit {
 
   http = inject(HttpClient);
   router = inject(Router);
+  auth = inject(AuthService);
 
   currentStep: 1 | 2 | 3 = 1;
   isSubmitting = false;
@@ -758,27 +760,73 @@ export class DonationModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.resetFormToContext();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['requestId'] || changes['campaignId'] || changes['associationId'] || changes['defaultType']) {
+      this.resetFormToContext();
+    }
+  }
+
+  private getInitialType(): 'request' | 'campaign' | 'association' | 'platform' {
     if (this.campaignId) {
-      this.donationForm.type = 'campaign';
-      this.donationForm.campaignId = this.campaignId;
-    } else if (this.requestId) {
-      this.donationForm.type = 'request';
+      return 'campaign';
+    }
+
+    if (this.requestId) {
+      return 'request';
+    }
+
+    if (this.associationId) {
+      return 'association';
+    }
+
+    if (this.allowedTypes.includes(this.defaultType)) {
+      return this.defaultType;
+    }
+
+    return 'platform';
+  }
+
+  private resetFormToContext() {
+    const amount = this.donationForm?.amount || 25;
+    const message = this.donationForm?.message || '';
+    const isAnonymous = this.donationForm?.isAnonymous || false;
+    this.donationForm = {
+      type: this.getInitialType(),
+      amount,
+      message,
+      isAnonymous
+    };
+    this.applyTargetForType(this.donationForm.type);
+  }
+
+  private applyTargetForType(type: 'request' | 'campaign' | 'association' | 'platform') {
+    delete this.donationForm.requestId;
+    delete this.donationForm.campaignId;
+    delete this.donationForm.associationId;
+
+    if (type === 'request' && this.requestId) {
       this.donationForm.requestId = this.requestId;
-    } else if (this.associationId) {
-      this.donationForm.type = 'association';
+    }
+
+    if (type === 'campaign' && this.campaignId) {
+      this.donationForm.campaignId = this.campaignId;
+    }
+
+    if (type === 'association' && this.associationId) {
       this.donationForm.associationId = this.associationId;
     }
   }
 
   selectType(type: 'request' | 'campaign' | 'association' | 'platform') {
-    this.donationForm.type = type;
-    if (type === 'request' && this.requestId) {
-      this.donationForm.requestId = this.requestId;
-    } else if (type === 'campaign' && this.campaignId) {
-      this.donationForm.campaignId = this.campaignId;
-    } else if (type === 'association' && this.associationId) {
-      this.donationForm.associationId = this.associationId;
+    if (!this.allowedTypes.includes(type)) {
+      return;
     }
+
+    this.donationForm.type = type;
+    this.applyTargetForType(type);
   }
 
   getTypeIcon(): string {
@@ -815,11 +863,19 @@ export class DonationModalComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    this.http.post(`${environment.apiUrl}create_donation.php`, this.donationForm).subscribe({
+    const token = this.auth.getToken();
+    const options = token
+      ? { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) }
+      : {};
+
+    this.http.post(`${environment.apiUrl}create_donation.php`, this.donationForm, options).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.currentStep = 3;
-          this.donated.emit(this.donationForm);
+          this.donated.emit({
+            ...this.donationForm,
+            ...(response.data || {})
+          });
         } else {
           alert(response.message || 'Erreur lors du traitement du don');
         }
@@ -870,14 +926,12 @@ export class DonationModalComponent implements OnInit {
     this.isOpen = false;
     this.currentStep = 1;
     this.donationForm = {
-      type: this.defaultType,
+      type: this.getInitialType(),
       amount: 25,
       message: '',
-      isAnonymous: false,
-      requestId: this.requestId,
-      campaignId: this.campaignId,
-      associationId: this.associationId
+      isAnonymous: false
     };
+    this.applyTargetForType(this.donationForm.type);
     this.closed.emit();
   }
 }

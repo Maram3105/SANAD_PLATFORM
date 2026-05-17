@@ -4,7 +4,7 @@
  * 
  * GET /backend/api/get_donations.php
  * Query params:
- *   - type: request|association|platform (optionnel)
+ *   - type: request|campaign|association|platform (optionnel)
  *   - id: ID de la demande ou association (pour filtrer)
  *   - sort: recent|amount (défaut: recent)
  *   - limit: nombre de résultats (défaut: 10)
@@ -38,11 +38,13 @@ try {
         d.anonymous,
         d.created_at,
         CASE
+            WHEN d.campaign_id IS NOT NULL THEN "campaign"
             WHEN d.request_id IS NOT NULL THEN "request"
             WHEN d.association_id IS NOT NULL THEN "association"
             ELSE "platform"
         END as donation_type,
         d.request_id,
+        d.campaign_id,
         d.association_id
     FROM donations d
     WHERE d.status = "completed"';
@@ -53,11 +55,14 @@ try {
     if ($type === 'request' && $id) {
         $query .= ' AND d.request_id = ?';
         $params[] = $id;
+    } elseif ($type === 'campaign' && $id) {
+        $query .= ' AND d.campaign_id = ?';
+        $params[] = $id;
     } elseif ($type === 'association' && $id) {
         $query .= ' AND d.association_id = ?';
         $params[] = $id;
     } elseif ($type === 'platform') {
-        $query .= ' AND d.request_id IS NULL AND d.association_id IS NULL';
+        $query .= ' AND d.request_id IS NULL AND d.campaign_id IS NULL AND d.association_id IS NULL';
     }
 
     // Tri
@@ -104,11 +109,14 @@ try {
     if ($type === 'request' && $id) {
         $statsQuery .= ' AND d.request_id = ?';
         $statsParams[] = $id;
+    } elseif ($type === 'campaign' && $id) {
+        $statsQuery .= ' AND d.campaign_id = ?';
+        $statsParams[] = $id;
     } elseif ($type === 'association' && $id) {
         $statsQuery .= ' AND d.association_id = ?';
         $statsParams[] = $id;
     } elseif ($type === 'platform') {
-        $statsQuery .= ' AND d.request_id IS NULL AND d.association_id IS NULL';
+        $statsQuery .= ' AND d.request_id IS NULL AND d.campaign_id IS NULL AND d.association_id IS NULL';
     }
 
     $stmtStats = $pdo->prepare($statsQuery);

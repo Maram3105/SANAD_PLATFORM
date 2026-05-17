@@ -16,6 +16,7 @@ export interface HelpOffer {
   location: string;
   delivery_method: 'hand' | 'delivery';
   deliveryMethod?: string;
+  image_url?: string | null;
   status: 'pending' | 'accepted' | 'reserved' | 'completed' | 'rejected';
   donor_name?: string;
   created_at: string;
@@ -31,12 +32,12 @@ export class HelpOfferService {
 
   private getHeaders() {
     const token = this.auth.getToken();
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+    return token
+      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+      : new HttpHeaders();
   }
 
-  createOffer(offer: Partial<HelpOffer>): Observable<any> {
+  createOffer(offer: Partial<HelpOffer> | FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}create_help_offer.php`, offer, {
       headers: this.getHeaders()
     });

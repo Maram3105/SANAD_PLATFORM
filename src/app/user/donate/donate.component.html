@@ -2,37 +2,74 @@
 
 <main class="donate">
   <section class="hero">
-    <h1>{{ isPlatformDonation() ? 'Faire un don libre' : 'Faire un don' }}</h1>
-    <p>{{ isPlatformDonation() ? 'Votre contribution aidera les cas les plus urgents identifiés par Sanad.' : 'Chaque contribution finance des actions concrètes et transparentes.' }}</p>
+    <h1>{{ selectedType() === 'platform' ? 'Faire un don libre' : 'Faire un don' }}</h1>
+    <p>
+      {{
+        selectedType() === 'platform'
+          ? 'Votre contribution aidera les cas les plus urgents identifies par Sanad.'
+          : 'Chaque contribution finance des actions concretes et transparentes.'
+      }}
+    </p>
   </section>
 
   <section class="donate-card">
     <div>
       <h2>Choisir un montant</h2>
-      <p>Votre don sera dirige vers les demandes prioritaires.</p>
+      <p>Votre don sera confirme en quelques secondes.</p>
     </div>
+
     <div class="donation-types">
-      <div class="type-card">
+      <button type="button" class="type-card" [class.selected]="isSelected('request')" (click)="selectType('request')">
         <h3>Don pour une demande</h3>
         <p>Soutenir un projet precis.</p>
-      </div>
-      <div class="type-card">
+      </button>
+      <button type="button" class="type-card" [class.selected]="isSelected('campaign')" (click)="selectType('campaign')">
+        <h3>Don pour une campagne</h3>
+        <p>Contribuer a une action portee par une association.</p>
+      </button>
+      <button type="button" class="type-card" [class.selected]="isSelected('association')" (click)="selectType('association')">
         <h3>Don pour une association</h3>
         <p>Accompagner une organisation.</p>
-      </div>
-      <div class="type-card">
+      </button>
+      <button type="button" class="type-card" [class.selected]="isSelected('platform')" (click)="selectType('platform')">
         <h3>Don libre</h3>
         <p>Contribution generale a la plateforme.</p>
-      </div>
+      </button>
     </div>
+
     <div class="amount-grid">
-      <button type="button">50 DT</button>
-      <button type="button">100 DT</button>
-      <button type="button">250 DT</button>
-      <button type="button">500 DT</button>
+      <button
+        type="button"
+        *ngFor="let quickAmount of quickAmounts"
+        [class.selected]="amount === quickAmount"
+        (click)="setAmount(quickAmount)"
+      >
+        {{ quickAmount }} DT
+      </button>
     </div>
-    <label>Montant libre</label>
-    <input type="number" [(ngModel)]="amount" />
-    <button class="primary" type="button">Confirmer le don</button>
+
+    <label for="donation-amount">Montant libre</label>
+    <input id="donation-amount" type="number" min="5" max="100000" step="1" [(ngModel)]="amount" />
+
+    <label for="donation-message">Message optionnel</label>
+    <textarea
+      id="donation-message"
+      rows="3"
+      maxlength="500"
+      [(ngModel)]="message"
+      placeholder="Un mot de soutien..."
+    ></textarea>
+
+    <label class="checkbox-row">
+      <input type="checkbox" [(ngModel)]="isAnonymous" />
+      <span>Faire ce don anonymement</span>
+    </label>
+
+    <div class="alert success" *ngIf="successMessage()">{{ successMessage() }}</div>
+    <div class="alert error" *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+    <button class="primary" type="button" (click)="submitDonation()" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Confirmation...' : 'Confirmer le don' }}
+    </button>
   </section>
 </main>

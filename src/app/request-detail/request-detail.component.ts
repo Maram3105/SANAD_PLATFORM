@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { NavbarComponent } from '../shared/navbar.component';
 import { LoggedInNavbarComponent } from '../shared/logged-in-navbar.component';
@@ -48,6 +49,16 @@ interface RelatedRequest {
   urgency: 'low' | 'medium' | 'high';
 }
 
+interface OfferDraft {
+  description: string;
+  quantity: number;
+  category: string;
+  location: string;
+  deliveryMethod: 'hand' | 'delivery';
+  imageFile: File | null;
+  imagePreview: string | null;
+}
+
 @Component({
   selector: 'app-request-detail',
   standalone: true,
@@ -57,6 +68,7 @@ interface RelatedRequest {
     LoggedInNavbarComponent,
     AssociationNavbarComponent,
     DonationModalComponent,
+    FormsModule,
     RouterLink
   ],
   templateUrl: './request-detail.component.html',
@@ -85,6 +97,20 @@ export class RequestDetailComponent implements OnInit {
 
   readonly helpOffers = signal<any[]>([]);
   readonly showProposeForm = signal<'object' | 'service' | null>(null);
+  readonly isOfferSubmitting = signal(false);
+  readonly offerError = signal('');
+  readonly offerSuccess = signal('');
+  readonly offerCategories = ['Alimentation', 'Vetements', 'Meubles', 'Sante', 'Education', 'Transport', 'Accompagnement', 'Autre'];
+
+  offerDraft: OfferDraft = {
+    description: '',
+    quantity: 1,
+    category: '',
+    location: '',
+    deliveryMethod: 'hand',
+    imageFile: null,
+    imagePreview: null
+  };
 
   constructor() {
     this.isLoggedIn.set(Boolean(this.auth.getToken()));
@@ -102,8 +128,8 @@ export class RequestDetailComponent implements OnInit {
     
     // Check for query params to show form
     const action = this.route.snapshot.queryParamMap.get('action');
-    if (action === 'propose-object') this.showProposeForm.set('object');
-    if (action === 'propose-service') this.showProposeForm.set('service');
+    if (action === 'propose-object') this.openOfferForm('object');
+    if (action === 'propose-service') this.openOfferForm('service');
   }
 
   loadRequest(id: number | string) {
@@ -155,27 +181,71 @@ export class RequestDetailComponent implements OnInit {
 
   submitOffer(event: Event) {
     event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
     const req = this.request();
     if (!req) return;
 
-    const offer = {
-      ...(req.item_type === 'campaign' ? { campaignId: req.id } : { requestId: req.id }),
-      type: this.showProposeForm() as 'object' | 'service',
-      description: formData.get('description') as string,
-      quantity: Number(formData.get('quantity') || 1),
-      category: formData.get('category') as string,
-      location: formData.get('location') as string,
-      deliveryMethod: formData.get('deliveryMethod') as string
-    };
+    this.offerError.set('');
+    this.offerSuccess.set('');
 
+    const type = this.showProposeForm();
+    const description = this.offerDraft.description.trim();
+    const location = this.offerDraft.location.trim();
+    const quantity = Number(this.offerDraft.quantity);
+
+    if (!type) {
+      this.offerError.set('Choisissez le type de proposition.');
+      return;
+    }
+
+    if (!description) {
+      this.offerError.set('Decrivez votre proposition.');
+      return;
+    }
+
+    if (!location) {
+      this.offerError.set('Indiquez votre ville ou votre zone de disponibilite.');
+      return;
+    }
+
+    if (!Number.isFinite(quantity) || quantity < 1) {
+      this.offerError.set('La quantite doit etre superieure ou egale a 1.');
+      return;
+    }
+
+    const offer = new FormData();
+    offer.append(req.item_type === 'campaign' ? 'campaignId' : 'requestId', String(req.id));
+    offer.append('type', type);
+    offer.append('description', description);
+    offer.append('quantity', String(quantity));
+    offer.append('category', this.offerDraft.category || (type === 'object' ? 'Autre' : 'Accompagnement'));
+    offer.append('location', location);
+    offer.append('deliveryMethod', this.offerDraft.deliveryMethod);
+    if (type === 'object' && this.offerDraft.imageFile) {
+      offer.append('image', this.offerDraft.imageFile);
+    }
+
+    this.isOfferSubmitting.set(true);
     this.helpOfferService.createOffer(offer).subscribe({
       next: (response) => {
         if (response.success) {
-          alert('Merci ! Votre proposition a été envoyée.');
-          this.showProposeForm.set(null);
-          this.loadHelpOffers();
+          this.offerSuccess.set(type === 'object'
+            ? 'Votre proposition d\'objet a ete envoyee.'
+            : 'Votre proposition d\'aide a ete envoyee.');
+          this.helpOffers.update((offers) => response.data ? [response.data, ...offers] : offers);
+          if (!response.data) {
+            this.loadHelpOffers();
+          }
+          this.resetOfferDraft();
+          setTimeout(() => this.closeOfferForm(), 1200);
+          return;
         }
+        this.offerError.set(response.message || 'Impossible d\'envoyer cette proposition.');
+      },
+      error: (error) => {
+        this.offerError.set(error.error?.message || 'Erreur lors de l\'envoi de la proposition.');
+      },
+      complete: () => {
+        this.isOfferSubmitting.set(false);
       }
     });
   }
@@ -275,7 +345,7 @@ export class RequestDetailComponent implements OnInit {
       this.router.navigate(['/auth/login'], { queryParams: { reason: 'object' } });
       return;
     }
-    this.showProposeForm.set('object');
+    this.openOfferForm('object');
   }
 
   proposeHelp() {
@@ -284,16 +354,96 @@ export class RequestDetailComponent implements OnInit {
       this.router.navigate(['/auth/login'], { queryParams: { reason: 'help' } });
       return;
     }
-    this.showProposeForm.set('service');
+    this.openOfferForm('service');
+  }
+
+  openOfferForm(type: 'object' | 'service') {
+    this.resetOfferDraft();
+    this.showProposeForm.set(type);
+    setTimeout(() => {
+      document.querySelector('.propose-form-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  closeOfferForm() {
+    if (this.isOfferSubmitting()) return;
+    this.showProposeForm.set(null);
+    this.offerError.set('');
+    this.offerSuccess.set('');
+    this.resetOfferDraft();
+  }
+
+  resetOfferDraft() {
+    if (this.offerDraft.imagePreview) {
+      URL.revokeObjectURL(this.offerDraft.imagePreview);
+    }
+
+    this.offerDraft = {
+      description: '',
+      quantity: 1,
+      category: '',
+      location: '',
+      deliveryMethod: 'hand',
+      imageFile: null,
+      imagePreview: null
+    };
+  }
+
+  onOfferImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+
+    this.offerError.set('');
+    if (!file) {
+      this.clearOfferImage(input);
+      return;
+    }
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      this.offerError.set('Image invalide. Utilisez PNG, JPG ou WebP.');
+      this.clearOfferImage(input);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.offerError.set('Image trop volumineuse. Maximum 5 Mo.');
+      this.clearOfferImage(input);
+      return;
+    }
+
+    if (this.offerDraft.imagePreview) {
+      URL.revokeObjectURL(this.offerDraft.imagePreview);
+    }
+
+    this.offerDraft.imageFile = file;
+    this.offerDraft.imagePreview = URL.createObjectURL(file);
+  }
+
+  clearOfferImage(input?: HTMLInputElement) {
+    if (this.offerDraft.imagePreview) {
+      URL.revokeObjectURL(this.offerDraft.imagePreview);
+    }
+    this.offerDraft.imageFile = null;
+    this.offerDraft.imagePreview = null;
+    if (input) {
+      input.value = '';
+    }
   }
 
   onDonationClosed() {
     this.isDonationModalOpen.set(false);
   }
 
-  onDonationCompleted(donation: { amount: number }) {
+  onDonationCompleted(donation: { amount: number; type?: 'request' | 'campaign' | 'association' | 'platform' }) {
     this.request.update((current) => {
       if (!current) return null;
+
+      const expectedType = current.item_type === 'campaign' ? 'campaign' : 'request';
+      if (donation.type && donation.type !== expectedType) {
+        return current;
+      }
+
       return {
         ...current,
         collected_amount: (current.collected_amount || 0) + donation.amount,
