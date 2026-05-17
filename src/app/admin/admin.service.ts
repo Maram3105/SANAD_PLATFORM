@@ -34,6 +34,8 @@ export interface AdminAssociation {
 
 export interface AdminRequest {
   id: number;
+  item_key?: string;
+  item_type?: 'request' | 'campaign';
   title: string;
   description: string;
   location: string;
@@ -45,6 +47,15 @@ export interface AdminRequest {
   organization_name: string;
   logo_url: string | null;
   category_name: string | null;
+  documents?: AdminRequestDocument[];
+}
+
+export interface AdminRequestDocument {
+  id: number;
+  file_path: string;
+  file_type: string | null;
+  file_name: string | null;
+  created_at: string;
 }
 
 export interface AdminDonation {
@@ -175,10 +186,10 @@ export class AdminService {
     ).pipe(catchError(this.handleError));
   }
 
-  updateRequest(requestId: number, action: 'approve' | 'reject' | 'delete'): Observable<AdminActionResponse> {
+  updateRequest(requestId: number, action: 'approve' | 'reject' | 'complete' | 'delete', itemType: 'request' | 'campaign' = 'request'): Observable<AdminActionResponse> {
     return this.http.post<AdminActionResponse>(
       `${this.apiBase}admin_update_request.php`,
-      { request_id: requestId, action },
+      { request_id: requestId, action, item_type: itemType },
       { headers: this.headers() }
     ).pipe(catchError(this.handleError));
   }

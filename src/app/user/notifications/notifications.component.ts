@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { LoggedInNavbarComponent } from '../../shared/logged-in-navbar.component';
 import { UserDataService, NotificationItem } from '../user-data.service';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule, LoggedInNavbarComponent],
+  imports: [CommonModule, RouterLink, LoggedInNavbarComponent],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
@@ -14,19 +15,31 @@ export class NotificationsComponent implements OnInit {
   notifications: NotificationItem[] = [];
   loading = true;
   isUpdating = false;
+  error = '';
 
-  constructor(private userData: UserDataService) {}
+  constructor(
+    private userData: UserDataService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.userData.getNotifications().subscribe({
       next: (response) => {
         if (response.success) {
           this.notifications = response.data;
+          this.error = '';
+        } else {
+          this.error = 'Impossible de charger les notifications.';
         }
         this.loading = false;
+        this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        this.error = err?.status === 401
+          ? 'Votre session a expire. Veuillez vous reconnecter.'
+          : 'Impossible de charger les notifications.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -46,9 +59,11 @@ export class NotificationsComponent implements OnInit {
           }));
         }
         this.isUpdating = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isUpdating = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -65,9 +80,11 @@ export class NotificationsComponent implements OnInit {
           item.isRead = true;
         }
         this.isUpdating = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isUpdating = false;
+        this.cdr.detectChanges();
       }
     });
   }

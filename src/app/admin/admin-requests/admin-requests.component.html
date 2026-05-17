@@ -55,7 +55,7 @@
         id="req-search"
         class="search-input"
         type="text"
-        placeholder="Rechercher une demande, une association..."
+        placeholder="Rechercher une demande, un créateur..."
         [(ngModel)]="searchQuery"
         (input)="onSearch()"
       />
@@ -110,7 +110,7 @@
       <thead>
         <tr>
           <th style="width: 30%">Demande</th>
-          <th>Association</th>
+          <th>Créateur</th>
           <th>Urgence</th>
           <th>Progression</th>
           <th>Statut</th>
@@ -118,10 +118,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let req of requests; trackBy: trackById" [class.row--processing]="processingId === req.id">
+        <tr *ngFor="let req of requests" [class.row--processing]="processingKey === itemKey(req)">
           <td>
             <div class="request-info">
               <span class="request-title" [title]="req.title">{{ req.title }}</span>
+              <span class="category-badge" *ngIf="req.item_type === 'campaign'">Campagne</span>
               <span class="category-badge">{{ req.category_name || 'Général' }}</span>
               <div class="location-info">
                 <i class="fas fa-map-marker-alt"></i> {{ req.location }}
@@ -130,7 +131,7 @@
           </td>
           <td>
             <div class="assoc-info">
-              <div class="assoc-img">{{ req.organization_name.charAt(0).toUpperCase() }}</div>
+              <div class="assoc-img">{{ (req.organization_name || '?').charAt(0).toUpperCase() }}</div>
               <span class="assoc-name">{{ req.organization_name }}</span>
             </div>
           </td>
@@ -154,7 +155,7 @@
                 class="status-dropdown" 
                 [ngModel]="req.status" 
                 (ngModelChange)="changeStatus(req, $event)"
-                [disabled]="req.status === 'completed' || processingId === req.id"
+                [disabled]="req.status === 'completed' || processingKey === itemKey(req)"
                 [class]="'status-dropdown--' + req.status"
               >
                 <option value="paused">En attente</option>
@@ -178,7 +179,13 @@
                 </button>
               </ng-container>
 
-              <ng-container *ngIf="req.status === 'active' || req.status === 'paused'">
+              <ng-container *ngIf="req.status === 'paused'">
+                <button class="action-btn admin-btn-danger-ghost" (click)="suspendRequest(req)" title="Refuser">
+                  <i class="fas fa-times"></i>
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="req.status === 'active'">
                 <button class="action-btn action-btn--ghost" (click)="suspendRequest(req)" title="Suspendre">
                   <i class="fas fa-pause"></i>
                 </button>
@@ -221,7 +228,7 @@
           <span class="detail-value">{{ selectedRequest.title }}</span>
         </div>
         <div class="detail-row">
-          <span class="detail-label">Association</span>
+          <span class="detail-label">Créateur</span>
           <span class="detail-value">{{ selectedRequest.organization_name }}</span>
         </div>
         <div class="detail-row">
@@ -261,6 +268,25 @@
         <span class="detail-label">Description détaillée</span>
         <p class="detail-description">{{ selectedRequest.description }}</p>
       </div>
+
+      <div class="detail-row detail-row--full" *ngIf="selectedRequest.item_type !== 'campaign'">
+        <span class="detail-label">Justificatifs</span>
+        <div class="documents-list" *ngIf="(selectedRequest.documents?.length || 0) > 0; else noDocuments">
+          <a
+            class="document-link"
+            *ngFor="let doc of selectedRequest.documents"
+            [href]="documentUrl(doc.file_path)"
+            target="_blank"
+            rel="noopener"
+          >
+            <i class="fas fa-file-alt"></i>
+            <span>{{ doc.file_name || 'Justificatif' }}</span>
+          </a>
+        </div>
+        <ng-template #noDocuments>
+          <p class="documents-empty">Aucun justificatif disponible.</p>
+        </ng-template>
+      </div>
       
       <div class="detail-footer-meta">
         <span class="detail-date"><i class="far fa-calendar-alt"></i> Publiée le {{ selectedRequest.created_at | date: 'dd MMMM yyyy' }}</span>
@@ -276,7 +302,13 @@
         </ng-container>
 
         <!-- ACTIVE / PENDING -->
-        <ng-container *ngIf="selectedRequest.status === 'active' || selectedRequest.status === 'paused'">
+        <ng-container *ngIf="selectedRequest.status === 'paused'">
+          <button class="action-btn admin-btn-danger" (click)="suspendRequest(selectedRequest); closeModal()">
+            <i class="fas fa-times"></i> Refuser la demande
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="selectedRequest.status === 'active'">
           <button class="action-btn admin-btn-outline" (click)="suspendRequest(selectedRequest); closeModal()">
             <i class="fas fa-pause"></i> Suspendre
           </button>

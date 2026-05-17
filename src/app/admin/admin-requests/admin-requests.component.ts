@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AdminNavbarComponent } from '../admin-navbar/admin-navbar.component';
 import { AdminService, AdminRequest } from '../admin.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-admin-requests',
@@ -22,7 +23,7 @@ export class AdminRequestsComponent implements OnInit {
   loading = true;
   error = '';
   successMessage = '';
-  processingId: number | null = null;
+  processingKey: string | null = null;
 
   // Filters
   searchQuery = '';
@@ -86,9 +87,9 @@ export class AdminRequestsComponent implements OnInit {
    * Valide une demande (pending -> active)
    */
   validateRequest(req: AdminRequest): void {
-    if (this.processingId !== null) return;
-    this.processingId = req.id;
-    this.adminService.updateRequest(req.id, 'approve').subscribe({
+    if (this.processingKey !== null) return;
+    this.processingKey = this.itemKey(req);
+    this.adminService.updateRequest(req.id, 'approve', req.item_type ?? 'request').subscribe({
       next: (res) => {
         if (res.success) {
           req.status = 'active';
@@ -96,12 +97,12 @@ export class AdminRequestsComponent implements OnInit {
         } else {
           this.error = res.message;
         }
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.error = err?.message ?? 'Erreur lors de la validation.';
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       }
     });
@@ -111,24 +112,28 @@ export class AdminRequestsComponent implements OnInit {
    * Suspend une demande (pending/active -> suspended)
    */
   suspendRequest(req: AdminRequest): void {
-    if (this.processingId !== null) return;
-    if (!confirm(`Êtes-vous sûr de vouloir suspendre cette demande ?`)) return;
+    if (this.processingKey !== null) return;
+    const isPending = req.status === 'paused';
+    const confirmMessage = isPending
+      ? `Confirmer le refus de la demande "${req.title}" ?`
+      : `Etes-vous sur de vouloir suspendre cette demande ?`;
+    if (!confirm(confirmMessage)) return;
     
-    this.processingId = req.id;
-    this.adminService.updateRequest(req.id, 'reject').subscribe({
+    this.processingKey = this.itemKey(req);
+    this.adminService.updateRequest(req.id, 'reject', req.item_type ?? 'request').subscribe({
       next: (res) => {
         if (res.success) {
           req.status = 'cancelled'; // Map suspended to cancelled in backend
-          this.showSuccess(`Demande suspendue temporairement.`);
+          this.showSuccess(isPending ? 'Demande refusee.' : 'Demande suspendue temporairement.');
         } else {
           this.error = res.message;
         }
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.error = err?.message ?? 'Erreur lors de la suspension.';
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       }
     });
@@ -138,12 +143,11 @@ export class AdminRequestsComponent implements OnInit {
    * Clôture une demande (active/suspended -> closed)
    */
   closeRequest(req: AdminRequest): void {
-    if (this.processingId !== null) return;
+    if (this.processingKey !== null) return;
     if (!confirm(`Êtes-vous sûr de vouloir clôturer définitivement cette demande ?`)) return;
 
-    this.processingId = req.id;
-    // Currently mapping to 'reject' because backend doesn't have a 'complete' action in admin_update_request.php
-    this.adminService.updateRequest(req.id, 'reject').subscribe({
+    this.processingKey = this.itemKey(req);
+    this.adminService.updateRequest(req.id, 'complete', req.item_type ?? 'request').subscribe({
       next: (res) => {
         if (res.success) {
           req.status = 'completed'; // Set to completed locally to match "closed"
@@ -151,12 +155,12 @@ export class AdminRequestsComponent implements OnInit {
         } else {
           this.error = res.message;
         }
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.error = err?.message ?? 'Erreur lors de la clôture.';
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       }
     });
@@ -166,9 +170,9 @@ export class AdminRequestsComponent implements OnInit {
    * Réactive une demande (suspended -> active)
    */
   reactivateRequest(req: AdminRequest): void {
-    if (this.processingId !== null) return;
-    this.processingId = req.id;
-    this.adminService.updateRequest(req.id, 'approve').subscribe({
+    if (this.processingKey !== null) return;
+    this.processingKey = this.itemKey(req);
+    this.adminService.updateRequest(req.id, 'approve', req.item_type ?? 'request').subscribe({
       next: (res) => {
         if (res.success) {
           req.status = 'active';
@@ -176,12 +180,12 @@ export class AdminRequestsComponent implements OnInit {
         } else {
           this.error = res.message;
         }
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.error = err?.message ?? 'Erreur lors de la réactivation.';
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       }
     });
@@ -218,23 +222,24 @@ export class AdminRequestsComponent implements OnInit {
   }
 
   deleteRequest(req: AdminRequest): void {
-    if (this.processingId !== null) return;
+    if (this.processingKey !== null) return;
     if (!confirm(`Supprimer définitivement la demande "${req.title}" ? Cette action est irréversible.`)) return;
-    this.processingId = req.id;
-    this.adminService.updateRequest(req.id, 'delete').subscribe({
+    this.processingKey = this.itemKey(req);
+    this.adminService.updateRequest(req.id, 'delete', req.item_type ?? 'request').subscribe({
       next: (res) => {
         if (res.success) {
-          this.requests = this.requests.filter(r => r.id !== req.id);
+          const deletedKey = this.itemKey(req);
+          this.requests = this.requests.filter(r => this.itemKey(r) !== deletedKey);
           this.showSuccess(`Demande "${req.title}" supprimée.`);
         } else {
           this.error = res.message;
         }
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.error = err?.message ?? 'Erreur lors de la suppression.';
-        this.processingId = null;
+        this.processingKey = null;
         this.cdr.markForCheck();
       }
     });
@@ -276,5 +281,16 @@ export class AdminRequestsComponent implements OnInit {
     return Math.min(100, Math.round((req.collected_amount / req.target_amount) * 100));
   }
 
-  trackById(_: number, item: AdminRequest): number { return item.id; }
+  documentUrl(path: string): string {
+    if (!path) return '#';
+    if (/^https?:\/\//.test(path)) return path;
+    return `${environment.assetsUrl}${path.replace(/^\/+/, '')}`;
+  }
+
+  trackByItem(_: number, item: AdminRequest): string { return this.itemKey(item); }
+
+  trackById(_: number, item: AdminRequest): string { return this.itemKey(item); }
+
+  itemKey(item: AdminRequest): string { return item.item_key ?? `${item.item_type ?? 'request'}-${item.id}`; }
 }
+

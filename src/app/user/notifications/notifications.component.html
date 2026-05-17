@@ -41,7 +41,8 @@
   </div>
 
   <div class="empty" *ngIf="!loading && notifications.length === 0">
-    <p>Aucune notification recente.</p>
+    <p>{{ error || 'Aucune notification recente.' }}</p>
+    <a *ngIf="error" routerLink="/auth/login">Se reconnecter</a>
   </div>
 
   <div class="loading" *ngIf="loading">

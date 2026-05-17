@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
 import { LoggedInNavbarComponent } from '../../shared/logged-in-navbar.component';
-import { FavoriteRequest, UserDataService, UserDonationStats, UserRequest } from '../../user/user-data.service';
+import { FavoriteRequest, UserDataService } from '../../user/user-data.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -52,45 +52,32 @@ export class DashboardComponent implements OnInit {
     donors: number;
   }> = [];
 
-  constructor(private userData: UserDataService, private auth: AuthService) {}
+  constructor(
+    private userData: UserDataService,
+    private auth: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.userName = this.auth.getFullName() || 'Utilisateur';
 
-    this.userData.getProfile().subscribe({
+    this.userData.getDashboard().subscribe({
       next: (response) => {
         if (response.success) {
-          this.userName = response.data.fullName?.trim() || this.auth.getFullName() || 'Utilisateur';
+          this.userName = response.data.profile.fullName?.trim() || this.auth.getFullName() || 'Utilisateur';
           this.auth.setFullName(this.userName);
-        }
-      }
-    });
-
-    this.userData.getMyDonations().subscribe({
-      next: (response) => {
-        if (response.success && response.stats) {
-          this.updateDonationStats(response.stats);
-        }
-      }
-    });
-
-    this.userData.getMyRequests().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.updateRequestStats(response.data);
-        }
-      }
-    });
-
-    this.userData.getNotifications().subscribe({
-      next: (response) => {
-        if (response.success && response.data.length > 0) {
-          this.activities = response.data.map((item) => ({
+          this.updateDashboardStats(response.data.stats);
+          this.activities = response.data.notifications.map((item) => ({
             type: 'notification',
             title: item.title,
             meta: item.detail
           }));
+          this.cdr.detectChanges();
         }
+      },
+      error: () => {
+        this.activities = [];
+        this.cdr.detectChanges();
       }
     });
 
@@ -109,37 +96,42 @@ export class DashboardComponent implements OnInit {
               donors: Number(favorite.donors_count) || 0
             };
           });
+          this.cdr.detectChanges();
         }
       }
     });
   }
 
-  private updateDonationStats(stats: UserDonationStats) {
-    this.stats[0] = {
-      label: 'Total dons effectues',
-      value: `${Math.round(stats.total_amount)} DT`,
-      trend: `${stats.total_donations} dons`,
-      icon: 'fa-wallet',
-      tone: 'primary'
-    };
-
-    this.stats[2] = {
-      label: 'Demandes aidees',
-      value: String(stats.requests_supported),
-      trend: 'Impact en hausse',
-      icon: 'fa-hand-holding-heart',
-      tone: 'soft'
-    };
-  }
-
-  private updateRequestStats(requests: UserRequest[]) {
-    const activeCount = requests.filter((request) => request.status === 'active').length;
-    this.stats[1] = {
-      label: 'Demandes creees',
-      value: String(requests.length),
-      trend: `${activeCount} actives`,
-      icon: 'fa-file-alt',
-      tone: 'soft'
-    };
+  private updateDashboardStats(stats: {
+    total_donations: number;
+    total_amount: number;
+    requests_supported: number;
+    total_requests: number;
+    active_requests: number;
+    pending_requests: number;
+  }) {
+    this.stats = [
+      {
+        label: 'Total dons effectues',
+        value: `${Math.round(stats.total_amount)} DT`,
+        trend: `${stats.total_donations} dons`,
+        icon: 'fa-wallet',
+        tone: 'primary'
+      },
+      {
+        label: 'Demandes creees',
+        value: String(stats.total_requests),
+        trend: `${stats.active_requests} actives, ${stats.pending_requests} en attente`,
+        icon: 'fa-file-alt',
+        tone: 'soft'
+      },
+      {
+        label: 'Demandes aidees',
+        value: String(stats.requests_supported),
+        trend: 'Impact en hausse',
+        icon: 'fa-hand-holding-heart',
+        tone: 'soft'
+      }
+    ];
   }
 }

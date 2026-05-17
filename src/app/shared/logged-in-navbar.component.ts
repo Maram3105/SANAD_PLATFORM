@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { UserDataService } from '../user/user-data.service';
@@ -97,7 +97,8 @@ export class LoggedInNavbarComponent implements OnInit {
   constructor(
     private auth: AuthService,
     private router: Router,
-    private userData: UserDataService
+    private userData: UserDataService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -110,7 +111,12 @@ export class LoggedInNavbarComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.unreadCount = response.data.filter((item) => !item.isRead).length;
+          this.cdr.detectChanges();
         }
+      },
+      error: () => {
+        this.unreadCount = 0;
+        this.cdr.detectChanges();
       }
     });
 
@@ -119,7 +125,11 @@ export class LoggedInNavbarComponent implements OnInit {
         if (response.success) {
           this.currentUser.set(response.data);
           this.auth.setFullName(response.data.fullName);
+          this.cdr.detectChanges();
         }
+      },
+      error: () => {
+        this.cdr.detectChanges();
       }
     });
   }

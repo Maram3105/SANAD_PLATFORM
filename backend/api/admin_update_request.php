@@ -31,34 +31,67 @@ if (!$payload || ($payload['role'] ?? '') !== 'admin') {
 $input     = json_decode(file_get_contents('php://input'), true);
 $requestId = (int) ($input['request_id'] ?? 0);
 $action    = trim((string) ($input['action'] ?? ''));
+$itemType  = trim((string) ($input['item_type'] ?? 'request'));
 
-$validActions = ['approve', 'reject', 'delete'];
-if ($requestId <= 0 || !in_array($action, $validActions, true)) {
+$validActions = ['approve', 'reject', 'complete', 'delete'];
+$validTypes = ['request', 'campaign'];
+if ($requestId <= 0 || !in_array($action, $validActions, true) || !in_array($itemType, $validTypes, true)) {
     json_response(['success' => false, 'message' => 'Paramètres invalides.'], 400);
 }
 
 try {
+    $table = $itemType === 'campaign' ? 'campaigns' : 'requests';
+    $label = $itemType === 'campaign' ? 'Campagne' : 'Demande';
+    $requestForNotification = null;
+
     if ($action === 'delete') {
-        $stmt = $pdo->prepare("DELETE FROM requests WHERE id = :id");
+        $stmt = $pdo->prepare("DELETE FROM $table WHERE id = :id");
         $stmt->execute([':id' => $requestId]);
 
         if ($stmt->rowCount() === 0) {
-            json_response(['success' => false, 'message' => 'Demande introuvable.'], 404);
+            json_response(['success' => false, 'message' => "$label introuvable."], 404);
         }
 
         json_response(['success' => true, 'message' => 'Demande supprimée.']);
     }
 
     // approve → active, reject → cancelled
-    $newStatus = $action === 'approve' ? 'active' : 'cancelled';
+    $newStatus = match ($action) {
+        'approve' => 'active',
+        'complete' => 'completed',
+        default => 'cancelled'
+    };
+
+    if ($itemType === 'request') {
+        $requestStmt = $pdo->prepare('SELECT id, user_id, title FROM requests WHERE id = :id LIMIT 1');
+        $requestStmt->execute([':id' => $requestId]);
+        $requestForNotification = $requestStmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
 
     $stmt = $pdo->prepare(
-        "UPDATE requests SET status = :status, updated_at = NOW() WHERE id = :id"
+        "UPDATE $table SET status = :status, updated_at = NOW() WHERE id = :id"
     );
     $stmt->execute([':status' => $newStatus, ':id' => $requestId]);
 
     if ($stmt->rowCount() === 0) {
-        json_response(['success' => false, 'message' => 'Demande introuvable.'], 404);
+        json_response(['success' => false, 'message' => "$label introuvable."], 404);
+    }
+
+    if ($requestForNotification && !empty($requestForNotification['user_id']) && in_array($action, ['approve', 'reject'], true)) {
+        $notificationTitle = $action === 'approve' ? 'Demande validee' : 'Demande refusee';
+        $notificationDetail = $action === 'approve'
+            ? 'Votre demande "' . $requestForNotification['title'] . '" a ete validee par l administrateur. Elle est maintenant visible par les acteurs de la plateforme.'
+            : 'Votre demande "' . $requestForNotification['title'] . '" a ete refusee apres verification des justificatifs.';
+
+        $notificationStmt = $pdo->prepare(
+            'INSERT INTO notifications (user_id, type, title, detail) VALUES (:user_id, :type, :title, :detail)'
+        );
+        $notificationStmt->execute([
+            ':user_id' => (int) $requestForNotification['user_id'],
+            ':type' => $action === 'approve' ? 'request_approved' : 'request_rejected',
+            ':title' => $notificationTitle,
+            ':detail' => $notificationDetail
+        ]);
     }
 
     json_response([

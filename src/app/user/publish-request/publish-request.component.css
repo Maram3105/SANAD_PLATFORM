@@ -261,6 +261,13 @@ textarea:focus {
   font-weight: 600;
 }
 
+.upload-error {
+  margin-top: 10px;
+  color: #dc2626;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
 .file-input:hover + .upload-area {
   background: #eff6ff;
   border-color: #3b82f6;

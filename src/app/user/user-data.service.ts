@@ -42,6 +42,19 @@ export interface UserDonationStats {
   associations_supported: number;
 }
 
+export interface UserDashboardData {
+  profile: UserProfile;
+  stats: {
+    total_donations: number;
+    total_amount: number;
+    requests_supported: number;
+    total_requests: number;
+    active_requests: number;
+    pending_requests: number;
+  };
+  notifications: NotificationItem[];
+}
+
 export interface NotificationItem {
   id: number;
   title: string;
@@ -124,6 +137,13 @@ export class UserDataService {
   getNotifications(): Observable<{ success: boolean; data: NotificationItem[] }> {
     return this.http.get<{ success: boolean; data: NotificationItem[] }>(
       `${this.apiBase}get_notifications.php`,
+      { headers: this.authHeaders() }
+    );
+  }
+
+  getDashboard(): Observable<{ success: boolean; data: UserDashboardData }> {
+    return this.http.get<{ success: boolean; data: UserDashboardData }>(
+      `${this.apiBase}get_user_dashboard.php`,
       { headers: this.authHeaders() }
     );
   }

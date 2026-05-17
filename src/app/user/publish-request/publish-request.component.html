@@ -130,7 +130,7 @@
           <h3>Documents justificatifs</h3>
         </div>
         <div class="upload-container">
-          <input type="file" id="file-upload" multiple (change)="onFileSelected($event)" accept=".pdf,image/*" class="file-input">
+          <input type="file" id="file-upload" multiple required (change)="onFileSelected($event)" accept=".pdf,image/*" class="file-input">
           <label for="file-upload" class="upload-area">
             <i class="fas fa-cloud-upload-alt"></i>
             <span class="upload-title">Glissez vos fichiers ou cliquez pour uploader</span>
@@ -139,6 +139,7 @@
               {{ selectedFiles.length }} fichier(s) sélectionné(s)
             </div>
           </label>
+          <p class="upload-error" *ngIf="documentError">{{ documentError }}</p>
         </div>
       </div>
 

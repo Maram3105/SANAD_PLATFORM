@@ -34,6 +34,7 @@ export class PublishRequestComponent {
   };
 
   selectedFiles: File[] = [];
+  documentError = '';
 
   onCancel() {
     this.router.navigate(['/explorer']);
@@ -42,12 +43,18 @@ export class PublishRequestComponent {
   onFileSelected(event: any) {
     if (event.target.files) {
       this.selectedFiles = Array.from(event.target.files);
+      this.documentError = '';
     }
   }
 
   onSubmit() {
     if (!this.model.needs_money && !this.model.needs_object && !this.model.needs_service) {
       alert('Veuillez sélectionner au moins un type de besoin.');
+      return;
+    }
+
+    if (this.selectedFiles.length === 0) {
+      this.documentError = 'Veuillez ajouter au moins un justificatif avant de soumettre votre demande.';
       return;
     }
 
@@ -72,7 +79,7 @@ export class PublishRequestComponent {
     this.http.post(`${environment.apiUrl}create_request.php`, formData, options).subscribe({
       next: (res: any) => {
         if (res.success) {
-          alert('Demande publiée avec succès !');
+          alert(res.message || 'Votre demande est en attente de validation par un administrateur.');
           this.router.navigate(['/explorer']);
         } else {
           alert(res.message || 'Une erreur est survenue.');
@@ -82,3 +89,4 @@ export class PublishRequestComponent {
     });
   }
 }
+

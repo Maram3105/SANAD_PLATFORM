@@ -60,6 +60,22 @@ function resolve_category_id(PDO $pdo, string $categoryInput, int $categoryId): 
     return $resolved ? (int) $resolved : null;
 }
 
+function ensure_request_documents_table(PDO $pdo): void
+{
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS request_documents (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            request_id INT NOT NULL,
+            file_path VARCHAR(255) NOT NULL,
+            file_type VARCHAR(50) NULL,
+            file_name VARCHAR(255) NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT fk_request_docs_request_id FOREIGN KEY (request_id) REFERENCES requests(id) ON DELETE CASCADE,
+            INDEX idx_request_id (request_id)
+        )'
+    );
+}
+
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         json_response(['success' => false, 'message' => 'Methode non autorisee.'], 405);
@@ -67,6 +83,7 @@ try {
 
     $pdo = require __DIR__ . '/db.php';
     $config = require __DIR__ . '/config.php';
+    ensure_request_documents_table($pdo);
 
     $auth = authenticate_request($pdo, $config, ['user']);
     $user = $auth['user'];
@@ -103,6 +120,35 @@ try {
         json_response(['success' => false, 'message' => 'Urgence invalide.'], 400);
     }
 
+    if (!isset($_FILES['documents']) || !is_array($_FILES['documents']['name'])) {
+        json_response(['success' => false, 'message' => 'Au moins un justificatif est obligatoire.'], 400);
+    }
+
+    $documentFiles = [];
+    $docCount = count($_FILES['documents']['name']);
+    for ($i = 0; $i < $docCount; $i++) {
+        $error = (int) ($_FILES['documents']['error'][$i] ?? UPLOAD_ERR_NO_FILE);
+        if ($error === UPLOAD_ERR_NO_FILE) {
+            continue;
+        }
+
+        if ($error !== UPLOAD_ERR_OK) {
+            json_response(['success' => false, 'message' => 'Impossible de televerser un justificatif.'], 400);
+        }
+
+        $documentFiles[] = [
+            'name' => $_FILES['documents']['name'][$i],
+            'type' => $_FILES['documents']['type'][$i],
+            'tmp_name' => $_FILES['documents']['tmp_name'][$i],
+            'error' => $error,
+            'size' => $_FILES['documents']['size'][$i]
+        ];
+    }
+
+    if (count($documentFiles) === 0) {
+        json_response(['success' => false, 'message' => 'Au moins un justificatif est obligatoire.'], 400);
+    }
+
     $imageUrl = null;
     if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
         $filename = store_upload($_FILES['image'], $config, 'campaign', ['png', 'jpg', 'jpeg', 'webp']);
@@ -117,11 +163,13 @@ try {
     $baseSlug = slugify($title);
     $slug = unique_slug($pdo, $baseSlug !== '' ? $baseSlug : 'request');
 
+    $pdo->beginTransaction();
+
     $stmt = $pdo->prepare(
           'INSERT INTO requests
                 (user_id, association_id, parent_request_id, title, slug, description, full_description, category_id, location, urgency, image_url, target_amount, needs_money, needs_object, needs_service, status, created_at)
             VALUES
-                (:user_id, NULL, NULL, :title, :slug, :description, :full_description, :category_id, :location, :urgency, :image_url, :target_amount, :needs_money, :needs_object, :needs_service, "active", NOW())'
+                (:user_id, NULL, NULL, :title, :slug, :description, :full_description, :category_id, :location, :urgency, :image_url, :target_amount, :needs_money, :needs_object, :needs_service, "paused", NOW())'
     );
 
     $stmt->execute([
@@ -142,44 +190,32 @@ try {
 
     $requestId = (int) $pdo->lastInsertId();
 
-    // Handle multiple document uploads
-    if (isset($_FILES['documents']) && is_array($_FILES['documents']['name'])) {
-        $docCount = count($_FILES['documents']['name']);
-        for ($i = 0; $i < $docCount; $i++) {
-            if ($_FILES['documents']['error'][$i] === UPLOAD_ERR_OK) {
-                $file = [
-                    'name' => $_FILES['documents']['name'][$i],
-                    'type' => $_FILES['documents']['type'][$i],
-                    'tmp_name' => $_FILES['documents']['tmp_name'][$i],
-                    'error' => $_FILES['documents']['error'][$i],
-                    'size' => $_FILES['documents']['size'][$i]
-                ];
-                
-                try {
-                    $filename = store_upload($file, $config, 'request_docs', ['pdf', 'png', 'jpg', 'jpeg']);
-                    $docStmt = $pdo->prepare(
-                        'INSERT INTO request_documents (request_id, file_path, file_type, file_name) VALUES (:request_id, :file_path, :file_type, :file_name)'
-                    );
-                    $docStmt->execute([
-                        ':request_id' => $requestId,
-                        ':file_path' => 'uploads/' . $filename,
-                        ':file_type' => $file['type'],
-                        ':file_name' => $file['name']
-                    ]);
-                } catch (Exception $e) {
-                    // Log error but continue with other files
-                }
-            }
-        }
+    foreach ($documentFiles as $file) {
+        $filename = store_upload($file, $config, 'request_docs', ['pdf', 'png', 'jpg', 'jpeg', 'webp']);
+        $docStmt = $pdo->prepare(
+            'INSERT INTO request_documents (request_id, file_path, file_type, file_name) VALUES (:request_id, :file_path, :file_type, :file_name)'
+        );
+        $docStmt->execute([
+            ':request_id' => $requestId,
+            ':file_path' => 'uploads/' . $filename,
+            ':file_type' => $file['type'],
+            ':file_name' => $file['name']
+        ]);
     }
+
+    $pdo->commit();
 
     json_response([
         'success' => true,
+        'message' => 'Votre demande a ete envoyee et attend la validation de l administrateur.',
         'data' => [
             'id' => $requestId,
             'slug' => $slug
         ]
     ], 201);
 } catch (Exception $e) {
+    if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
     json_response(['success' => false, 'message' => $e->getMessage()], 500);
 }
