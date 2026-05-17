@@ -6,6 +6,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AssociationNavbarComponent } from '../../shared/association-navbar.component';
 import { AuthService } from '../../auth/auth.service';
 import { UserDataService } from '../../user/user-data.service';
+import { TUNISIA_LOCATIONS } from '../../shared/locations';
 
 interface RequestCard {
   id: number;
@@ -45,7 +46,7 @@ export class AssociationExplorerComponent {
   readonly sortBy = signal<'recent' | 'most-funded' | 'most-urgent'>('recent');
 
   readonly categories = ['Alimentation', 'Santé', 'Éducation', 'Logement', 'Emploi', 'Infrastructure'];
-  readonly locations = ['Tunis', 'Sfax', 'Sousse', 'Ariana', 'Ben Arous', 'Manouba'];
+  readonly locations = TUNISIA_LOCATIONS;
   readonly urgencies = ['Basse', 'Moyenne', 'Haute'];
 
   readonly allRequests = signal<RequestCard[]>([]);

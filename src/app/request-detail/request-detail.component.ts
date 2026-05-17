@@ -11,6 +11,7 @@ import { AuthService } from '../auth/auth.service';
 import { UserDataService } from '../user/user-data.service';
 import { HelpOfferService } from '../shared/help-offer.service';
 import { UserRole } from '../auth/auth.models';
+import { TUNISIA_LOCATIONS } from '../shared/locations';
 
 interface Request {
   id: number;
@@ -102,6 +103,7 @@ export class RequestDetailComponent implements OnInit {
   readonly offerError = signal('');
   readonly offerSuccess = signal('');
   readonly offerCategories = ['Alimentation', 'Vetements', 'Meubles', 'Sante', 'Education', 'Transport', 'Accompagnement', 'Autre'];
+  readonly locations = TUNISIA_LOCATIONS;
 
   offerDraft: OfferDraft = {
     description: '',

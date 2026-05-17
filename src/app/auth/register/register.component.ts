@@ -9,6 +9,7 @@ import {
   passwordStrengthValidator
 } from '../auth.validators';
 import { NavbarComponent } from '../../shared/navbar.component';
+import { TUNISIA_LOCATIONS } from '../../shared/locations';
 
 @Component({
   selector: 'app-register',
@@ -28,6 +29,7 @@ export class RegisterComponent {
   showPassword = false;
   showConfirm = false;
   documentName = '';
+  readonly locations = TUNISIA_LOCATIONS;
   readonly userFieldOrder = ['fullName', 'email', 'password', 'confirmPassword', 'phone'];
   readonly associationStepOneOrder = [
     'organizationName',

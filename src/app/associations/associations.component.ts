@@ -7,6 +7,7 @@ import { LoggedInNavbarComponent } from '../shared/logged-in-navbar.component';
 import { AssociationNavbarComponent } from '../shared/association-navbar.component';
 import { UserDataService } from '../user/user-data.service';
 import { AuthService } from '../auth/auth.service';
+import { TUNISIA_LOCATIONS } from '../shared/locations';
 
 interface Association {
   id: number;
@@ -36,7 +37,7 @@ export class AssociationsComponent implements OnInit {
   readonly sortBy = signal('name');
 
   readonly categories = ['Alimentation', 'Santé', 'Éducation', 'Logement', 'Emploi', 'Infrastructure'];
-  readonly locations = ['Tunis', 'Sfax', 'Sousse', 'Ariana', 'Ben Arous', 'Manouba'];
+  readonly locations = TUNISIA_LOCATIONS;
 
   readonly allAssociations = signal<Association[]>([]);
   readonly filteredAssociations = signal<Association[]>([]);

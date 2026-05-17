@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../auth/auth.service';
+import { TUNISIA_LOCATIONS } from '../../shared/locations';
 
 @Component({
   selector: 'app-publish-request',
@@ -19,7 +20,7 @@ export class PublishRequestComponent {
   private router = inject(Router);
   private auth = inject(AuthService);
 
-  readonly locations = ['Tunis', 'Sfax', 'Sousse', 'Kairouan', 'Bizerte', 'Gabès', 'Ariana', 'Gafsa', 'La Marsa', 'Sidi Bouzid'];
+  readonly locations = TUNISIA_LOCATIONS;
 
   model = {
     title: '',

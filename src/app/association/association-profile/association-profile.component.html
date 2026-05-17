@@ -60,7 +60,12 @@
       <div class="grid">
         <div class="field">
           <label for="location">Localisation</label>
-          <input id="location" type="text" formControlName="location" />
+          <select id="location" formControlName="location">
+            <option value="">Choisir une ville</option>
+            @for (loc of locations; track loc) {
+              <option [value]="loc">{{ loc }}</option>
+            }
+          </select>
         </div>
         <div class="field">
           <label for="website">Site web</label>

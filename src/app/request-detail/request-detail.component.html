@@ -157,15 +157,18 @@
                   </div>
                   <div class="form-group">
                     <label for="offer-location">Ville</label>
-                    <input
+                    <select
                       id="offer-location"
-                      type="text"
                       name="location"
                       [(ngModel)]="offerDraft.location"
                       #offerLocationCtrl="ngModel"
                       [class.invalid]="!offerDraft.location.trim() && (offerLocationCtrl.dirty || offerLocationCtrl.touched || offerSubmitAttempted())"
-                      placeholder="Ex: Tunis"
                       required>
+                      <option value="">Choisir une ville</option>
+                      @for (loc of locations; track loc) {
+                        <option [value]="loc">{{ loc }}</option>
+                      }
+                    </select>
                     <p class="field-warning" *ngIf="!offerDraft.location.trim() && (offerLocationCtrl.dirty || offerLocationCtrl.touched || offerSubmitAttempted())">La ville est obligatoire.</p>
                   </div>
                 </div>

@@ -9,6 +9,7 @@ import { AssociationNavbarComponent } from '../shared/association-navbar.compone
 import { AuthService } from '../auth/auth.service';
 import { UserDataService } from '../user/user-data.service';
 import { UserRole } from '../auth/auth.models';
+import { TUNISIA_LOCATIONS } from '../shared/locations';
 
 interface Request {
   id: number;
@@ -60,7 +61,7 @@ export class ExplorerComponent implements OnInit {
   readonly sortBy = signal<'recent' | 'most-funded' | 'most-urgent'>('recent');
 
   readonly categories = ['Alimentation', 'Santé', 'Éducation', 'Logement', 'Emploi', 'Infrastructure'];
-  readonly locations = ['Tunis', 'Sfax', 'Sousse', 'Ariana', 'Ben Arous', 'Manouba'];
+  readonly locations = TUNISIA_LOCATIONS;
   readonly urgencies = ['Basse', 'Moyenne', 'Haute'];
 
   readonly allRequests = signal<Request[]>([]);

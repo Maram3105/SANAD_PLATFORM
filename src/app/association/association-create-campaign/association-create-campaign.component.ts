@@ -9,6 +9,7 @@ import {
   RequestDetailPayload
 } from '../association-data.service';
 import { AssociationNavbarComponent } from '../../shared/association-navbar.component';
+import { TUNISIA_LOCATIONS } from '../../shared/locations';
 
 @Component({
   selector: 'app-association-create-campaign',
@@ -24,6 +25,7 @@ export class AssociationCreateCampaignComponent {
   private readonly route = inject(ActivatedRoute);
 
   readonly categories = signal<Category[]>([]);
+  readonly locations = TUNISIA_LOCATIONS;
   readonly originalImageUrl = signal<string | null>(null);
   readonly isEditMode = signal(false);
   readonly requestId = signal<number | null>(null);

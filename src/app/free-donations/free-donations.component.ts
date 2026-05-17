@@ -10,6 +10,7 @@ import { ReservationService } from '../shared/reservation.service';
 import { NavbarComponent } from '../shared/navbar.component';
 import { LoggedInNavbarComponent } from '../shared/logged-in-navbar.component';
 import { AssociationNavbarComponent } from '../shared/association-navbar.component';
+import { TUNISIA_LOCATIONS } from '../shared/locations';
 
 @Component({
   selector: 'app-free-donations',
@@ -43,7 +44,7 @@ export class FreeDonationsComponent {
   readonly publishError = signal('');
 
   readonly categories = ['Alimentation', 'Vêtements', 'Meubles', 'Électronique', 'Santé', 'Éducation'];
-  readonly locations = ['Tunis', 'Sfax', 'Sousse', 'Ariana', 'Ben Arous', 'Manouba'];
+  readonly locations = TUNISIA_LOCATIONS;
   readonly deliveryMethods = [
     { value: 'hand', label: 'Remise en main propre' },
     { value: 'delivery', label: 'Livraison possible' }

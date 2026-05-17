@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { AssociationDataService, AssociationProfile } from '../association-data.service';
 import { AssociationNavbarComponent } from '../../shared/association-navbar.component';
+import { TUNISIA_LOCATIONS } from '../../shared/locations';
 
 @Component({
   selector: 'app-association-profile',
@@ -22,6 +23,7 @@ export class AssociationProfileComponent {
   readonly profile = signal<AssociationProfile | null>(null);
   readonly logoFile = signal<File | null>(null);
   readonly coverFile = signal<File | null>(null);
+  readonly locations = TUNISIA_LOCATIONS;
 
   readonly logoPreviewUrl = computed(() => {
     const file = this.logoFile();

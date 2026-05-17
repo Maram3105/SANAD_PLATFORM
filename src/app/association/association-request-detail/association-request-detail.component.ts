@@ -7,6 +7,7 @@ import { LoggedInNavbarComponent } from '../../shared/logged-in-navbar.component
 import { AuthService } from '../../auth/auth.service';
 import { UserDataService } from '../../user/user-data.service';
 import { HelpOfferService } from '../../shared/help-offer.service';
+import { TUNISIA_LOCATIONS } from '../../shared/locations';
 
 interface Request {
   id: number;
@@ -53,6 +54,7 @@ export class AssociationRequestDetailComponent implements OnInit {
   readonly offerSubmitAttempted = signal(false);
   readonly offerFormTouched = signal(false);
   readonly offerError = signal('');
+  readonly locations = TUNISIA_LOCATIONS;
 
   ngOnInit(): void {
     this.checkAccess();

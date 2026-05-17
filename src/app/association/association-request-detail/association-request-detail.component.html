@@ -81,7 +81,12 @@
                   </div>
                   <div class="form-group">
                     <label>Lieu d'intervention / envoi</label>
-                    <input type="text" name="location" [value]="req.location">
+                    <select name="location" [value]="req.location" required>
+                      <option value="">Choisir une ville</option>
+                      @for (loc of locations; track loc) {
+                        <option [value]="loc">{{ loc }}</option>
+                      }
+                    </select>
                   </div>
                 </div>
 

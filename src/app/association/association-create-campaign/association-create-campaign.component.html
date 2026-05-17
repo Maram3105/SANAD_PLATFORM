@@ -83,18 +83,9 @@
               <i class="fas fa-map-marker-alt"></i>
               <select id="location" formControlName="location" required [class.invalid]="form.controls.location.invalid && (form.controls.location.dirty || form.controls.location.touched)">
                 <option value="">Sélectionner une ville</option>
-                <option value="Tunis">Tunis</option>
-                <option value="Sfax">Sfax</option>
-                <option value="Sousse">Sousse</option>
-                <option value="Ariana">Ariana</option>
-                <option value="Ben Arous">Ben Arous</option>
-                <option value="Manouba">Manouba</option>
-                <option value="Bizerte">Bizerte</option>
-                <option value="Gabès">Gabès</option>
-                <option value="Kairouan">Kairouan</option>
-                <option value="Gafsa">Gafsa</option>
-                <option value="Monastir">Monastir</option>
-                <option value="Nabeul">Nabeul</option>
+                @for (loc of locations; track loc) {
+                  <option [value]="loc">{{ loc }}</option>
+                }
               </select>
             </div>
             <p class="field-warning" *ngIf="form.controls.location.invalid && (form.controls.location.dirty || form.controls.location.touched)">La zone geographique est obligatoire.</p>
