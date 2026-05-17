@@ -134,8 +134,11 @@
                     id="offer-description"
                     name="description"
                     [(ngModel)]="offerDraft.description"
+                    #offerDescriptionCtrl="ngModel"
+                    [class.invalid]="!offerDraft.description.trim() && (offerDescriptionCtrl.dirty || offerDescriptionCtrl.touched || offerSubmitAttempted())"
                     [placeholder]="showProposeForm() === 'object' ? 'Ex: fauteuil roulant, couvertures, lot de vetements...' : 'Ex: transport, accompagnement medical, cours de soutien...'"
                     required></textarea>
+                  <p class="field-warning" *ngIf="!offerDraft.description.trim() && (offerDescriptionCtrl.dirty || offerDescriptionCtrl.touched || offerSubmitAttempted())">La description est obligatoire.</p>
                 </div>
                 <div class="form-row">
                   <div class="form-group">
@@ -146,7 +149,11 @@
                       name="quantity"
                       min="1"
                       step="1"
-                      [(ngModel)]="offerDraft.quantity">
+                      [(ngModel)]="offerDraft.quantity"
+                      #offerQuantityCtrl="ngModel"
+                      required
+                      [class.invalid]="(!offerDraft.quantity || offerDraft.quantity < 1) && (offerQuantityCtrl.dirty || offerQuantityCtrl.touched || offerSubmitAttempted())">
+                    <p class="field-warning" *ngIf="(!offerDraft.quantity || offerDraft.quantity < 1) && (offerQuantityCtrl.dirty || offerQuantityCtrl.touched || offerSubmitAttempted())">La quantite doit etre superieure ou egale a 1.</p>
                   </div>
                   <div class="form-group">
                     <label for="offer-location">Ville</label>
@@ -155,8 +162,11 @@
                       type="text"
                       name="location"
                       [(ngModel)]="offerDraft.location"
+                      #offerLocationCtrl="ngModel"
+                      [class.invalid]="!offerDraft.location.trim() && (offerLocationCtrl.dirty || offerLocationCtrl.touched || offerSubmitAttempted())"
                       placeholder="Ex: Tunis"
                       required>
+                    <p class="field-warning" *ngIf="!offerDraft.location.trim() && (offerLocationCtrl.dirty || offerLocationCtrl.touched || offerSubmitAttempted())">La ville est obligatoire.</p>
                   </div>
                 </div>
                 <div class="form-group">

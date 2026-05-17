@@ -106,6 +106,7 @@ interface DonationData {
                   id="amount"
                   type="number"
                   [(ngModel)]="donationForm.amount"
+                  #modalAmountCtrl="ngModel"
                   name="amount"
                   placeholder="25"
                   min="5"
@@ -113,8 +114,12 @@ interface DonationData {
                   step="1"
                   required
                   class="amount-input"
+                  [class.invalid]="(!donationForm.amount || donationForm.amount < 5 || donationForm.amount > 100000) && (modalAmountCtrl.dirty || modalAmountCtrl.touched || submitAttempted)"
                 />
                 <span class="currency">DT</span>
+              </div>
+              <div class="field-warning" *ngIf="(!donationForm.amount || donationForm.amount < 5 || donationForm.amount > 100000) && (modalAmountCtrl.dirty || modalAmountCtrl.touched || submitAttempted)">
+                Le montant est obligatoire et doit etre compris entre 5 et 100000 DT.
               </div>
               <small class="amount-info">Minimum: 5 DT</small>
             </div>
@@ -741,6 +746,7 @@ export class DonationModalComponent implements OnInit, OnChanges {
 
   currentStep: 1 | 2 | 3 = 1;
   isSubmitting = false;
+  submitAttempted = false;
   quickAmounts = [5, 25, 50, 100, 250, 500];
 
   donationForm: DonationData = {
@@ -856,8 +862,9 @@ export class DonationModalComponent implements OnInit, OnChanges {
   }
 
   submitDonation() {
-    if (!this.donationForm.amount || this.donationForm.amount < 5) {
-      alert('Le montant minimum est 5 DT');
+    this.submitAttempted = true;
+    if (!this.donationForm.amount || this.donationForm.amount < 5 || this.donationForm.amount > 100000) {
+      alert('Le montant doit etre compris entre 5 et 100000 DT');
       return;
     }
 
@@ -925,6 +932,7 @@ export class DonationModalComponent implements OnInit, OnChanges {
   closeModal() {
     this.isOpen = false;
     this.currentStep = 1;
+    this.submitAttempted = false;
     this.donationForm = {
       type: this.getInitialType(),
       amount: 25,

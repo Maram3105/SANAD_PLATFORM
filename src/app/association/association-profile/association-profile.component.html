@@ -45,11 +45,13 @@
     <form [formGroup]="form" class="profile-form" (ngSubmit)="submit()" novalidate>
       <div class="field">
         <label for="organization_name">Nom officiel</label>
-        <input id="organization_name" type="text" formControlName="organization_name" />
+        <input id="organization_name" type="text" formControlName="organization_name" required [class.invalid]="form.controls.organization_name.invalid && (form.controls.organization_name.dirty || form.controls.organization_name.touched)" />
+        <p class="field-warning" *ngIf="form.controls.organization_name.invalid && (form.controls.organization_name.dirty || form.controls.organization_name.touched)">Le nom officiel est obligatoire.</p>
       </div>
       <div class="field">
         <label for="description">Description courte</label>
-        <textarea id="description" rows="3" formControlName="description"></textarea>
+        <textarea id="description" rows="3" formControlName="description" required [class.invalid]="form.controls.description.invalid && (form.controls.description.dirty || form.controls.description.touched)"></textarea>
+        <p class="field-warning" *ngIf="form.controls.description.invalid && (form.controls.description.dirty || form.controls.description.touched)">La description courte est obligatoire.</p>
       </div>
       <div class="field">
         <label for="full_description">Description detaillee</label>

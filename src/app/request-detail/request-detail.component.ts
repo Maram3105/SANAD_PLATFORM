@@ -98,6 +98,7 @@ export class RequestDetailComponent implements OnInit {
   readonly helpOffers = signal<any[]>([]);
   readonly showProposeForm = signal<'object' | 'service' | null>(null);
   readonly isOfferSubmitting = signal(false);
+  readonly offerSubmitAttempted = signal(false);
   readonly offerError = signal('');
   readonly offerSuccess = signal('');
   readonly offerCategories = ['Alimentation', 'Vetements', 'Meubles', 'Sante', 'Education', 'Transport', 'Accompagnement', 'Autre'];
@@ -184,6 +185,7 @@ export class RequestDetailComponent implements OnInit {
     const req = this.request();
     if (!req) return;
 
+    this.offerSubmitAttempted.set(true);
     this.offerError.set('');
     this.offerSuccess.set('');
 
@@ -359,6 +361,7 @@ export class RequestDetailComponent implements OnInit {
 
   openOfferForm(type: 'object' | 'service') {
     this.resetOfferDraft();
+    this.offerSubmitAttempted.set(false);
     this.showProposeForm.set(type);
     setTimeout(() => {
       document.querySelector('.propose-form-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -370,6 +373,7 @@ export class RequestDetailComponent implements OnInit {
     this.showProposeForm.set(null);
     this.offerError.set('');
     this.offerSuccess.set('');
+    this.offerSubmitAttempted.set(false);
     this.resetOfferDraft();
   }
 

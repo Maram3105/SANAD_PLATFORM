@@ -47,6 +47,7 @@
             [class.invalid]="emailControl.touched && emailControl.invalid"
             type="email"
             formControlName="email"
+            required
             autocomplete="off"
             name="sanad-login-email"
             placeholder="you@example.com"
@@ -69,6 +70,7 @@
               [class.invalid]="passwordControl.touched && passwordControl.invalid"
               [type]="showPassword ? 'text' : 'password'"
               formControlName="password"
+              required
               autocomplete="new-password"
               name="sanad-login-password"
               placeholder="Saisissez votre mot de passe"

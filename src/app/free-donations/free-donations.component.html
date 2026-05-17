@@ -98,8 +98,10 @@
               rows="4"
               placeholder="Ex: Lot de vêtements pour enfants, matelas orthopédique..."
               [(ngModel)]="newItem.description"
-              [class.invalid]="publishSubmitted() && !newItem.description.trim()"
+              #itemDescriptionCtrl="ngModel"
+              [class.invalid]="!newItem.description.trim() && (itemDescriptionCtrl.dirty || itemDescriptionCtrl.touched || publishSubmitted())"
               required></textarea>
+            <p class="field-warning" *ngIf="!newItem.description.trim() && (itemDescriptionCtrl.dirty || itemDescriptionCtrl.touched || publishSubmitted())">La description de l'objet est obligatoire.</p>
           </div>
 
           <div class="form-row">
@@ -109,13 +111,15 @@
                 id="item-category"
                 name="category"
                 [(ngModel)]="newItem.category"
-                [class.invalid]="publishSubmitted() && !newItem.category"
+                #itemCategoryCtrl="ngModel"
+                [class.invalid]="!newItem.category && (itemCategoryCtrl.dirty || itemCategoryCtrl.touched || publishSubmitted())"
                 required>
                 <option value="">Choisir une catégorie</option>
                 @for (cat of categories; track cat) {
                   <option [value]="cat">{{ cat }}</option>
                 }
               </select>
+              <p class="field-warning" *ngIf="!newItem.category && (itemCategoryCtrl.dirty || itemCategoryCtrl.touched || publishSubmitted())">La categorie est obligatoire.</p>
             </div>
 
             <div class="form-group">
@@ -124,13 +128,15 @@
                 id="item-location"
                 name="location"
                 [(ngModel)]="newItem.location"
-                [class.invalid]="publishSubmitted() && !newItem.location"
+                #itemLocationCtrl="ngModel"
+                [class.invalid]="!newItem.location && (itemLocationCtrl.dirty || itemLocationCtrl.touched || publishSubmitted())"
                 required>
                 <option value="">Choisir une ville</option>
                 @for (loc of locations; track loc) {
                   <option [value]="loc">{{ loc }}</option>
                 }
               </select>
+              <p class="field-warning" *ngIf="!newItem.location && (itemLocationCtrl.dirty || itemLocationCtrl.touched || publishSubmitted())">La localisation est obligatoire.</p>
             </div>
           </div>
 
@@ -144,8 +150,10 @@
                 min="1"
                 step="1"
                 [(ngModel)]="newItem.quantity"
-                [class.invalid]="publishSubmitted() && (!newItem.quantity || newItem.quantity < 1)"
+                #itemQuantityCtrl="ngModel"
+                [class.invalid]="(!newItem.quantity || newItem.quantity < 1) && (itemQuantityCtrl.dirty || itemQuantityCtrl.touched || publishSubmitted())"
                 required>
+              <p class="field-warning" *ngIf="(!newItem.quantity || newItem.quantity < 1) && (itemQuantityCtrl.dirty || itemQuantityCtrl.touched || publishSubmitted())">La quantite doit etre superieure ou egale a 1.</p>
             </div>
 
             <div class="form-group">

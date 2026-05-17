@@ -50,6 +50,9 @@ export class AssociationRequestDetailComponent implements OnInit {
   readonly isLoggedIn = signal(false);
   readonly isAssociation = signal(false);
   readonly showProposeForm = signal<'object' | 'service' | null>(null);
+  readonly offerSubmitAttempted = signal(false);
+  readonly offerFormTouched = signal(false);
+  readonly offerError = signal('');
 
   ngOnInit(): void {
     this.checkAccess();
@@ -122,10 +125,16 @@ export class AssociationRequestDetailComponent implements OnInit {
   }
 
   donnerObjets() {
+    this.offerSubmitAttempted.set(false);
+    this.offerFormTouched.set(false);
+    this.offerError.set('');
     this.showProposeForm.set('object');
   }
 
   aiderService() {
+    this.offerSubmitAttempted.set(false);
+    this.offerFormTouched.set(false);
+    this.offerError.set('');
     this.showProposeForm.set('service');
   }
 
@@ -135,17 +144,28 @@ export class AssociationRequestDetailComponent implements OnInit {
 
   submitOffer(event: Event) {
     event.preventDefault();
+    this.offerSubmitAttempted.set(true);
+    this.offerError.set('');
     const formData = new FormData(event.target as HTMLFormElement);
     const req = this.request();
     if (!req) return;
 
+    const description = String(formData.get('description') ?? '').trim();
+    const location = String(formData.get('location') ?? '').trim();
+    const quantity = Number(formData.get('quantity') || 1);
+
+    if (!description || !location || !Number.isFinite(quantity) || quantity < 1) {
+      this.offerError.set('Veuillez remplir les champs obligatoires avant l envoi.');
+      return;
+    }
+
     const offer = {
       requestId: req.id,
       type: this.showProposeForm() as 'object' | 'service',
-      description: formData.get('description') as string,
-      quantity: Number(formData.get('quantity') || 1),
+      description,
+      quantity,
       category: formData.get('category') as string || 'General',
-      location: formData.get('location') as string,
+      location,
       deliveryMethod: formData.get('deliveryMethod') as string
     };
 

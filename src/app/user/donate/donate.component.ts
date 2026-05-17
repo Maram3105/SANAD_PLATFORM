@@ -26,6 +26,7 @@ export class DonateComponent implements OnInit {
   readonly quickAmounts = [50, 100, 250, 500];
   readonly selectedType = signal<DonationType>('platform');
   readonly isSubmitting = signal(false);
+  readonly submitAttempted = signal(false);
   readonly successMessage = signal('');
   readonly errorMessage = signal('');
 
@@ -67,6 +68,7 @@ export class DonateComponent implements OnInit {
   }
 
   submitDonation() {
+    this.submitAttempted.set(true);
     this.errorMessage.set('');
     this.successMessage.set('');
 

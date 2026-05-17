@@ -66,6 +66,9 @@
               </div>
               
               <form (submit)="submitOffer($event)" class="help-form">
+                @if (offerError()) {
+                  <div class="form-alert error">{{ offerError() }}</div>
+                }
                 <div class="form-group full-width">
                   <label>Message d'accompagnement</label>
                   <textarea name="description" placeholder="Expliquez brièvement votre proposition à l'organisateur..." required></textarea>
@@ -263,4 +266,3 @@
     </div>
   </footer>
 </main>
-

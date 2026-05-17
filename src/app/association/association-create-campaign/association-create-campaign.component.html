@@ -31,13 +31,15 @@
           <label for="title">Titre de la campagne</label>
           <div class="input-wrapper">
             <i class="fas fa-heading"></i>
-            <input id="title" type="text" formControlName="title" placeholder="Ex: Soutien scolaire pour 50 enfants" />
+            <input id="title" type="text" formControlName="title" placeholder="Ex: Soutien scolaire pour 50 enfants" required [class.invalid]="form.controls.title.invalid && (form.controls.title.dirty || form.controls.title.touched)" />
           </div>
+          <p class="field-warning" *ngIf="form.controls.title.invalid && (form.controls.title.dirty || form.controls.title.touched)">Le titre de la campagne est obligatoire.</p>
         </div>
 
         <div class="field">
           <label for="description">Résumé accrocheur</label>
-          <textarea id="description" rows="3" formControlName="description" placeholder="Une courte phrase qui donne envie d'aider..."></textarea>
+          <textarea id="description" rows="3" formControlName="description" placeholder="Une courte phrase qui donne envie d'aider..." required [class.invalid]="form.controls.description.invalid && (form.controls.description.dirty || form.controls.description.touched)"></textarea>
+          <p class="field-warning" *ngIf="form.controls.description.invalid && (form.controls.description.dirty || form.controls.description.touched)">Le resume est obligatoire.</p>
         </div>
 
         <div class="field">
@@ -55,20 +57,22 @@
             <label for="goal_amount">Objectif de collecte (DT)</label>
             <div class="input-wrapper">
               <i class="fas fa-coins"></i>
-              <input id="goal_amount" type="number" min="1" formControlName="goal_amount" placeholder="Montant cible" />
+              <input id="goal_amount" type="number" min="1" formControlName="goal_amount" placeholder="Montant cible" required [class.invalid]="form.controls.goal_amount.invalid && (form.controls.goal_amount.dirty || form.controls.goal_amount.touched)" />
             </div>
+            <p class="field-warning" *ngIf="form.controls.goal_amount.invalid && (form.controls.goal_amount.dirty || form.controls.goal_amount.touched)">L'objectif doit etre superieur a 0 DT.</p>
           </div>
           <div class="field">
             <label for="category_id">Domaine d'intervention</label>
             <div class="input-wrapper">
               <i class="fas fa-tag"></i>
-              <select id="category_id" formControlName="category_id">
-                <option [value]="null">Choisir une catégorie</option>
+              <select id="category_id" formControlName="category_id" required [class.invalid]="form.controls.category_id.invalid && (form.controls.category_id.dirty || form.controls.category_id.touched)">
+                <option [ngValue]="null">Choisir une catégorie</option>
                 @for (category of categories(); track category.id) {
                   <option [value]="category.id">{{ category.name }}</option>
                 }
               </select>
             </div>
+            <p class="field-warning" *ngIf="form.controls.category_id.invalid && (form.controls.category_id.dirty || form.controls.category_id.touched)">Le domaine d'intervention est obligatoire.</p>
           </div>
         </div>
 
@@ -77,7 +81,7 @@
             <label for="location">Zone géographique</label>
             <div class="input-wrapper">
               <i class="fas fa-map-marker-alt"></i>
-              <select id="location" formControlName="location">
+              <select id="location" formControlName="location" required [class.invalid]="form.controls.location.invalid && (form.controls.location.dirty || form.controls.location.touched)">
                 <option value="">Sélectionner une ville</option>
                 <option value="Tunis">Tunis</option>
                 <option value="Sfax">Sfax</option>
@@ -93,12 +97,13 @@
                 <option value="Nabeul">Nabeul</option>
               </select>
             </div>
+            <p class="field-warning" *ngIf="form.controls.location.invalid && (form.controls.location.dirty || form.controls.location.touched)">La zone geographique est obligatoire.</p>
           </div>
           <div class="field">
             <label for="urgency">Niveau d'urgence</label>
             <div class="input-wrapper">
               <i class="fas fa-bolt"></i>
-              <select id="urgency" formControlName="urgency">
+              <select id="urgency" formControlName="urgency" required>
                 <option value="low">Standard</option>
                 <option value="medium">Prioritaire</option>
                 <option value="high">Urgent (Critique)</option>

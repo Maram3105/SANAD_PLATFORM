@@ -49,11 +49,13 @@
     </div>
 
     <label for="donation-amount">Montant libre</label>
-    <input id="donation-amount" type="number" min="5" max="100000" step="1" [(ngModel)]="amount" />
+    <input id="donation-amount" name="amount" type="number" min="5" max="100000" step="1" [(ngModel)]="amount" #donationAmountCtrl="ngModel" required [class.invalid]="(!amount || amount < 5 || amount > 100000) && (donationAmountCtrl.dirty || donationAmountCtrl.touched || submitAttempted())" />
+    <p class="field-warning" *ngIf="(!amount || amount < 5 || amount > 100000) && (donationAmountCtrl.dirty || donationAmountCtrl.touched || submitAttempted())">Le montant est obligatoire et doit etre compris entre 5 et 100000 DT.</p>
 
     <label for="donation-message">Message optionnel</label>
     <textarea
       id="donation-message"
+      name="message"
       rows="3"
       maxlength="500"
       [(ngModel)]="message"

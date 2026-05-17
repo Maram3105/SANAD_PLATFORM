@@ -35,6 +35,7 @@ export class PublishRequestComponent {
 
   selectedFiles: File[] = [];
   documentError = '';
+  submitAttempted = false;
 
   onCancel() {
     this.router.navigate(['/explorer']);
@@ -48,8 +49,19 @@ export class PublishRequestComponent {
   }
 
   onSubmit() {
+    this.submitAttempted = true;
     if (!this.model.needs_money && !this.model.needs_object && !this.model.needs_service) {
       alert('Veuillez sélectionner au moins un type de besoin.');
+      return;
+    }
+
+    if (
+      !this.model.title.trim()
+      || !this.model.category
+      || !this.model.location
+      || !this.model.description.trim()
+      || (this.model.needs_money && (!this.model.amount || Number(this.model.amount) <= 0))
+    ) {
       return;
     }
 

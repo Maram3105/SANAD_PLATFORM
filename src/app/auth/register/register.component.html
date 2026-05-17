@@ -92,6 +92,7 @@
                   [class.invalid]="userForm.controls.fullName.touched && userForm.controls.fullName.invalid"
                   type="text"
                   formControlName="fullName"
+                  required
                   autocomplete="name"
                   placeholder="Amira Rahman"
                   (focus)="onFieldFocus(userForm, userFieldOrder, 0)"
@@ -112,6 +113,7 @@
                   [class.invalid]="userForm.controls.email.touched && userForm.controls.email.invalid"
                   type="email"
                   formControlName="email"
+                  required
                   autocomplete="email"
                   placeholder="you@example.com"
                   (focus)="onFieldFocus(userForm, userFieldOrder, 1)"
@@ -135,6 +137,7 @@
                   [class.invalid]="userForm.controls.password.touched && userForm.controls.password.invalid"
                   [type]="showPassword ? 'text' : 'password'"
                   formControlName="password"
+                  required
                   autocomplete="new-password"
                   placeholder="Au moins 8 caracteres"
                   (focus)="onFieldFocus(userForm, userFieldOrder, 2)"
@@ -178,6 +181,7 @@
                   [class.invalid]="userForm.controls.confirmPassword.touched && (userForm.controls.confirmPassword.invalid || userForm.errors?.['passwordMismatch'])"
                   [type]="showConfirm ? 'text' : 'password'"
                   formControlName="confirmPassword"
+                  required
                   autocomplete="new-password"
                   placeholder="Repetez votre mot de passe"
                   (focus)="onFieldFocus(userForm, userFieldOrder, 3)"
@@ -241,6 +245,7 @@
                     [class.invalid]="associationForm.controls.organizationName.touched && associationForm.controls.organizationName.invalid"
                     type="text"
                     formControlName="organizationName"
+                    required
                     placeholder="Hope Builders"
                     (focus)="onFieldFocus(associationForm, associationStepOneOrder, 0)"
                   />
@@ -260,6 +265,7 @@
                     [class.invalid]="associationForm.controls.responsibleName.touched && associationForm.controls.responsibleName.invalid"
                     type="text"
                     formControlName="responsibleName"
+                    required
                     placeholder="Salma Ben Youssef"
                     (focus)="onFieldFocus(associationForm, associationStepOneOrder, 1)"
                   />
@@ -279,6 +285,7 @@
                     [class.invalid]="associationForm.controls.email.touched && associationForm.controls.email.invalid"
                     type="email"
                     formControlName="email"
+                    required
                     autocomplete="email"
                     placeholder="team@association.org"
                     (focus)="onFieldFocus(associationForm, associationStepOneOrder, 2)"
@@ -302,6 +309,7 @@
                     [class.invalid]="associationForm.controls.password.touched && associationForm.controls.password.invalid"
                     [type]="showPassword ? 'text' : 'password'"
                     formControlName="password"
+                    required
                     autocomplete="new-password"
                     placeholder="Au moins 8 caracteres"
                     (focus)="onFieldFocus(associationForm, associationStepOneOrder, 3)"
@@ -345,6 +353,7 @@
                     [class.invalid]="associationForm.controls.confirmPassword.touched && (associationForm.controls.confirmPassword.invalid || associationForm.errors?.['passwordMismatch'])"
                     [type]="showConfirm ? 'text' : 'password'"
                     formControlName="confirmPassword"
+                    required
                     autocomplete="new-password"
                     placeholder="Repetez votre mot de passe"
                     (focus)="onFieldFocus(associationForm, associationStepOneOrder, 4)"
@@ -368,6 +377,7 @@
                   [class.invalid]="associationForm.controls.phone.touched && associationForm.controls.phone.invalid"
                   type="tel"
                   formControlName="phone"
+                  required
                   autocomplete="tel"
                   inputmode="numeric"
                   maxlength="8"
@@ -394,6 +404,7 @@
                     [class.invalid]="associationForm.controls.location.touched && associationForm.controls.location.invalid"
                     type="text"
                     formControlName="location"
+                    required
                     placeholder="Tunis, Tunisie"
                     (focus)="onFieldFocus(associationForm, associationStepOneOrder, 6)"
                   />
@@ -414,6 +425,7 @@
                     class="input has-icon"
                     rows="3"
                     formControlName="description"
+                    required
                     placeholder="Parlez-nous de votre mission et de vos programmes."
                     (focus)="onFieldFocus(associationForm, associationStepTwoOrder, 0)"
                   ></textarea>
@@ -430,6 +442,7 @@
                     id="verificationDocument"
                     type="file"
                     accept=".pdf,image/*"
+                    required
                     aria-label="Televerser le document de verification"
                     (change)="onFileSelected($event)"
                   />

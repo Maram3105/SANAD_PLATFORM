@@ -13,7 +13,7 @@
       </div>
     </header>
 
-    <form class="publish-form" (ngSubmit)="onSubmit()">
+    <form class="publish-form" (ngSubmit)="onSubmit()" #requestForm="ngForm" novalidate>
       
       <!-- Section 1: Informations principales -->
       <div class="form-section">
@@ -26,8 +26,9 @@
           <label for="title">Titre de la demande</label>
           <div class="input-wrapper">
             <i class="fas fa-heading"></i>
-            <input id="title" [(ngModel)]="model.title" name="title" placeholder="Ex: Aide alimentaire pour une famille" required />
+            <input id="title" [(ngModel)]="model.title" name="title" #titleCtrl="ngModel" [class.invalid]="titleCtrl.invalid && (titleCtrl.dirty || titleCtrl.touched || submitAttempted)" placeholder="Ex: Aide alimentaire pour une famille" required />
           </div>
+          <p class="field-warning" *ngIf="titleCtrl.invalid && (titleCtrl.dirty || titleCtrl.touched || submitAttempted)">Le titre est obligatoire.</p>
         </div>
 
         <div class="form-grid">
@@ -35,7 +36,7 @@
             <label for="category">Catégorie</label>
             <div class="input-wrapper">
               <i class="fas fa-tag"></i>
-              <select id="category" [(ngModel)]="model.category" name="category" required>
+              <select id="category" [(ngModel)]="model.category" name="category" #categoryCtrl="ngModel" [class.invalid]="categoryCtrl.invalid && (categoryCtrl.dirty || categoryCtrl.touched || submitAttempted)" required>
                 <option value="" disabled selected>Choisir une catégorie</option>
                 <option value="Sante">Santé</option>
                 <option value="Education">Éducation</option>
@@ -44,13 +45,14 @@
                 <option value="Emploi">Emploi</option>
               </select>
             </div>
+            <p class="field-warning" *ngIf="categoryCtrl.invalid && (categoryCtrl.dirty || categoryCtrl.touched || submitAttempted)">La categorie est obligatoire.</p>
           </div>
 
           <div class="field-group">
             <label for="urgency">Niveau d'urgence</label>
             <div class="input-wrapper">
               <i class="fas fa-exclamation-triangle"></i>
-              <select id="urgency" [(ngModel)]="model.urgency" name="urgency">
+              <select id="urgency" [(ngModel)]="model.urgency" name="urgency" required>
                 <option value="high">Élevée</option>
                 <option value="medium">Moyenne</option>
                 <option value="low">Basse</option>
@@ -63,13 +65,14 @@
           <label for="location">Localisation</label>
           <div class="input-wrapper">
             <i class="fas fa-map-marker-alt"></i>
-            <select id="location" [(ngModel)]="model.location" name="location" required>
+            <select id="location" [(ngModel)]="model.location" name="location" #locationCtrl="ngModel" [class.invalid]="locationCtrl.invalid && (locationCtrl.dirty || locationCtrl.touched || submitAttempted)" required>
               <option value="" disabled selected>Choisir une ville</option>
               @for (loc of locations; track loc) {
                 <option [value]="loc">{{ loc }}</option>
               }
             </select>
           </div>
+          <p class="field-warning" *ngIf="locationCtrl.invalid && (locationCtrl.dirty || locationCtrl.touched || submitAttempted)">La localisation est obligatoire.</p>
         </div>
       </div>
 
@@ -84,8 +87,9 @@
           <label for="amount">Montant souhaité (DT)</label>
           <div class="input-wrapper">
             <i class="fas fa-coins"></i>
-            <input id="amount" type="number" [(ngModel)]="model.amount" name="amount" placeholder="Ex: 500" />
+            <input id="amount" type="number" min="1" [(ngModel)]="model.amount" name="amount" #amountCtrl="ngModel" [required]="model.needs_money" [class.invalid]="amountCtrl.invalid && (amountCtrl.dirty || amountCtrl.touched || submitAttempted)" placeholder="Ex: 500" />
           </div>
+          <p class="field-warning" *ngIf="amountCtrl.invalid && (amountCtrl.dirty || amountCtrl.touched || submitAttempted)">Le montant est obligatoire pour une demande financiere.</p>
         </div>
 
         <div class="field-group">
@@ -118,8 +122,9 @@
         </div>
         <div class="field-group">
           <label for="description">Explication de votre demande</label>
-          <textarea id="description" rows="6" [(ngModel)]="model.description" name="description" 
+          <textarea id="description" rows="6" [(ngModel)]="model.description" name="description" #descriptionCtrl="ngModel" [class.invalid]="descriptionCtrl.invalid && (descriptionCtrl.dirty || descriptionCtrl.touched || submitAttempted)" required
             placeholder="Décrivez précisément votre situation et comment l'aide sera utilisée..."></textarea>
+          <p class="field-warning" *ngIf="descriptionCtrl.invalid && (descriptionCtrl.dirty || descriptionCtrl.touched || submitAttempted)">La description est obligatoire.</p>
         </div>
       </div>
 
@@ -130,7 +135,7 @@
           <h3>Documents justificatifs</h3>
         </div>
         <div class="upload-container">
-          <input type="file" id="file-upload" multiple required (change)="onFileSelected($event)" accept=".pdf,image/*" class="file-input">
+          <input type="file" id="file-upload" multiple required (change)="onFileSelected($event)" accept=".pdf,image/*" class="file-input" [class.invalid]="submitAttempted && selectedFiles.length === 0">
           <label for="file-upload" class="upload-area">
             <i class="fas fa-cloud-upload-alt"></i>
             <span class="upload-title">Glissez vos fichiers ou cliquez pour uploader</span>
@@ -140,6 +145,7 @@
             </div>
           </label>
           <p class="upload-error" *ngIf="documentError">{{ documentError }}</p>
+          <p class="field-warning" *ngIf="submitAttempted && selectedFiles.length === 0">Au moins un justificatif est obligatoire.</p>
         </div>
       </div>
 
