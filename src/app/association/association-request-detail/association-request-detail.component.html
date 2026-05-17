@@ -1,0 +1,266 @@
+@if (isAssociation()) {
+  <app-association-navbar></app-association-navbar>
+} @else if (isLoggedIn()) {
+  <app-logged-in-navbar></app-logged-in-navbar>
+} @else {
+  <app-navbar></app-navbar>
+}
+
+<main class="detail-page">
+  <!-- Hero Header -->
+  <header class="page-hero">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a routerLink="/association/explorer"><i class="fas fa-chevron-left"></i> Retour à l'explorateur</a>
+      </nav>
+      
+      <div class="hero-flex">
+        <div class="hero-text">
+          <div class="hero-badges">
+            <span class="badge category">{{ request()?.category_name }}</span>
+            <span class="badge urgency" [class]="'urgency-' + request()?.urgency">
+              <i class="fas fa-bolt"></i> {{ getUrgencyLabel(request()?.urgency || '') }}
+            </span>
+          </div>
+          <h1>{{ request()?.title }}</h1>
+          <div class="hero-meta">
+            <span><i class="fas fa-map-marker-alt"></i> {{ request()?.location }}</span>
+            <span><i class="fas fa-building"></i> {{ request()?.organization_name }}</span>
+            <span><i class="fas fa-calendar-alt"></i> Publié le {{ request()?.created_at | date:'dd MMM yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container main-container">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Récupération des données en cours...</p>
+      </div>
+    } @else if (request(); as req) {
+      <div class="detail-grid">
+        <!-- Left: Information & Description -->
+        <div class="content-column">
+          <div class="image-showcase">
+            <img [src]="getImageUrl(req.image_url)" [alt]="req.title" />
+            <div class="image-overlay"></div>
+          </div>
+
+          <section class="info-section card">
+            <div class="section-header">
+              <i class="fas fa-align-left"></i>
+              <h2>Description détaillée</h2>
+            </div>
+            <div class="description-body">
+              <p>{{ req.full_description || req.description }}</p>
+            </div>
+          </section>
+
+          @if (showProposeForm()) {
+            <section class="form-section card animate-in">
+              <div class="section-header">
+                <i class="fas fa-paper-plane"></i>
+                <h2>Proposer {{ showProposeForm() === 'object' ? 'du matériel' : 'vos services' }}</h2>
+              </div>
+              
+              <form (submit)="submitOffer($event)" class="help-form">
+                <div class="form-group full-width">
+                  <label>Message d'accompagnement</label>
+                  <textarea name="description" placeholder="Expliquez brièvement votre proposition à l'organisateur..." required></textarea>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Quantité / Détails</label>
+                    <input type="text" name="quantity" placeholder="Ex: 50 colis, 2 jours...">
+                  </div>
+                  <div class="form-group">
+                    <label>Lieu d'intervention / envoi</label>
+                    <input type="text" name="location" [value]="req.location">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>Logistique</label>
+                  <select name="deliveryMethod">
+                    <option value="hand">Remise en main propre / Sur site</option>
+                    <option value="delivery">Livraison / À distance</option>
+                  </select>
+                </div>
+
+                <div class="form-footer">
+                  <button type="button" class="btn-ghost" (click)="showProposeForm.set(null)">Annuler</button>
+                  <button type="submit" class="btn-submit-action">Envoyer la proposition <i class="fas fa-check"></i></button>
+                </div>
+              </form>
+            </section>
+          }
+
+          <section class="progress-section card">
+            <div class="section-header">
+              <i class="fas fa-chart-line"></i>
+              <h2>Impact & Progression</h2>
+            </div>
+            <div class="progress-container">
+              <div class="progress-labels">
+                <div class="label-group">
+                  <span class="label">Collecté</span>
+                  <span class="value main">{{ req.collected_amount | number }} DT</span>
+                </div>
+                <div class="label-group text-right">
+                  <span class="label">Objectif</span>
+                  <span class="value">{{ req.target_amount | number }} DT</span>
+                </div>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" [style.width.%]="getProgressPercent(req.collected_amount, req.target_amount)">
+                  <span class="pct">{{ getProgressPercent(req.collected_amount, req.target_amount) | number:'1.0-0' }}%</span>
+                </div>
+              </div>
+              <div class="progress-footer">
+                <span><i class="fas fa-users"></i> <strong>{{ req.donors_count }}</strong> contributeurs ont déjà participé</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right: Actions Center -->
+        <aside class="actions-column">
+          <div class="sticky-panel">
+            <div class="action-card main">
+              <div class="card-head">
+                <h3>Centre de Collaboration</h3>
+                <p>En tant qu'association, vous pouvez amplifier l'impact de cette demande.</p>
+              </div>
+
+              <div class="action-grid">
+                <!-- Action 1 -->
+                <button class="help-action" (click)="faireDon()">
+                  <div class="icon-box blue"><i class="fas fa-hand-holding-heart"></i></div>
+                  <div class="text-box">
+                    <span class="title">Faire un don</span>
+                    <span class="desc">Aide financière directe</span>
+                  </div>
+                </button>
+
+                <!-- Action 2 -->
+                <button class="help-action" (click)="donnerObjets()">
+                  <div class="icon-box green"><i class="fas fa-box"></i></div>
+                  <div class="text-box">
+                    <span class="title">Donner des objets</span>
+                    <span class="desc">Matériel et ressources</span>
+                  </div>
+                </button>
+
+                <!-- Action 3 -->
+                <button class="help-action" (click)="aiderService()">
+                  <div class="icon-box orange"><i class="fas fa-hands-helping"></i></div>
+                  <div class="text-box">
+                    <span class="title">Aider avec un service</span>
+                    <span class="desc">Expertise ou bénévolat</span>
+                  </div>
+                </button>
+
+                <!-- Action 4 - Featured -->
+                <button class="help-action featured" (click)="collaborer()">
+                  <div class="icon-box white"><i class="fas fa-bullhorn"></i></div>
+                  <div class="text-box">
+                    <span class="title">Collaborer à la campagne</span>
+                    <span class="desc">Devenir partenaire officiel</span>
+                  </div>
+                  <div class="featured-badge">Recommandé</div>
+                </button>
+              </div>
+
+              <div class="action-info-box">
+                <i class="fas fa-shield-alt"></i>
+                <p>Toutes les collaborations sont tracées et sécurisées par la plateforme Sanad.</p>
+              </div>
+            </div>
+
+            <div class="contact-card card">
+              <h4>Besoin d'en savoir plus ?</h4>
+              <p>Contactez directement l'organisation pour discuter des modalités de partenariat.</p>
+              <button class="btn-outline-blue"><i class="fas fa-envelope"></i> Contacter l'organisation</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    }
+  </div>
+
+  <!-- Footer Section -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="container">
+        <div class="footer-grid">
+          <!-- Brand & Story -->
+          <div class="footer-col brand-col">
+            <img src="assets/logo.png" alt="Sanad Logo" class="footer-logo" />
+            <p class="brand-desc">
+              Sanad est le premier réseau de solidarité intelligente en Tunisie. Nous connectons les citoyens et les associations pour transformer chaque geste en impact durable.
+            </p>
+            <div class="social-links">
+              <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="footer-col">
+            <h4 class="footer-title">Navigation</h4>
+            <ul class="footer-links">
+              <li><a routerLink="/association/explorer">Explorer les demandes</a></li>
+              <li><a routerLink="/association/campaigns">Mes campagnes</a></li>
+              <li><a routerLink="/association/donations">Historique des dons</a></li>
+              <li><a routerLink="/association/profile">Espace Association</a></li>
+            </ul>
+          </div>
+
+          <!-- Resources -->
+          <div class="footer-col">
+            <h4 class="footer-title">Ressources</h4>
+            <ul class="footer-links">
+              <li><a href="#">Comment ça marche ?</a></li>
+              <li><a href="#">Guide des associations</a></li>
+              <li><a href="#">Centre d'aide</a></li>
+              <li><a href="#">Blog & Actualités</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact & Newsletter -->
+          <div class="footer-col newsletter-col">
+            <h4 class="footer-title">Restons connectés</h4>
+            <p class="newsletter-text">Recevez les dernières mises à jour sur l'impact de notre communauté.</p>
+            <div class="newsletter-form">
+              <input type="email" placeholder="Votre email..." />
+              <button class="btn-send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            <div class="contact-mini">
+              <span><i class="fas fa-envelope"></i> contact@sanad.tn</span>
+              <span><i class="fas fa-phone-alt"></i> +216 71 000 000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="bottom-flex">
+          <p class="copyright">&copy; 2024 Sanad Tunisie. Tous droits réservés.</p>
+          <ul class="legal-links">
+            <li><a href="#">Mentions Légales</a></li>
+            <li><a href="#">Politique de Confidentialité</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</main>
+

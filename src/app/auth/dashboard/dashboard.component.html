@@ -1,0 +1,148 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<main class="dashboard-wrapper">
+  <div class="dashboard-shell">
+    <section class="dashboard-hero">
+      <div class="hero-main">
+        <span class="hero-badge">
+          <i class="fas fa-user-check"></i>
+          Tableau de bord personnel
+        </span>
+        <div class="welcome-text">
+          <h1>Bonjour, <span>{{ userName }}</span></h1>
+          <p class="hero-subtitle">
+            Retrouvez vos dons, vos demandes et vos actions sauvegardees dans un espace clair pour suivre votre impact.
+          </p>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a class="btn-outline-premium" routerLink="/requests/new">
+          <i class="fas fa-paper-plane"></i>
+          Publier une demande
+        </a>
+        <a class="btn-outline-premium btn-outline-premium--light" routerLink="/explorer">
+          <i class="fas fa-compass"></i>
+          Explorer
+        </a>
+      </div>
+    </section>
+
+    <section class="metrics-grid">
+      <article
+        class="metric-card"
+        *ngFor="let stat of stats; let first = first"
+        [class.metric-card--primary]="first"
+      >
+        <div class="metric-header">
+          <span class="metric-icon">
+            <i [ngClass]="['fas', stat.icon]"></i>
+          </span>
+          <p class="metric-label">{{ stat.label }}</p>
+        </div>
+        <div class="metric-body">
+          <h2 class="metric-value">{{ stat.value }}</h2>
+          <span class="metric-footer">
+            <i class="fas fa-check-circle"></i>
+            {{ stat.trend }}
+          </span>
+        </div>
+      </article>
+    </section>
+
+    <section class="quick-actions">
+      <article class="quick-action" *ngFor="let action of quickActions">
+        <span class="quick-icon">
+          <i [ngClass]="['fas', action.icon]"></i>
+        </span>
+        <div>
+          <h3>{{ action.title }}</h3>
+          <p>{{ action.description }}</p>
+        </div>
+        <a class="quick-link" [routerLink]="action.link">
+          Demarrer
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <div class="feed-panel">
+        <header class="feed-header">
+          <div class="feed-title">
+            <h3><i class="fas fa-bell"></i> Activite recente</h3>
+            <p>Notifications et mises a jour liees a votre compte.</p>
+          </div>
+          <a routerLink="/notifications" class="link-more">
+            Voir tout <i class="fas fa-chevron-right"></i>
+          </a>
+        </header>
+
+        <div class="activity-list" *ngIf="activities.length > 0; else noActivity">
+          <article class="activity-row" *ngFor="let item of activities">
+            <span class="activity-marker">
+              <i class="fas fa-bell"></i>
+            </span>
+            <div>
+              <p class="activity-title">{{ item.title }}</p>
+              <p class="activity-meta">{{ item.meta }}</p>
+            </div>
+          </article>
+        </div>
+
+        <ng-template #noActivity>
+          <div class="empty-state">
+            <span class="empty-icon"><i class="fas fa-inbox"></i></span>
+            <p>Aucune activite recente pour le moment.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="feed-panel">
+        <header class="feed-header">
+          <div class="feed-title">
+            <h3><i class="fas fa-bookmark"></i> Demandes sauvegardees</h3>
+            <p>Les demandes que vous gardez sous surveillance.</p>
+          </div>
+          <a routerLink="/saved" class="link-more">
+            Voir tout <i class="fas fa-chevron-right"></i>
+          </a>
+        </header>
+
+        <div class="saved-list" *ngIf="savedRequests.length > 0; else noSavedRequests">
+          <article class="saved-row" *ngFor="let request of savedRequests">
+            <div class="saved-main">
+              <span class="saved-avatar">
+                <i class="fas fa-heart"></i>
+              </span>
+              <div>
+                <h4>{{ request.title }}</h4>
+                <p><i class="fas fa-map-marker-alt"></i> {{ request.location }}</p>
+              </div>
+            </div>
+            <div class="progress">
+              <div class="progress-meta">
+                <span>{{ request.progress }}% atteint</span>
+                <span>{{ request.donors }} donateurs</span>
+              </div>
+              <div class="progress-bar">
+                <span [style.width.%]="request.progress"></span>
+              </div>
+            </div>
+            <a class="saved-link" [routerLink]="['/request-detail', request.requestId]">
+              Voir <i class="fas fa-arrow-right"></i>
+            </a>
+          </article>
+        </div>
+
+        <ng-template #noSavedRequests>
+          <div class="empty-state">
+            <span class="empty-icon"><i class="fas fa-folder-open"></i></span>
+            <p>Aucune demande sauvegardee.</p>
+            <a class="empty-link" routerLink="/explorer">Explorer les initiatives</a>
+          </div>
+        </ng-template>
+      </div>
+    </section>
+  </div>
+</main>

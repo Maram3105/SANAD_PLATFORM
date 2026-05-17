@@ -1,0 +1,219 @@
+@if (isLoggedIn()) {
+  @if (isAssociation()) {
+    <app-association-navbar></app-association-navbar>
+  } @else {
+    <app-logged-in-navbar></app-logged-in-navbar>
+  }
+} @else {
+  <app-navbar></app-navbar>
+}
+
+<main class="associations-page">
+  <!-- ==================== HEADER ==================== -->
+  <section class="associations-header">
+    <div class="container">
+      <div class="header-content">
+        <span class="header-badge">Notre Réseau National</span>
+        <h1>Associations Partenaires</h1>
+        <p>Découvrez les organisations de confiance qui font une différence en Tunisie. Chaque association est rigoureusement vérifiée par notre plateforme.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SEARCH + FILTERS ==================== -->
+  <section class="filters-section">
+    <div class="container">
+      <div class="filters-shell">
+        <!-- Search Box -->
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Rechercher une association, une cause..." [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)" />
+        </div>
+
+        <!-- Quick Filters Bar -->
+        <div class="filters-grid">
+          <div class="filter-item">
+            <label><i class="fas fa-tag"></i> Domaine d'action</label>
+            <select [ngModel]="selectedCategory()" (ngModelChange)="selectedCategory.set($event)">
+              <option value="">Toutes catégories</option>
+              <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label><i class="fas fa-map-marker-alt"></i> Localisation</label>
+            <select [ngModel]="selectedLocation()" (ngModelChange)="selectedLocation.set($event)">
+              <option value="">Partout en Tunisie</option>
+              <option *ngFor="let loc of locations" [value]="loc">{{ loc }}</option>
+            </select>
+          </div>
+
+          <div class="filter-item">
+            <label><i class="fas fa-sort-amount-down"></i> Trier par</label>
+            <select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+              <option value="name">Ordre alphabétique</option>
+              <option value="most-active">Activité récente</option>
+              <option value="most-funded">Impact généré</option>
+            </select>
+          </div>
+
+          <div class="filter-item actions">
+            <button class="btn-reset" (click)="clearFilters()" title="Réinitialiser">
+          <i class="fas fa-undo"></i>
+        </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-meta">
+        <p>Il y a <strong>{{ filteredAssociations().length }}</strong> organisations vérifiées actuellement</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ASSOCIATIONS GRID ==================== -->
+  <section class="associations-section">
+    <div class="container">
+      @if (loading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Chargement du réseau Sanad...</p>
+        </div>
+      } @else if (filteredAssociations().length > 0) {
+        <div class="associations-grid">
+          <div class="association-card" *ngFor="let assoc of filteredAssociations()" (click)="openProfile(assoc.id)">
+            <div class="card-image-section">
+              <div class="card-cover"
+                [style.background-image]="getLogoUrl(assoc.cover_url) ? 'url(' + getLogoUrl(assoc.cover_url) + ')' : 'linear-gradient(135deg, #1e3a8a, #3b82f6)'">
+                <div class="cover-overlay"></div>
+              </div>
+              <div class="card-logo">
+                @if (getLogoUrl(assoc.logo_url)) {
+                  <img [src]="getLogoUrl(assoc.logo_url)" [alt]="assoc.organization_name" />
+                } @else {
+                  <span class="logo-fallback">{{ getLogoInitials(assoc.logo_url, assoc.organization_name) }}</span>
+                }
+              </div>
+              @if (assoc.verified) {
+                <div class="verified-tag">
+                  <i class="fas fa-check-circle"></i> Vérifiée
+                </div>
+              }
+            </div>
+
+            <div class="card-body">
+              <div class="card-info">
+                <h3 class="org-name">{{ assoc.organization_name }}</h3>
+                <div class="org-meta">
+                  <span class="meta-tag"><i class="fas fa-map-marker-alt"></i> {{ assoc.location }}</span>
+                </div>
+                <p class="org-description">
+                  <span class="description-icon"><i class="fas fa-tag"></i> {{ assoc.category_name }}</span>
+                  {{ assoc.description }}
+                </p>
+              </div>
+
+              <div class="card-stats">
+                <div class="stat-pill">
+                  <span class="val">{{ assoc.campaign_count }}</span>
+                  <span class="lab">Campagnes</span>
+                </div>
+                <div class="stat-pill">
+                  <span class="val">{{ (assoc.id * 127) % 50 + 5 }}</span>
+                  <span class="lab">Partenaires</span>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <button class="btn-view" (click)="$event.stopPropagation(); openProfile(assoc.id)">
+                  Consulter le profil <i class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fas fa-search"></i></div>
+          <h3>Aucune association trouvée</h3>
+          <p>Nous n'avons pas trouvé d'organisations correspondant à vos critères. Essayez d'élargir votre recherche.</p>
+          <button class="btn-primary" (click)="clearFilters()">Voir tout le réseau</button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="container">
+        <div class="footer-grid">
+          <!-- Brand & Story -->
+          <div class="footer-col brand-col">
+            <img src="assets/logo.png" alt="Sanad Logo" class="footer-logo" />
+            <p class="brand-desc">
+              Sanad est le premier réseau de solidarité intelligente en Tunisie. Nous connectons les citoyens et les associations pour transformer chaque geste en impact durable.
+            </p>
+            <div class="social-links">
+              <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="footer-col">
+            <h4 class="footer-title">Navigation</h4>
+            <ul class="footer-links">
+              <li><a routerLink="/explorer">Explorer les demandes</a></li>
+              <li><a routerLink="/associations">Associations</a></li>
+              <li><a routerLink="/free-donations">Dons Libres</a></li>
+              <li><a routerLink="/auth/login">Espace Membre</a></li>
+            </ul>
+          </div>
+
+          <!-- Resources -->
+          <div class="footer-col">
+            <h4 class="footer-title">Ressources</h4>
+            <ul class="footer-links">
+              <li><a href="#">Comment ça marche ?</a></li>
+              <li><a href="#">Guide des donateurs</a></li>
+              <li><a href="#">Centre d'aide</a></li>
+              <li><a href="#">Blog & Actualités</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact & Newsletter -->
+          <div class="footer-col newsletter-col">
+            <h4 class="footer-title">Restons connectés</h4>
+            <p class="newsletter-text">Recevez les dernières mises à jour sur l'impact de notre communauté.</p>
+            <div class="newsletter-form">
+              <input type="email" placeholder="Votre email..." />
+              <button class="btn-send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            <div class="contact-mini">
+              <span><i class="fas fa-envelope"></i> contact@sanad.tn</span>
+              <span><i class="fas fa-phone-alt"></i> +216 71 000 000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="bottom-flex">
+          <p class="copyright">&copy; 2024 Sanad Tunisie. Tous droits réservés.</p>
+          <ul class="legal-links">
+            <li><a href="#">Mentions Légales</a></li>
+            <li><a href="#">Politique de Confidentialité</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</main>

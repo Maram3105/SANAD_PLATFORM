@@ -1,0 +1,247 @@
+@if (isLoggedIn()) {
+  @if (role() === 'association') {
+    <app-association-navbar></app-association-navbar>
+  } @else {
+    <app-logged-in-navbar></app-logged-in-navbar>
+  }
+} @else {
+  <app-navbar></app-navbar>
+}
+
+<div class="free-donations-page">
+  <header class="page-header">
+    <div class="container">
+      <h1>Objets disponibles</h1>
+      <p class="subtitle">Articles offerts généreusement par la communauté pour les personnes dans le besoin.</p>
+      <button class="btn-donate-main" (click)="publishItem()">
+        <i class="fas fa-plus"></i> Proposer un objet
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="filters-bar">
+      <div class="filter-group">
+        <label>Catégorie</label>
+        <select [ngModel]="searchCategory()" (ngModelChange)="searchCategory.set($event)" class="filter-select">
+          <option value="">Toutes les catégories</option>
+          @for (cat of categories; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+          }
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Localisation</label>
+        <select [ngModel]="searchLocation()" (ngModelChange)="searchLocation.set($event)" class="filter-select">
+          <option value="">Toutes les villes</option>
+          @for (loc of locations; track loc) {
+            <option [value]="loc">{{ loc }}</option>
+          }
+        </select>
+      </div>
+    </section>
+
+    <div class="items-grid">
+      @for (item of filteredItems(); track item.id) {
+        <div class="item-card">
+          <div class="item-image">
+            <img src="/assets/images/placeholders/request-placeholder.svg" alt="Item">
+            <span class="item-status badge-available">{{ item.status }}</span>
+          </div>
+          <div class="item-content">
+            <h3>{{ item.description }}</h3>
+            <div class="item-meta">
+              <p><i class="fas fa-tag"></i> {{ item.category }}</p>
+              <p><i class="fas fa-map-marker-alt"></i> {{ item.location }}</p>
+              <p><i class="fas fa-user"></i> Offert par {{ item.donor_name }}</p>
+            </div>
+            <div class="item-actions">
+              <button class="btn-reserve" (click)="reserveItem(item.id)">
+                <i class="fas fa-box"></i> Réserver cet objet
+              </button>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="no-results">
+          <i class="fas fa-box-open"></i>
+          <h3>Aucun objet disponible</h3>
+          <p>Revenez plus tard ou changez vos filtres.</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (showPublishModal()) {
+    <div class="modal-backdrop" (click)="closePublishModal()">
+      <section class="publish-modal" role="dialog" aria-modal="true" aria-labelledby="publish-title" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <span class="modal-eyebrow">Don libre</span>
+            <h2 id="publish-title">Proposer un objet</h2>
+          </div>
+          <button type="button" class="btn-close-modal" aria-label="Fermer" (click)="closePublishModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <form class="publish-form" (ngSubmit)="submitItem()" #itemForm="ngForm" novalidate>
+          @if (publishError()) {
+            <div class="form-alert">{{ publishError() }}</div>
+          }
+
+          <div class="form-group">
+            <label for="item-description">Objet proposé</label>
+            <textarea
+              id="item-description"
+              name="description"
+              rows="4"
+              placeholder="Ex: Lot de vêtements pour enfants, matelas orthopédique..."
+              [(ngModel)]="newItem.description"
+              [class.invalid]="publishSubmitted() && !newItem.description.trim()"
+              required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="item-category">Catégorie</label>
+              <select
+                id="item-category"
+                name="category"
+                [(ngModel)]="newItem.category"
+                [class.invalid]="publishSubmitted() && !newItem.category"
+                required>
+                <option value="">Choisir une catégorie</option>
+                @for (cat of categories; track cat) {
+                  <option [value]="cat">{{ cat }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="item-location">Localisation</label>
+              <select
+                id="item-location"
+                name="location"
+                [(ngModel)]="newItem.location"
+                [class.invalid]="publishSubmitted() && !newItem.location"
+                required>
+                <option value="">Choisir une ville</option>
+                @for (loc of locations; track loc) {
+                  <option [value]="loc">{{ loc }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="item-quantity">Quantité</label>
+              <input
+                id="item-quantity"
+                name="quantity"
+                type="number"
+                min="1"
+                step="1"
+                [(ngModel)]="newItem.quantity"
+                [class.invalid]="publishSubmitted() && (!newItem.quantity || newItem.quantity < 1)"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="item-delivery">Remise</label>
+              <select id="item-delivery" name="deliveryMethod" [(ngModel)]="newItem.deliveryMethod">
+                @for (method of deliveryMethods; track method.value) {
+                  <option [value]="method.value">{{ method.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" (click)="closePublishModal()" [disabled]="isPublishing()">Annuler</button>
+            <button type="submit" class="btn-submit" [disabled]="isPublishing()">
+              @if (isPublishing()) {
+                Publication...
+              } @else {
+                Publier l'objet
+              }
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  }
+
+  <!-- ==================== SITE FOOTER ==================== -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="container">
+        <div class="footer-grid">
+          <!-- Brand & Story -->
+          <div class="footer-col brand-col">
+            <img src="assets/logo.png" alt="Sanad Logo" class="footer-logo" />
+            <p class="brand-desc">
+              Sanad est le premier réseau de solidarité intelligente en Tunisie. Nous connectons les citoyens et les associations pour transformer chaque geste en impact durable.
+            </p>
+            <div class="social-links">
+              <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="footer-col">
+            <h4 class="footer-title">Navigation</h4>
+            <ul class="footer-links">
+              <li><a routerLink="/explorer">Explorer les demandes</a></li>
+              <li><a routerLink="/associations">Réseau des associations</a></li>
+              <li><a routerLink="/auth/register">Devenir partenaire</a></li>
+              <li><a href="#">Faire un don libre</a></li>
+            </ul>
+          </div>
+
+          <!-- Resources -->
+          <div class="footer-col">
+            <h4 class="footer-title">Ressources</h4>
+            <ul class="footer-links">
+              <li><a href="#">Comment ça marche ?</a></li>
+              <li><a href="#">Guide des donateurs</a></li>
+              <li><a href="#">Centre d'aide</a></li>
+              <li><a href="#">Blog & Actualités</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact & Newsletter -->
+          <div class="footer-col newsletter-col">
+            <h4 class="footer-title">Restons connectés</h4>
+            <p class="newsletter-text">Recevez les dernières mises à jour sur l'impact de notre communauté.</p>
+            <div class="newsletter-form">
+              <input type="email" placeholder="Votre email..." />
+              <button class="btn-send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            <div class="contact-mini">
+              <span><i class="fas fa-envelope"></i> contact@sanad.tn</span>
+              <span><i class="fas fa-phone-alt"></i> +216 71 000 000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="bottom-flex">
+          <p class="copyright">&copy; 2024 Sanad Tunisie. Tous droits réservés.</p>
+          <ul class="legal-links">
+            <li><a href="#">Mentions Légales</a></li>
+            <li><a href="#">Politique de Confidentialité</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

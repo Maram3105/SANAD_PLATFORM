@@ -1,0 +1,276 @@
+<app-navbar></app-navbar>
+
+<!-- ==================== HERO SECTION ==================== -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-text">
+      <span class="hero-badge">Solidarité Sanad</span>
+      <h1 class="hero-title">Ensemble, nous pouvons faire la différence</h1>
+      <p class="hero-description">
+        Sanad connecte ceux qui ont besoin d'aide avec une communauté engagée. 
+        Découvrez des demandes, soutenez des causes qui vous touchent, et suivez l'impact en temps réel.
+      </p>
+      <div class="hero-ctas">
+        <a routerLink="/explorer" class="cta-primary">
+          <i class="fas fa-search"></i>
+          Explorer les demandes
+        </a>
+        <a routerLink="/auth/register" class="cta-secondary">
+          <i class="fas fa-user-plus"></i>
+          S'inscrire maintenant
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-decoration">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== KEY BENEFITS SECTION ==================== -->
+<section class="benefits">
+  <div class="container">
+    <h2 class="section-title">Pourquoi Sanad ?</h2>
+    <p class="section-subtitle">Une plateforme conçue pour la transparence et l'impact</p>
+    
+    <div class="benefits-grid">
+      <!-- Benefit 1 -->
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <i class="fas fa-hand-holding-heart"></i>
+        </div>
+        <h3>Publiez ou soutenez</h3>
+        <p>Créez une demande d'aide ou soutenez celles qui vous touchent avec quelques clics.</p>
+      </div>
+
+      <!-- Benefit 2 -->
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+        <h3>Transparence totale</h3>
+        <p>Suivez chaque don et son impact en temps réel. Aucune surprise.</p>
+      </div>
+
+      <!-- Benefit 3 -->
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3>Communauté engagée</h3>
+        <p>Rejoignez des milliers de personnes déterminées à faire la différence.</p>
+      </div>
+
+      <!-- Benefit 4 -->
+      <div class="benefit-card">
+        <div class="benefit-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Associations vérifiées</h3>
+        <p>Tous nos partenaires sont validés pour garantir confiance et sécurité.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== IMPACT / STATISTICS ==================== -->
+<section class="impact">
+  <div class="container">
+    <h2 class="section-title">Notre impact</h2>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">{{ globalStats.total_donations }}+</div>
+        <div class="stat-label">Dons réalisés</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ globalStats.persons_helped }}+</div>
+        <div class="stat-label">Personnes aidées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ globalStats.active_associations }}+</div>
+        <div class="stat-label">Associations actives</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">Transparent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== HOW IT WORKS ==================== -->
+<section class="how-it-works">
+  <div class="container">
+    <h2 class="section-title">Comment ça marche</h2>
+    <p class="section-subtitle">Trois étapes simples pour faire la différence</p>
+    
+    <div class="steps-container">
+      <!-- Step 1 -->
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-icon">
+          <i class="fas fa-compass"></i>
+        </div>
+        <h3>Explorez</h3>
+        <p>Parcourez les demandes d'aide en fonction de vos intérêts et causes.</p>
+      </div>
+
+      <!-- Arrow -->
+      <div class="step-arrow">
+        <i class="fas fa-arrow-right"></i>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <h3>Aidez</h3>
+        <p>Contribuez en tant que donateur ou publiez votre propre demande.</p>
+      </div>
+
+      <!-- Arrow -->
+      <div class="step-arrow">
+        <i class="fas fa-arrow-right"></i>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3>Suivez l'impact</h3>
+        <p>Observez l'impact de votre contribution en temps réel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== TRUST & SECURITY ==================== -->
+<section class="trust">
+  <div class="container">
+    <h2 class="section-title">Sécurité et confiance</h2>
+    
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="trust-icon">
+          <i class="fas fa-lock"></i>
+        </div>
+        <h3>Données sécurisées</h3>
+        <p>Vos informations personnelles sont protégées par des normes de sécurité strictes.</p>
+      </div>
+
+      <div class="trust-item">
+        <div class="trust-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>Associations vérifiées</h3>
+        <p>Chaque partenaire est validé avant d'accéder à la plateforme.</p>
+      </div>
+
+      <div class="trust-item">
+        <div class="trust-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <h3>Transparence totale</h3>
+        <p>Consultez chaque étape et l'utilisation de chaque contribution.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FINAL CTA ==================== -->
+<section class="final-cta">
+  <div class="cta-content">
+    <h2>Rejoignez la communauté Sanad</h2>
+    <p>Commencez à faire la différence aujourd'hui. C'est gratuit et sans engagement.</p>
+    <div class="final-buttons">
+      <a routerLink="/auth/register" class="btn-primary-large">
+        Créer un compte
+      </a>
+      <a routerLink="/explorer" class="btn-secondary-large">
+        Découvrir les demandes
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SITE FOOTER ==================== -->
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand & Story -->
+        <div class="footer-col brand-col">
+          <img src="assets/logo.png" alt="Sanad Logo" class="footer-logo" />
+          <p class="brand-desc">
+            Sanad est le premier réseau de solidarité intelligente en Tunisie. Nous connectons les citoyens et les associations pour transformer chaque geste en impact durable.
+          </p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-col">
+          <h4 class="footer-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a routerLink="/explorer">Explorer les demandes</a></li>
+            <li><a routerLink="/associations">Réseau des associations</a></li>
+            <li><a routerLink="/auth/register">Devenir partenaire</a></li>
+            <li><a href="#">Faire un don libre</a></li>
+          </ul>
+        </div>
+
+        <!-- Resources -->
+        <div class="footer-col">
+          <h4 class="footer-title">Ressources</h4>
+          <ul class="footer-links">
+            <li><a href="#">Comment ça marche ?</a></li>
+            <li><a href="#">Guide des donateurs</a></li>
+            <li><a href="#">Centre d'aide</a></li>
+            <li><a href="#">Blog & Actualités</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact & Newsletter -->
+        <div class="footer-col newsletter-col">
+          <h4 class="footer-title">Restons connectés</h4>
+          <p class="newsletter-text">Recevez les dernières mises à jour sur l'impact de notre communauté.</p>
+          <div class="newsletter-form">
+            <input type="email" placeholder="Votre email..." />
+            <button class="btn-send"><i class="fas fa-paper-plane"></i></button>
+          </div>
+          <div class="contact-mini">
+            <span><i class="fas fa-envelope"></i> contact@sanad.tn</span>
+            <span><i class="fas fa-phone-alt"></i> +216 71 000 000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="bottom-flex">
+        <p class="copyright">&copy; 2024 Sanad Tunisie. Tous droits réservés.</p>
+        <ul class="legal-links">
+          <li><a href="#">Mentions Légales</a></li>
+          <li><a href="#">Politique de Confidentialité</a></li>
+          <li><a href="#">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>

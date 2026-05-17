@@ -1,0 +1,50 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<main class="notifications">
+  <header class="header">
+    <div>
+      <h1>Notifications</h1>
+      <p>Restez informe en temps reel.</p>
+    </div>
+    <button
+      class="secondary"
+      type="button"
+      (click)="markAllRead()"
+      [disabled]="isUpdating || notifications.length === 0"
+    >
+      Tout marquer comme lu
+    </button>
+  </header>
+
+  <div class="notification-list" *ngIf="!loading && notifications.length > 0">
+    <article
+      class="notification-card"
+      *ngFor="let item of notifications"
+      [class.unread]="!item.isRead"
+    >
+      <div>
+        <h2>{{ item.title }}</h2>
+        <p>{{ item.detail }}</p>
+      </div>
+      <div class="meta">
+        <span class="date">{{ item.date | date: 'dd MMM yyyy' }}</span>
+        <button
+          class="mark-read"
+          type="button"
+          *ngIf="!item.isRead"
+          (click)="markRead(item)"
+        >
+          Marquer comme lu
+        </button>
+      </div>
+    </article>
+  </div>
+
+  <div class="empty" *ngIf="!loading && notifications.length === 0">
+    <p>Aucune notification recente.</p>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Chargement des notifications...</p>
+  </div>
+</main>

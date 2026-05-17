@@ -1,0 +1,156 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="admin-page">
+  <div class="admin-container">
+    <!-- Header Section -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">Gestion des utilisateurs</h1>
+        <p class="page-subtitle">Pilotez les comptes de la communauté, gérez les rôles et surveillez la fiabilité</p>
+      </div>
+      <a routerLink="/admin-dashboard" class="back-link">
+        <i class="fas fa-arrow-left"></i> Tableau de bord
+      </a>
+    </div>
+
+    <!-- Stats Summary (Optional but looks professional) -->
+    <div class="users-stats" *ngIf="!loading && !error">
+      <div class="mini-stat">
+        <span class="mini-stat__label">Total Utilisateurs</span>
+        <span class="mini-stat__value">{{ users.length }}</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-stat__label">En attente</span>
+        <span class="mini-stat__value mini-stat__value--orange">{{ pendingCount || 0 }}</span>
+      </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          class="search-input"
+          [(ngModel)]="searchQuery" 
+          (input)="onSearch()"
+          placeholder="Rechercher un nom, email ou ID..."
+        >
+      </div>
+      
+      <div class="filters-group">
+        <div class="filter-item">
+          <label class="filter-label">Rôle</label>
+          <select class="filter-select" [(ngModel)]="roleFilter" (change)="onFilterChange()">
+            <option value="">Tous les rôles</option>
+            <option value="user">Particuliers (User)</option>
+            <option value="association">Associations</option>
+            <option value="admin">Administrateurs</option>
+          </select>
+        </div>
+
+        <button class="btn-refresh" (click)="loadUsers()" [class.is-loading]="loading">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div *ngIf="error && !loading" class="alert alert--error">
+      <div class="alert-content">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ error }}</span>
+        <button class="btn-retry" (click)="loadUsers()">Réessayer</button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Synchronisation des données...</p>
+    </div>
+
+    <!-- Table Layout -->
+    <div class="table-wrapper" *ngIf="!loading && users.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Utilisateur</th>
+            <th>Contact & Info</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="user-meta">
+                  <span class="user-name">{{ user.name }}</span>
+                  <span class="user-date">Inscrit le {{ user.created_at | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="contact-info">
+                <div class="info-row">
+                  <i class="far fa-envelope"></i>
+                  <span>{{ user.email }}</span>
+                </div>
+                <div class="info-row">
+                  <i class="fas fa-phone-alt"></i>
+                  <span [class.text-muted]="!user.phone">{{ user.phone || 'Non renseigné' }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="role-badge" [class]="'role-badge--' + user.role">
+                {{ user.role === 'user' ? 'Particulier' : (user.role === 'association' ? 'Association' : 'Admin') }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [class]="'status-badge--' + user.status">
+                {{ getStatusLabel(user.status) }}
+              </span>
+            </td>
+
+            <td>
+              <div class="action-buttons justify-end">
+                <!-- Action: View Profile -->
+                <button class="icon-btn icon-btn--blue" (click)="viewProfile(user)" title="Voir le profil">
+                  <i class="fas fa-eye"></i>
+                </button>
+
+                <!-- Action: Block/Unblock -->
+                <button *ngIf="user.status === 'active'" class="icon-btn icon-btn--orange" (click)="blockUser(user)" title="Bloquer">
+                  <i class="fas fa-lock"></i>
+                </button>
+                <button *ngIf="user.status === 'blocked'" class="icon-btn icon-btn--green" (click)="unblockUser(user)" title="Débloquer">
+                  <i class="fas fa-unlock"></i>
+                </button>
+
+                <!-- Action: Close Account -->
+                <button *ngIf="user.status !== 'closed'" class="icon-btn icon-btn--red" (click)="closeAccount(user)" title="Clôturer le compte">
+                  <i class="fas fa-user-slash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && users.length === 0 && !error">
+      <div class="empty-state__visual">
+        <i class="fas fa-user-friends"></i>
+      </div>
+      <h3>Aucun utilisateur trouvé</h3>
+      <p>Modifiez vos critères de recherche ou filtres pour voir plus de résultats.</p>
+    </div>
+  </div>
+</div>

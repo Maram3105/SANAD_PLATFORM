@@ -1,0 +1,85 @@
+<app-association-navbar></app-association-navbar>
+
+<section class="profile-shell">
+  <header class="profile-header">
+    <div>
+      <p class="kicker">Profil association</p>
+      <h1>Votre identite officielle</h1>
+      <p>Gardez un profil clair et verifie pour instaurer la confiance.</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+  <div class="state">Chargement du profil...</div>
+  } @else {
+  @if (error()) {
+  <div class="state state--error">{{ error() }}</div>
+  }
+
+  <div class="profile-grid">
+    <div class="profile-preview">
+      <div class="cover"
+        [style.background-image]="coverPreviewUrl() ? 'url(' + coverPreviewUrl() + ')' : 'linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(34, 197, 94, 0.25))'">
+        <span class="status-badge" [class.pending]="profile()?.status !== 'approved'">
+          {{ statusLabel(profile()?.status) }}
+        </span>
+      </div>
+      <div class="logo"
+        [style.background-image]="logoPreviewUrl() ? 'url(' + logoPreviewUrl() + ')' : 'linear-gradient(135deg, #0ea5e9, #22c55e)'">
+        @if (!logoPreviewUrl()) {
+        <span>{{ (profile()?.organization_name || 'A').charAt(0) }}</span>
+        }
+      </div>
+      <div class="preview-content">
+        <h2>{{ profile()?.organization_name }}</h2>
+        <p>{{ profile()?.description }}</p>
+        <div class="meta">
+          <span>{{ profile()?.location }}</span>
+          <span class="verified" [class.active]="profile()?.verified">
+            {{ profile()?.verified ? 'Verifiee' : 'Non verifiee' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="form" class="profile-form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="organization_name">Nom officiel</label>
+        <input id="organization_name" type="text" formControlName="organization_name" />
+      </div>
+      <div class="field">
+        <label for="description">Description courte</label>
+        <textarea id="description" rows="3" formControlName="description"></textarea>
+      </div>
+      <div class="field">
+        <label for="full_description">Description detaillee</label>
+        <textarea id="full_description" rows="5" formControlName="full_description"></textarea>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="location">Localisation</label>
+          <input id="location" type="text" formControlName="location" />
+        </div>
+        <div class="field">
+          <label for="website">Site web</label>
+          <input id="website" type="text" formControlName="website" placeholder="https://" />
+        </div>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="logo">Logo</label>
+          <input id="logo" type="file" (change)="onLogoSelected($event)" />
+        </div>
+        <div class="field">
+          <label for="cover">Image de couverture</label>
+          <input id="cover" type="file" (change)="onCoverSelected($event)" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" [disabled]="saving()">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+  }
+</section>

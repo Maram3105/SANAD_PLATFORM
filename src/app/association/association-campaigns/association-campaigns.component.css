@@ -1,0 +1,463 @@
+.page-wrapper {
+  min-height: 100vh;
+  padding-bottom: 76px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(59, 130, 246, 0.13), transparent 34%),
+    linear-gradient(180deg, #f8fbff 0%, #f8fafc 48%, #ffffff 100%);
+}
+
+.campaigns-shell {
+  width: min(1160px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 48px 0;
+}
+
+.campaigns-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 28px;
+  padding: 30px;
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+  background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+  box-shadow: 0 18px 36px rgba(30, 64, 175, 0.08);
+}
+
+.kicker {
+  margin: 0 0 8px;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.campaigns-header h1 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-family: var(--font-heading);
+  font-size: 38px;
+  line-height: 1.1;
+}
+
+.header-subtitle {
+  max-width: 680px;
+  margin: 0;
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.btn-primary,
+.btn-outline,
+.action-btn,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 8px;
+  font-weight: 800;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-primary {
+  min-height: 46px;
+  padding: 12px 18px;
+  color: #fff;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.26);
+}
+
+.btn-primary:hover,
+.btn-outline:hover,
+.action-btn:hover,
+.icon-btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 20px 34px rgba(37, 99, 235, 0.32);
+}
+
+.campaign-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.summary-card {
+  padding: 18px 20px;
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+  background: #fff;
+  box-shadow: 0 14px 28px rgba(30, 64, 175, 0.06);
+  display: grid;
+  gap: 8px;
+}
+
+.summary-label {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.summary-card strong {
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.campaign-list {
+  display: grid;
+  gap: 20px;
+}
+
+.campaign-card {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+  background: #fff;
+  box-shadow: 0 18px 36px rgba(30, 64, 175, 0.08);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.campaign-card:hover {
+  transform: translateY(-3px);
+  border-color: #93c5fd;
+  box-shadow: 0 24px 44px rgba(30, 64, 175, 0.13);
+}
+
+.campaign-media {
+  min-height: 260px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.campaign-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.media-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  color: #60a5fa;
+  background: linear-gradient(135deg, #eff6ff, #e0ecff);
+  font-size: 40px;
+}
+
+.status-badge {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: #fff;
+  background: #1d4ed8;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.status-badge[data-status="paused"] {
+  background: #60a5fa;
+}
+
+.status-badge[data-status="completed"] {
+  background: #1e3a8a;
+}
+
+.status-badge[data-status="cancelled"] {
+  background: #64748b;
+}
+
+.campaign-content {
+  min-width: 0;
+  padding: 28px 32px;
+  display: grid;
+  gap: 22px;
+}
+
+.card-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.title-group h2 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.category-tag {
+  width: fit-content;
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.card-options {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #dbeafe;
+  color: #1d4ed8;
+  background: #f8fbff;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.icon-btn.danger {
+  color: #475569;
+}
+
+.icon-btn.danger:hover {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.campaign-desc {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.progress-section {
+  display: grid;
+  gap: 10px;
+}
+
+.progress-labels,
+.progress-amounts {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.progress-labels span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.progress-labels span:nth-child(2) {
+  text-align: center;
+}
+
+.percent {
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.progress-bar-container {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8f1ff;
+}
+
+.progress-fill {
+  height: 100%;
+  max-width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+  transition: width 0.45s ease;
+}
+
+.progress-amounts {
+  grid-template-columns: 1fr 1fr;
+}
+
+.progress-amounts span {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.progress-amounts span:last-child {
+  text-align: right;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.action-btn {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid #dbeafe;
+  color: #1d4ed8;
+  background: #fff;
+  font-size: 13px;
+}
+
+.action-btn:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.action-btn.secondary {
+  color: #0f172a;
+  background: #eff6ff;
+}
+
+.action-btn.secondary:hover {
+  color: #1d4ed8;
+}
+
+.state-container {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  padding: 52px 32px;
+  color: #64748b;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+  background: #fff;
+  box-shadow: 0 18px 36px rgba(30, 64, 175, 0.07);
+}
+
+.state-container i {
+  color: #2563eb;
+  font-size: 34px;
+}
+
+.state-container p {
+  margin: 0;
+}
+
+.state--error i {
+  color: #ef4444;
+}
+
+.empty-state h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+}
+
+.empty-state .btn-outline {
+  margin-top: 8px;
+}
+
+.btn-outline {
+  min-height: 42px;
+  padding: 10px 16px;
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+}
+
+.btn-outline:hover {
+  background: #dbeafe;
+}
+
+@media (max-width: 980px) {
+  .campaigns-header,
+  .campaign-card {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-primary {
+    width: fit-content;
+  }
+
+  .campaign-media,
+  .media-placeholder {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 720px) {
+  .campaigns-shell {
+    width: min(100% - 32px, 1160px);
+    padding: 32px 0;
+  }
+
+  .campaigns-header {
+    padding: 24px;
+  }
+
+  .campaigns-header h1 {
+    font-size: 30px;
+  }
+
+  .btn-primary,
+  .campaign-summary {
+    width: 100%;
+  }
+
+  .campaign-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .campaign-content {
+    padding: 22px;
+  }
+
+  .card-top,
+  .progress-labels,
+  .progress-amounts {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-labels span:nth-child(2),
+  .progress-amounts span:last-child,
+  .percent {
+    text-align: left;
+  }
+
+  .card-options {
+    justify-content: flex-start;
+  }
+
+  .action-btn {
+    flex: 1;
+  }
+}

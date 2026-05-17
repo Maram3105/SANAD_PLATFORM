@@ -1,0 +1,309 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="admin-page fade-in">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Gestion des demandes</h1>
+      <p class="page-subtitle">
+        Supervisez, modérez et gérez l'ensemble des appels à l'aide sur la plateforme.
+      </p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/admin-dashboard" class="back-link">
+        <i class="fas fa-arrow-left"></i> Tableau de bord
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="stats-overview" *ngIf="!loading">
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--total">
+        <i class="fas fa-clipboard-list"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ total }}</span>
+        <span class="stat-label">Total Demandes</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--pending">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ pendingCount }}</span>
+        <span class="stat-label">En Attente</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon stat-icon--active">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ activeCount }}</span>
+        <span class="stat-label">Actives</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Search Bar -->
+  <div class="filters-bar">
+    <div class="search-wrapper">
+      <span class="search-icon"><i class="fas fa-search"></i></span>
+      <input
+        id="req-search"
+        class="search-input"
+        type="text"
+        placeholder="Rechercher une demande, une association..."
+        [(ngModel)]="searchQuery"
+        (input)="onSearch()"
+      />
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-select-wrapper">
+        <select id="req-status-filter" class="filter-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
+          <option value="">Tous les statuts</option>
+          <option value="paused">En attente</option>
+          <option value="active">Actives</option>
+          <option value="cancelled">Suspendues</option>
+          <option value="completed">Clôturées</option>
+        </select>
+      </div>
+
+      <div class="filter-select-wrapper">
+        <select id="req-urgency-filter" class="filter-select" [(ngModel)]="urgencyFilter" (change)="onFilterChange()">
+          <option value="">Toutes urgences</option>
+          <option value="high">Haute</option>
+          <option value="medium">Moyenne</option>
+          <option value="low">Faible</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="results-count" *ngIf="!loading">
+      {{ requests.length }} résultat(s)
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert--success"><i class="fas fa-check-circle"></i> {{ successMessage }}</div>
+  <div *ngIf="error && !loading" class="alert alert--error"><i class="fas fa-exclamation-triangle"></i> {{ error }}</div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Synchronisation des données...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && requests.length === 0" class="empty-state">
+    <div class="empty-state__icon"><i class="fas fa-search-minus"></i></div>
+    <h3>Aucun résultat trouvé</h3>
+    <p>Ajustez vos filtres pour explorer d'autres demandes.</p>
+  </div>
+
+  <!-- Main Table -->
+  <div *ngIf="!loading && requests.length > 0" class="table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th style="width: 30%">Demande</th>
+          <th>Association</th>
+          <th>Urgence</th>
+          <th>Progression</th>
+          <th>Statut</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let req of requests; trackBy: trackById" [class.row--processing]="processingId === req.id">
+          <td>
+            <div class="request-info">
+              <span class="request-title" [title]="req.title">{{ req.title }}</span>
+              <span class="category-badge">{{ req.category_name || 'Général' }}</span>
+              <div class="location-info">
+                <i class="fas fa-map-marker-alt"></i> {{ req.location }}
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="assoc-info">
+              <div class="assoc-img">{{ req.organization_name.charAt(0).toUpperCase() }}</div>
+              <span class="assoc-name">{{ req.organization_name }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="urgency-badge" [class]="'urgency-badge--' + req.urgency">
+              <i class="fas fa-circle" style="font-size: 8px;"></i>
+              {{ getUrgencyLabel(req.urgency) }}
+            </span>
+          </td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-track">
+                <div class="progress-fill" [style.width.%]="getProgress(req)"></div>
+              </div>
+              <span class="progress-text">{{ getProgress(req) }}% complété</span>
+            </div>
+          </td>
+          <td>
+            <div class="status-select-card">
+              <select 
+                class="status-dropdown" 
+                [ngModel]="req.status" 
+                (ngModelChange)="changeStatus(req, $event)"
+                [disabled]="req.status === 'completed' || processingId === req.id"
+                [class]="'status-dropdown--' + req.status"
+              >
+                <option value="paused">En attente</option>
+                <option value="active">Active</option>
+                <option value="cancelled">Suspendue</option>
+                <option value="completed">Terminée</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="action-buttons justify-end">
+              <!-- View Detail -->
+              <button class="action-btn action-btn--detail" (click)="viewRequest(req)" title="Détails">
+                <i class="fas fa-eye"></i>
+              </button>
+
+              <!-- Conditional Actions -->
+              <ng-container *ngIf="req.status === 'paused'">
+                <button class="action-btn admin-btn-primary" (click)="validateRequest(req)" title="Approuver">
+                  <i class="fas fa-check"></i>
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="req.status === 'active' || req.status === 'paused'">
+                <button class="action-btn action-btn--ghost" (click)="suspendRequest(req)" title="Suspendre">
+                  <i class="fas fa-pause"></i>
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="req.status === 'cancelled'">
+                <button class="action-btn admin-btn-primary" (click)="reactivateRequest(req)" title="Réactiver">
+                  <i class="fas fa-play"></i>
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="req.status !== 'completed'">
+                <button class="action-btn admin-btn-outline" (click)="closeRequest(req)" title="Clôturer">
+                  <i class="fas fa-archive"></i>
+                </button>
+              </ng-container>
+
+              <button class="action-btn admin-btn-danger-ghost" (click)="deleteRequest(req)" title="Supprimer">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Overhaul remains consistent with the new style via CSS -->
+<div *ngIf="selectedRequest" class="modal-overlay" (click)="closeModal()">
+  <div class="modal fade-in" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <h2 class="modal__title">Fiche Demande #{{ selectedRequest.id }}</h2>
+      <button class="modal__close" (click)="closeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal__body">
+      <div class="detail-grid">
+        <div class="detail-row">
+          <span class="detail-label">Titre</span>
+          <span class="detail-value">{{ selectedRequest.title }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Association</span>
+          <span class="detail-value">{{ selectedRequest.organization_name }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Localisation</span>
+          <span class="detail-value">{{ selectedRequest.location }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Catégorie</span>
+          <span class="detail-value">{{ selectedRequest.category_name || 'Non spécifiée' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Urgence</span>
+          <span class="urgency-badge" [class]="'urgency-badge--' + selectedRequest.urgency">
+            {{ getUrgencyLabel(selectedRequest.urgency) }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Statut</span>
+          <span class="status-badge" [class]="'status-badge--' + selectedRequest.status">
+            {{ getStatusLabel(selectedRequest.status) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-info">
+          <span>Collecté: <strong>{{ selectedRequest.collected_amount | number: '1.0-0' }} DT</strong></span>
+          <span>Objectif: <strong>{{ selectedRequest.target_amount | number: '1.0-0' }} DT</strong></span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" [style.width.%]="getProgress(selectedRequest)"></div>
+        </div>
+        <span class="progress-percentage">{{ getProgress(selectedRequest) }}% atteint</span>
+      </div>
+
+      <div class="detail-row detail-row--full">
+        <span class="detail-label">Description détaillée</span>
+        <p class="detail-description">{{ selectedRequest.description }}</p>
+      </div>
+      
+      <div class="detail-footer-meta">
+        <span class="detail-date"><i class="far fa-calendar-alt"></i> Publiée le {{ selectedRequest.created_at | date: 'dd MMMM yyyy' }}</span>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <div class="footer-actions">
+        <!-- PENDING -->
+        <ng-container *ngIf="selectedRequest.status === 'paused'">
+          <button class="action-btn admin-btn-primary" (click)="validateRequest(selectedRequest); closeModal()">
+            <i class="fas fa-check"></i> Approuver la demande
+          </button>
+        </ng-container>
+
+        <!-- ACTIVE / PENDING -->
+        <ng-container *ngIf="selectedRequest.status === 'active' || selectedRequest.status === 'paused'">
+          <button class="action-btn admin-btn-outline" (click)="suspendRequest(selectedRequest); closeModal()">
+            <i class="fas fa-pause"></i> Suspendre
+          </button>
+        </ng-container>
+
+        <!-- SUSPENDED -->
+        <ng-container *ngIf="selectedRequest.status === 'cancelled'">
+          <button class="action-btn admin-btn-primary" (click)="reactivateRequest(selectedRequest); closeModal()">
+            <i class="fas fa-play"></i> Réactiver
+          </button>
+        </ng-container>
+
+        <!-- NOT COMPLETED -->
+        <ng-container *ngIf="selectedRequest.status !== 'completed'">
+          <button class="action-btn admin-btn-danger" (click)="closeRequest(selectedRequest); closeModal()">
+            <i class="fas fa-archive"></i> Clôturer définitivement
+          </button>
+        </ng-container>
+
+        <!-- CLOSED notice -->
+        <div *ngIf="selectedRequest.status === 'completed'" class="closed-notice">
+          <i class="fas fa-check-double"></i> Dossier finalisé et clôturé.
+        </div>
+      </div>
+
+      <div class="footer-separator"></div>
+      <button class="modal-close-btn" (click)="closeModal()">Fermer la fiche</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<main class="activity">
+  <header class="header">
+    <div>
+      <h1>Historique d'activite</h1>
+      <p>Vos actions recentes sur la plateforme.</p>
+    </div>
+  </header>
+
+  <div class="activity-list" *ngIf="!loading && activities.length > 0">
+    <article class="activity-card" *ngFor="let item of activities">
+      <span class="tag" [class]="item.type">{{ item.type }}</span>
+      <div>
+        <h2>{{ item.title }}</h2>
+        <p>{{ item.meta }}</p>
+      </div>
+      <span class="date">{{ item.date | date: 'dd MMM yyyy' }}</span>
+    </article>
+  </div>
+
+  <div class="empty" *ngIf="!loading && activities.length === 0">
+    <p>Aucune activite pour le moment.</p>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Chargement de l'historique...</p>
+  </div>
+</main>

@@ -1,0 +1,42 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<main class="saved">
+  <header class="header">
+    <div>
+      <h1>Demandes sauvegardees</h1>
+      <p>Retrouvez rapidement les demandes que vous suivez.</p>
+    </div>
+    <a class="primary" routerLink="/explorer">Explorer</a>
+  </header>
+
+  <div class="saved-grid" *ngIf="!loading && favorites.length > 0">
+    <article class="saved-card" *ngFor="let item of favorites">
+      <div class="saved-header">
+        <h2>{{ item.title }}</h2>
+        <span>{{ item.location }}</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar">
+          <span [style.width.%]="getProgress(item)"></span>
+        </div>
+        <div class="progress-meta">
+          <span>{{ getProgress(item) }}% atteint</span>
+          <span>{{ item.donors_count }} donateurs</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="ghost" (click)="removeFavorite(item.request_id)">Retirer</button>
+        <a class="link" [routerLink]="['/request-detail', item.request_id]">Voir</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="empty" *ngIf="!loading && favorites.length === 0">
+    <p>Aucune demande sauvegardee.</p>
+    <a class="primary" routerLink="/explorer">Explorer les demandes</a>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Chargement des demandes sauvegardees...</p>
+  </div>
+</main>

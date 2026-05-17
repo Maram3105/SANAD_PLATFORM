@@ -1,0 +1,38 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<main class="donate">
+  <section class="hero">
+    <h1>{{ isPlatformDonation() ? 'Faire un don libre' : 'Faire un don' }}</h1>
+    <p>{{ isPlatformDonation() ? 'Votre contribution aidera les cas les plus urgents identifiés par Sanad.' : 'Chaque contribution finance des actions concrètes et transparentes.' }}</p>
+  </section>
+
+  <section class="donate-card">
+    <div>
+      <h2>Choisir un montant</h2>
+      <p>Votre don sera dirige vers les demandes prioritaires.</p>
+    </div>
+    <div class="donation-types">
+      <div class="type-card">
+        <h3>Don pour une demande</h3>
+        <p>Soutenir un projet precis.</p>
+      </div>
+      <div class="type-card">
+        <h3>Don pour une association</h3>
+        <p>Accompagner une organisation.</p>
+      </div>
+      <div class="type-card">
+        <h3>Don libre</h3>
+        <p>Contribution generale a la plateforme.</p>
+      </div>
+    </div>
+    <div class="amount-grid">
+      <button type="button">50 DT</button>
+      <button type="button">100 DT</button>
+      <button type="button">250 DT</button>
+      <button type="button">500 DT</button>
+    </div>
+    <label>Montant libre</label>
+    <input type="number" [(ngModel)]="amount" />
+    <button class="primary" type="button">Confirmer le don</button>
+  </section>
+</main>

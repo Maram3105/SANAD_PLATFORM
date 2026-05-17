@@ -1,0 +1,170 @@
+<app-association-navbar></app-association-navbar>
+
+<div class="dashboard-wrapper">
+  <main class="dashboard-shell">
+    <!-- Header / Personalized Welcome -->
+    <header class="dashboard-hero" [style.background-image]="coverUrl() ? 'linear-gradient(90deg, rgba(15, 23, 42, 0.78) 0%, rgba(30, 64, 175, 0.62) 52%, rgba(37, 99, 235, 0.46) 100%), url(' + coverUrl() + ')' : null">
+      <div class="hero-main">
+        <div class="hero-badge">
+          <i class="fas fa-home"></i>
+          <span>Aperçu général</span>
+        </div>
+        <div class="welcome-text">
+          <h1 [class.text-white]="coverUrl()">Bienvenue, <span class="org-highlight">{{ orgName() }}</span></h1>
+          <p class="hero-subtitle" [class.text-white]="coverUrl()">
+            Voici un résumé de l'activité de votre association et de l'impact de vos campagnes.
+          </p>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn-outline-premium" routerLink="/association/campaigns">
+          <i class="fas fa-layer-group"></i>
+          <span>Gérer mes campagnes</span>
+        </a>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="loading-overlay">
+        <div class="loader"></div>
+        <p>Synchronisation de vos données...</p>
+      </div>
+    } @else {
+      @if (error()) {
+        <div class="error-banner">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <!-- Performance Metrics -->
+      <section class="metrics-grid">
+        <div class="metric-card metric-card--primary">
+          <div class="metric-header">
+            <div class="metric-icon"><i class="fas fa-wallet"></i></div>
+            <p class="metric-label">Total récolté</p>
+          </div>
+          <div class="metric-body">
+            <h2 class="metric-value">{{ formattedTotal() | number : '1.0-0' }} <span class="currency">DT</span></h2>
+            <div class="metric-footer">
+              <span class="trend positive"><i class="fas fa-check-circle"></i> Données à jour</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <div class="metric-icon"><i class="fas fa-bullseye"></i></div>
+            <p class="metric-label">Campagnes</p>
+          </div>
+          <div class="metric-body">
+            <h2 class="metric-value">{{ stats()?.campaign_count ?? 0 }}</h2>
+            <div class="metric-footer">
+              <span class="sub-label">Total des publications</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <div class="metric-icon"><i class="fas fa-heart"></i></div>
+            <p class="metric-label">Donateurs</p>
+          </div>
+          <div class="metric-body">
+            <h2 class="metric-value">{{ stats()?.donors_count ?? 0 }}</h2>
+            <div class="metric-footer">
+              <span class="sub-label">Contributeurs uniques</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-card--active">
+          <div class="metric-header">
+            <div class="metric-icon"><i class="fas fa-bolt"></i></div>
+            <p class="metric-label">En cours</p>
+          </div>
+          <div class="metric-body">
+            <h2 class="metric-value">{{ stats()?.active_campaigns ?? 0 }}</h2>
+            <div class="metric-footer">
+              <span class="sub-label">Actions actives</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Content Grid -->
+      <div class="content-grid">
+        <!-- Feed: Recent Donations -->
+        <section class="feed-panel">
+          <header class="feed-header">
+            <div class="feed-title">
+              <h3><i class="fas fa-receipt"></i> Flux des dons</h3>
+              <p>Dernières contributions reçues</p>
+            </div>
+            <a routerLink="/association/donations" class="link-more">Tout voir <i class="fas fa-chevron-right"></i></a>
+          </header>
+
+          <div class="feed-body">
+            @if (recentDonations().length === 0) {
+              <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-ghost"></i></div>
+                <p>Aucune contribution récente à afficher.</p>
+              </div>
+            } @else {
+              <div class="donation-rows">
+                @for (donation of recentDonations(); track donation.id) {
+                  <div class="donation-row">
+                    <div class="user-block">
+                      <div class="user-avatar">{{ donationLabel(donation).charAt(0) }}</div>
+                      <div class="user-info">
+                        <p class="user-name">{{ donationLabel(donation) }}</p>
+                        <p class="target-ref">{{ donation.request_title || 'Don direct à l\'association' }}</p>
+                      </div>
+                    </div>
+                    <div class="amount-block">
+                      <p class="amount-val">+{{ donation.amount | number : '1.2-2' }} DT</p>
+                      <p class="time-ref">{{ donation.created_at | date : 'shortDate' }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Feed: Updates & Actions -->
+        <section class="feed-panel">
+          <header class="feed-header">
+            <div class="feed-title">
+              <h3><i class="fas fa-stream"></i> Activité récente</h3>
+              <p>Mises à jour et publications</p>
+            </div>
+            <a routerLink="/association/campaigns" class="link-more">Gérer <i class="fas fa-chevron-right"></i></a>
+          </header>
+
+          <div class="feed-body">
+            @if (recentUpdates().length === 0) {
+              <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-edit"></i></div>
+                <p>Commencez par publier une mise à jour sur vos campagnes.</p>
+              </div>
+            } @else {
+              <div class="update-rows">
+                @for (update of recentUpdates(); track update.id) {
+                  <div class="update-row">
+                    <div class="update-marker"><i class="fas fa-bell"></i></div>
+                    <div class="update-info">
+                      <p class="update-text">{{ update.title }}</p>
+                      <p class="target-ref">{{ update.request_title || 'Campagne associée' }}</p>
+                    </div>
+                    <p class="time-ref">{{ update.created_at | date : 'dd MMM' }}</p>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    }
+  </main>
+</div>

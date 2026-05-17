@@ -1,0 +1,107 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Surveillance des dons</h1>
+      <p class="page-subtitle">Analysez les transactions et détectez les activités frauduleuses</p>
+    </div>
+    <a routerLink="/admin-dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Tableau de bord</a>
+  </div>
+
+  <!-- Summary Cards -->
+  <div *ngIf="!loading" class="summary-row">
+    <div class="summary-card">
+      <span class="summary-label"><i class="fas fa-hand-holding-usd"></i> Total collecté</span>
+      <span class="summary-value">{{ totalAmount | number: '1.0-0' }} DT</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-label"><i class="fas fa-check-circle"></i> Dons complétés</span>
+      <span class="summary-value">{{ completedCount }}</span>
+    </div>
+    <div class="summary-card">
+      <span class="summary-label"><i class="fas fa-chart-line"></i> Total affiché</span>
+      <span class="summary-value">{{ donations.length }}</span>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label class="filter-label" for="don-status-filter">Statut</label>
+      <select id="don-status-filter" class="filter-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
+        <option value="">Tous</option>
+        <option value="completed">Complétés</option>
+        <option value="pending">En attente</option>
+        <option value="failed">Échoués</option>
+        <option value="refunded">Remboursés</option>
+      </select>
+    </div>
+    <div class="results-count" *ngIf="!loading">{{ donations.length }} transaction(s)</div>
+  </div>
+
+  <div *ngIf="error && !loading" class="alert alert--error"><i class="fas fa-exclamation-triangle"></i> {{ error }}</div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des transactions...</p>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && donations.length === 0" class="empty-state">
+    <div class="empty-state__icon"><i class="fas fa-hand-holding-usd"></i></div>
+    <h3>Aucune transaction trouvée</h3>
+    <p>Modifiez le filtre pour afficher d'autres résultats.</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading && donations.length > 0" class="table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Donateur</th>
+          <th>Montant</th>
+          <th>Association</th>
+          <th>Demande liée</th>
+          <th>Méthode</th>
+          <th>Date</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let donation of donations; trackBy: trackById">
+          <td class="cell-id">#{{ donation.id }}</td>
+          <td>
+            <div class="donor-cell">
+              <span class="donor-name">
+                <i *ngIf="donation.anonymous" class="fas fa-lock"></i>
+                {{ donation.anonymous ? 'Anonyme' : (donation.donor_name || donation.donor_email || 'Inconnu') }}
+              </span>
+              <span *ngIf="!donation.anonymous && donation.donor_email" class="donor-email">{{ donation.donor_email }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="amount-value">{{ donation.amount | number: '1.0-0' }}</span>
+            <span class="amount-currency"> {{ donation.currency }}</span>
+          </td>
+          <td class="cell-secondary">{{ donation.organization_name }}</td>
+          <td>
+            <span *ngIf="donation.request_title" class="request-ref" [title]="donation.request_title">
+              {{ donation.request_title | slice: 0:30 }}{{ donation.request_title!.length > 30 ? '…' : '' }}
+            </span>
+            <span *ngIf="!donation.request_title" class="cell-empty">Don direct</span>
+          </td>
+          <td class="cell-secondary">{{ donation.payment_method || '—' }}</td>
+          <td class="cell-secondary">{{ donation.created_at | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            <span class="status-badge" [class]="'status-badge--' + donation.status">
+              {{ getStatusLabel(donation.status) }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

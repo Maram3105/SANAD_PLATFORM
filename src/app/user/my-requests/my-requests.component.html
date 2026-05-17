@@ -1,0 +1,48 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<main class="requests">
+  <header class="header">
+    <div>
+      <h1>Mes demandes</h1>
+      <p>Suivez l\'etat de vos demandes et gardez le controle.</p>
+    </div>
+    <a class="primary" routerLink="/requests/new">Publier une demande</a>
+  </header>
+
+  <div class="request-list" *ngIf="!loading && requests.length > 0">
+    <article class="request-card" *ngFor="let request of requests">
+      <div class="request-head">
+        <h2>{{ request.title }}</h2>
+        <span class="status" [class.complete]="request.status === 'completed'">
+          {{ request.status }}
+        </span>
+      </div>
+
+      <div class="progress">
+        <div class="progress-bar">
+          <span [style.width.%]="getProgress(request)"></span>
+        </div>
+        <div class="progress-meta">
+          <span>{{ getProgress(request) }}% atteint</span>
+          <span>{{ request.donors_count }} donateurs</span>
+          <span>{{ getAmountLabel(request) }}</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="ghost">Modifier</button>
+        <button type="button" class="ghost">Supprimer</button>
+        <a routerLink="/request-detail" class="link">Voir</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="empty" *ngIf="!loading && requests.length === 0">
+    <p>Aucune demande disponible.</p>
+    <a class="primary" routerLink="/requests/new">Publier une demande</a>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Chargement des demandes...</p>
+  </div>
+</main>

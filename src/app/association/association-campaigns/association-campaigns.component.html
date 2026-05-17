@@ -1,0 +1,123 @@
+<app-association-navbar></app-association-navbar>
+
+<div class="page-wrapper">
+  <section class="campaigns-shell">
+    <header class="campaigns-header">
+      <div class="header-main">
+        <p class="kicker">Pilotage des demandes</p>
+        <h1>Mes campagnes</h1>
+        <p class="header-subtitle">Suivez l'évolution de vos initiatives, mettez à jour vos campagnes et gardez une lecture claire de leur progression.</p>
+      </div>
+      <a class="btn-primary" routerLink="/association/campaigns/new">
+        <i class="fas fa-plus"></i>
+        <span>Créer une campagne</span>
+      </a>
+    </header>
+
+    @if (loading()) {
+      <div class="state-container">
+        <i class="fas fa-circle-notch fa-spin"></i>
+        <p>Synchronisation de vos campagnes...</p>
+      </div>
+    } @else {
+      @if (error()) {
+        <div class="state-container state--error">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>{{ error() }}</p>
+        </div>
+      }
+
+      @if (campaigns().length === 0) {
+        <div class="state-container empty-state">
+          <i class="fas fa-folder-open"></i>
+          <h3>Aucune campagne</h3>
+          <p>Vous n'avez pas encore publié de demande d'aide.</p>
+          <a class="btn-outline" routerLink="/association/campaigns/new">Commencer maintenant</a>
+        </div>
+      } @else {
+        <section class="campaign-summary">
+          <div class="summary-card">
+            <span class="summary-label">Total campagnes</span>
+            <strong>{{ campaigns().length }}</strong>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">Actives</span>
+            <strong>{{ activeCount() }}</strong>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">Montant collecté</span>
+            <strong>{{ collectedTotal() | number : '1.0-0' }} DT</strong>
+          </div>
+        </section>
+
+        <div class="campaign-list">
+          @for (campaign of campaigns(); track campaign.id) {
+            <article class="campaign-card">
+              <div class="campaign-media">
+                @if (imagePreview(campaign.image_url)) {
+                  <img
+                    [src]="imagePreview(campaign.image_url)"
+                    [alt]="campaign.title"
+                    (error)="$any($event.target).src = '/assets/images/placeholders/request-placeholder.svg'"
+                  />
+                } @else {
+                  <div class="media-placeholder">
+                    <i class="fas fa-image"></i>
+                  </div>
+                }
+                <span class="status-badge" [attr.data-status]="campaign.status">
+                  {{ statusLabel(campaign.status) }}
+                </span>
+              </div>
+
+              <div class="campaign-content">
+                <div class="card-top">
+                  <div class="title-group">
+                    <h2>{{ campaign.title }}</h2>
+                    <span class="category-tag">{{ campaign.category_name || 'Général' }}</span>
+                  </div>
+                  <div class="card-options">
+                    <a class="icon-btn" title="Modifier" aria-label="Modifier la campagne" [routerLink]="['/association/campaigns/edit', campaign.id]">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="icon-btn danger" title="Supprimer" aria-label="Supprimer la campagne" (click)="removeCampaign(campaign)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <p class="campaign-desc">{{ campaign.description }}</p>
+
+                <div class="progress-section">
+                  <div class="progress-labels">
+                    <span>Collecté</span>
+                    <span>Objectif</span>
+                    <span class="percent">{{ progressPercent(campaign) }}%</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-fill" [style.width.%]="progressPercent(campaign)"></div>
+                  </div>
+                  <div class="progress-amounts">
+                    <span>{{ campaign.collected_amount | number : '1.0-0' }} DT</span>
+                    <span>{{ campaign.target_amount | number : '1.0-0' }} DT</span>
+                  </div>
+                </div>
+
+                <div class="card-actions">
+                  <a class="action-btn" [routerLink]="['/association-detail', campaign.association_id]">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>Voir public</span>
+                  </a>
+                  <a class="action-btn secondary" [routerLink]="['/association/campaigns/edit', campaign.id]">
+                    <i class="fas fa-edit"></i>
+                    <span>Mettre à jour</span>
+                  </a>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    }
+  </section>
+</div>

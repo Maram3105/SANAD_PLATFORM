@@ -1,0 +1,26 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="gradOrg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0.1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#gradOrg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="200" cy="150" r="80" fill="#e0e7ff" opacity="0.5"/>
+  <circle cx="1000" cy="250" r="100" fill="#dcfce7" opacity="0.4"/>
+  <circle cx="600" cy="200" r="60" fill="#fef3c7" opacity="0.3"/>
+  
+  <!-- Hands/people silhouettes -->
+  <g opacity="0.3">
+    <ellipse cx="300" cy="280" rx="30" ry="60" fill="#475569"/>
+    <circle cx="300" cy="200" r="25" fill="#475569"/>
+    <ellipse cx="500" cy="300" rx="35" ry="70" fill="#475569"/>
+    <circle cx="500" cy="200" r="28" fill="#475569"/>
+    <ellipse cx="700" cy="290" rx="32" ry="65" fill="#475569"/>
+    <circle cx="700" cy="210" r="26" fill="#475569"/>
+    <ellipse cx="900" cy="310" rx="38" ry="75" fill="#475569"/>
+    <circle cx="900" cy="220" r="30" fill="#475569"/>
+  </g>
+</svg>

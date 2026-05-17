@@ -1,0 +1,140 @@
+<app-admin-navbar></app-admin-navbar>
+
+<div class="admin-page">
+  <div class="admin-page__header">
+    <div>
+      <h1 class="admin-page__title">Analyse & Statistiques</h1>
+      <p class="admin-page__subtitle">Rapports détaillés et tendances de la plateforme</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-refresh" (click)="loadData()" [disabled]="loading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> Actualiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !stats" class="loading-state">
+    <div class="spinner"></div>
+    <p>Génération de vos rapports...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-banner">
+    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+  </div>
+
+  <div *ngIf="stats && !loading" class="statistics-content">
+    
+    <!-- Summary Row -->
+    <div class="stats-summary-grid">
+      <div class="summary-card">
+        <div class="summary-card__header">
+          <span class="label">Total Collecté</span>
+          <i class="fas fa-wallet icon--blue"></i>
+        </div>
+        <div class="value">{{ formatAmount(stats.total_donations) }}</div>
+        <div class="trend positive">
+          <i class="fas fa-arrow-up"></i> +12% ce mois
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-card__header">
+          <span class="label">Donateurs Actifs</span>
+          <i class="fas fa-user-heart icon--purple"></i>
+        </div>
+        <div class="value">{{ stats.donations_count }}</div>
+        <div class="trend positive">
+          <i class="fas fa-arrow-up"></i> +8 nouveaux
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-card__header">
+          <span class="label">Demandes Traitées</span>
+          <i class="fas fa-check-double icon--green"></i>
+        </div>
+        <div class="value">{{ stats.closed_requests }}</div>
+        <div class="trend">Impact direct</div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-card__header">
+          <span class="label">Associations</span>
+          <i class="fas fa-building icon--orange"></i>
+        </div>
+        <div class="value">{{ stats.total_associations }}</div>
+        <div class="trend">Partenaires Sanad</div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+      <!-- Main Trend Chart -->
+      <div class="chart-card chart-card--span-2">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">Évolution des dons</h3>
+          <p class="chart-card__subtitle">Montants collectés sur les 6 derniers mois</p>
+        </div>
+        <div class="chart-canvas-wrapper">
+          <canvas #donationsChart></canvas>
+        </div>
+      </div>
+
+      <!-- Requests Status -->
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">Statut des demandes</h3>
+          <p class="chart-card__subtitle">Répartition par état actuel</p>
+        </div>
+        <div class="chart-canvas-wrapper">
+          <canvas #requestsChart></canvas>
+        </div>
+      </div>
+
+      <!-- Categories Distribution -->
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">Impact par catégorie</h3>
+          <p class="chart-card__subtitle">Volume de demandes par secteur</p>
+        </div>
+        <div class="chart-canvas-wrapper chart-canvas-wrapper--donut">
+          <canvas #categoryChart></canvas>
+        </div>
+      </div>
+
+      <!-- Regions Distribution -->
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">Répartition régionale</h3>
+          <p class="chart-card__subtitle">Top 5 des régions les plus actives</p>
+        </div>
+        <div class="chart-canvas-wrapper">
+          <canvas #regionChart></canvas>
+        </div>
+      </div>
+
+      <!-- Top Donors List -->
+      <div class="chart-card">
+        <div class="chart-card__header">
+          <h3 class="chart-card__title">Top Donateurs</h3>
+          <p class="chart-card__subtitle">Les plus grands contributeurs (non-anonymes)</p>
+        </div>
+        <div class="donors-list">
+          <div *ngFor="let donor of stats.top_donors; let i = index" class="donor-row">
+            <div class="donor-rank">{{ i + 1 }}</div>
+            <div class="donor-info">
+              <span class="donor-name">{{ donor.name }}</span>
+              <span class="donor-meta">{{ donor.donation_count }} dons effectués</span>
+            </div>
+            <div class="donor-amount">{{ formatAmount(donor.total_amount) }}</div>
+          </div>
+          <div *ngIf="!stats.top_donors?.length" class="empty-list">
+            Aucun donateur identifié pour le moment.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

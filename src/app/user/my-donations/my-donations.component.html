@@ -1,0 +1,47 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<main class="donations">
+  <header class="header">
+    <div>
+      <h1>Mes dons</h1>
+      <p>Historique detaille de vos contributions.</p>
+    </div>
+    <a class="primary" routerLink="/donate">Faire un don</a>
+  </header>
+
+  <section class="stats" *ngIf="stats">
+    <div class="stat-card">
+      <span>Total dons</span>
+      <strong>{{ stats.total_donations }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Montant total</span>
+      <strong>{{ stats.total_amount | number:'1.0-0' }} DT</strong>
+    </div>
+    <div class="stat-card">
+      <span>Demandes soutenues</span>
+      <strong>{{ stats.requests_supported }}</strong>
+    </div>
+  </section>
+
+  <div class="donation-list" *ngIf="!loading && donations.length > 0">
+    <article class="donation-card" *ngFor="let donation of donations">
+      <div>
+        <h2>{{ donation.target_name }}</h2>
+        <p class="meta">
+          {{ donation.donation_type }} • {{ donation.created_at | date: 'dd MMM yyyy' }}
+        </p>
+      </div>
+      <div class="amount">{{ donation.amount }} DT</div>
+    </article>
+  </div>
+
+  <div class="empty" *ngIf="!loading && donations.length === 0">
+    <p>Aucun don pour le moment.</p>
+    <a class="primary" routerLink="/donate">Faire un don</a>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    <p>Chargement des dons...</p>
+  </div>
+</main>

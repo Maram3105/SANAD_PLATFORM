@@ -1,0 +1,156 @@
+<app-association-navbar></app-association-navbar>
+
+<section class="explorer-header">
+  <div class="container">
+    <div class="header-content">
+      <div>
+        <h1>Explorer les demandes et campagnes</h1>
+        <p>Parcourez les initiatives disponibles et choisissez comment votre association peut collaborer ou construire une nouvelle campagne.</p>
+      </div>
+      <a class="header-cta" routerLink="/association/campaigns/new"><i class="fas fa-plus"></i> Créer une campagne</a>
+    </div>
+  </div>
+</section>
+
+<section class="sticky-filter-bar">
+  <div class="container">
+    <div class="filter-main-row">
+      <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          placeholder="Rechercher..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+        />
+      </div>
+
+      <div class="filter-actions">
+        <div class="compact-filters">
+          <select [ngModel]="selectedCategory()" (ngModelChange)="selectedCategory.set($event)">
+            <option value="">Catégorie</option>
+            @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+
+          <select [ngModel]="selectedLocation()" (ngModelChange)="selectedLocation.set($event)">
+            <option value="">Ville</option>
+            @for (loc of locations; track loc) {
+              <option [value]="loc">{{ loc }}</option>
+            }
+          </select>
+
+          <select [ngModel]="selectedUrgency()" (ngModelChange)="selectedUrgency.set($event)" class="mobile-hide">
+            <option value="">Urgence</option>
+            @for (urg of urgencies; track urg) {
+              <option [value]="urg">{{ urg }}</option>
+            }
+          </select>
+        </div>
+
+        <button class="btn-reset" (click)="clearFilters()" title="Réinitialiser">
+          <i class="fas fa-undo"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-sub-row">
+      <div class="results-count">{{ requests().length }} initiatives</div>
+      <div class="sort-wrapper">
+        <i class="fas fa-sort-amount-down"></i>
+        <select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+          <option value="recent">Récent</option>
+          <option value="most-funded">Financé</option>
+          <option value="most-urgent">Urgent</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="requests-section">
+  <div class="container">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Chargement des demandes...</p>
+      </div>
+    } @else if (requests().length > 0) {
+      <div class="requests-grid">
+        @for (request of requests(); track request.item_key || request.id) {
+          <div class="request-card">
+            <div class="request-image" (click)="openInitiative(request)">
+              @if (getImageUrl(request.image_url)) {
+                <img
+                  [src]="getImageUrl(request.image_url)"
+                  [alt]="request.title"
+                  (error)="$any($event.target).src = '/assets/images/placeholders/request-placeholder.svg'"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="media-placeholder">
+                  <i class="fas fa-image"></i>
+                </div>
+              }
+              <span
+                class="urgency-badge"
+                [class.urgency-high]="request.urgency === 'high'"
+                [class.urgency-medium]="request.urgency === 'medium'"
+                [class.urgency-low]="request.urgency === 'low'"
+              >
+                {{ getUrgencyLabel(request.urgency) }}
+              </span>
+            </div>
+
+            <div class="request-content">
+              <h3 class="request-title" (click)="openInitiative(request)">{{ request.title }}</h3>
+              <p class="request-description">{{ request.description }}</p>
+
+              <div class="request-meta">
+                <div class="meta-item">
+                  <i class="fas fa-building"></i>
+                  <span>{{ request.organization_name }}</span>
+                </div>
+                <div class="meta-item">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>{{ request.location }}</span>
+                </div>
+              </div>
+
+              <div class="progress-section">
+                <div class="progress-labels">
+                  <span>COLLECTÉ</span>
+                  <span>OBJECTIF</span>
+                </div>
+                <div class="progress-bar">
+                  <div
+                    class="progress-fill"
+                    [style.width.%]="getProgressPercent(request.collected_amount, request.target_amount)"
+                  ></div>
+                </div>
+                <div class="progress-values">
+                  <span class="amount">{{ request.collected_amount | number }} DT</span>
+                  <span class="target">{{ request.target_amount | number }} DT</span>
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <button class="btn-view-detail" type="button" (click)="openInitiative(request)">
+                  <i class="fas fa-eye"></i> Afficher détails
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="no-results">
+        <i class="fas fa-search"></i>
+        <h3>Aucune initiative disponible</h3>
+        <p>Essayez d'ajuster vos filtres ou votre recherche</p>
+        <button class="btn-secondary" (click)="clearFilters()">Réinitialiser les filtres</button>
+      </div>
+    }
+  </div>
+</section>

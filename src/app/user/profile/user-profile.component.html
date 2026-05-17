@@ -1,0 +1,54 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<main class="profile">
+  <section class="profile-header">
+    <div class="avatar">AM</div>
+    <div>
+      <h1>{{ profile.name }}</h1>
+      <p>{{ profile.email }}</p>
+      <span class="badge">Profil verifie</span>
+    </div>
+    <button class="edit-btn" type="button" (click)="toggleEdit()">
+      {{ isEditing ? 'Annuler' : 'Modifier le profil' }}
+    </button>
+  </section>
+
+  <section class="profile-grid">
+    <div class="profile-card">
+      <h2>Informations personnelles</h2>
+      <label>Nom complet</label>
+      <input [(ngModel)]="profile.name" [disabled]="!isEditing" />
+
+      <label>Email</label>
+      <input [(ngModel)]="profile.email" [disabled]="true" />
+
+      <label>Telephone</label>
+      <input [(ngModel)]="profile.phone" [disabled]="!isEditing" />
+
+      <label>Bio</label>
+      <textarea rows="4" [(ngModel)]="profile.bio" [disabled]="!isEditing"></textarea>
+
+      <button class="primary" type="button" [disabled]="!isEditing">
+        Enregistrer les modifications
+      </button>
+    </div>
+
+    <div class="profile-card">
+      <h2>Securite</h2>
+      <p>Modifiez votre mot de passe pour proteger votre compte.</p>
+
+      <label>Mot de passe actuel</label>
+      <input type="password" placeholder="******" />
+
+      <label>Nouveau mot de passe</label>
+      <input type="password" placeholder="Nouveau mot de passe" />
+
+      <label>Confirmer</label>
+      <input type="password" placeholder="Confirmer" />
+
+      <button class="secondary" type="button">
+        Mettre a jour le mot de passe
+      </button>
+    </div>
+  </section>
+</main>

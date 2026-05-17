@@ -1,0 +1,156 @@
+<app-logged-in-navbar></app-logged-in-navbar>
+
+<div class="page-container">
+  <main class="publish-container">
+    <!-- Header -->
+    <header class="publish-header">
+      <div class="header-icon">
+        <i class="fas fa-paper-plane"></i>
+      </div>
+      <div class="header-text">
+        <h1>Publier une demande</h1>
+        <p>Décrivez vos besoins avec précision pour recevoir l'aide de la communauté.</p>
+      </div>
+    </header>
+
+    <form class="publish-form" (ngSubmit)="onSubmit()">
+      
+      <!-- Section 1: Informations principales -->
+      <div class="form-section">
+        <div class="section-header">
+          <i class="fas fa-info-circle"></i>
+          <h3>Informations principales</h3>
+        </div>
+        
+        <div class="field-group">
+          <label for="title">Titre de la demande</label>
+          <div class="input-wrapper">
+            <i class="fas fa-heading"></i>
+            <input id="title" [(ngModel)]="model.title" name="title" placeholder="Ex: Aide alimentaire pour une famille" required />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="category">Catégorie</label>
+            <div class="input-wrapper">
+              <i class="fas fa-tag"></i>
+              <select id="category" [(ngModel)]="model.category" name="category" required>
+                <option value="" disabled selected>Choisir une catégorie</option>
+                <option value="Sante">Santé</option>
+                <option value="Education">Éducation</option>
+                <option value="Alimentation">Alimentation</option>
+                <option value="Logement">Logement</option>
+                <option value="Emploi">Emploi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="urgency">Niveau d'urgence</label>
+            <div class="input-wrapper">
+              <i class="fas fa-exclamation-triangle"></i>
+              <select id="urgency" [(ngModel)]="model.urgency" name="urgency">
+                <option value="high">Élevée</option>
+                <option value="medium">Moyenne</option>
+                <option value="low">Basse</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="location">Localisation</label>
+          <div class="input-wrapper">
+            <i class="fas fa-map-marker-alt"></i>
+            <select id="location" [(ngModel)]="model.location" name="location" required>
+              <option value="" disabled selected>Choisir une ville</option>
+              @for (loc of locations; track loc) {
+                <option [value]="loc">{{ loc }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Détails du besoin -->
+      <div class="form-section">
+        <div class="section-header">
+          <i class="fas fa-list-ul"></i>
+          <h3>Détails du besoin</h3>
+        </div>
+
+        <div class="field-group">
+          <label for="amount">Montant souhaité (DT)</label>
+          <div class="input-wrapper">
+            <i class="fas fa-coins"></i>
+            <input id="amount" type="number" [(ngModel)]="model.amount" name="amount" placeholder="Ex: 500" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Types de besoins</label>
+          <div class="needs-grid">
+            <label class="need-pill" [class.active]="model.needs_money">
+              <input type="checkbox" [(ngModel)]="model.needs_money" name="needs_money">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Argent</span>
+            </label>
+            <label class="need-pill" [class.active]="model.needs_object">
+              <input type="checkbox" [(ngModel)]="model.needs_object" name="needs_object">
+              <i class="fas fa-box"></i>
+              <span>Objet</span>
+            </label>
+            <label class="need-pill" [class.active]="model.needs_service">
+              <input type="checkbox" [(ngModel)]="model.needs_service" name="needs_service">
+              <i class="fas fa-hands-helping"></i>
+              <span>Service</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Description -->
+      <div class="form-section">
+        <div class="section-header">
+          <i class="fas fa-align-left"></i>
+          <h3>Description détaillée</h3>
+        </div>
+        <div class="field-group">
+          <label for="description">Explication de votre demande</label>
+          <textarea id="description" rows="6" [(ngModel)]="model.description" name="description" 
+            placeholder="Décrivez précisément votre situation et comment l'aide sera utilisée..."></textarea>
+        </div>
+      </div>
+
+      <!-- Section 4: Documents -->
+      <div class="form-section">
+        <div class="section-header">
+          <i class="fas fa-file-upload"></i>
+          <h3>Documents justificatifs</h3>
+        </div>
+        <div class="upload-container">
+          <input type="file" id="file-upload" multiple (change)="onFileSelected($event)" accept=".pdf,image/*" class="file-input">
+          <label for="file-upload" class="upload-area">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span class="upload-title">Glissez vos fichiers ou cliquez pour uploader</span>
+            <span class="upload-hint">PDF ou images (factures, rapports médicaux, etc.)</span>
+            <div class="selected-count" *ngIf="selectedFiles.length > 0">
+              {{ selectedFiles.length }} fichier(s) sélectionné(s)
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-cancel" type="button" (click)="onCancel()">
+          Annuler
+        </button>
+        <button class="btn-submit" type="submit">
+          <i class="fas fa-check-circle"></i>
+          Publier ma demande
+        </button>
+      </div>
+    </form>
+  </main>
+</div>

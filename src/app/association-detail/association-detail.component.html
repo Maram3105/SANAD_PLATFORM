@@ -1,0 +1,352 @@
+@if (isLoggedIn()) {
+  @if (isAssociation()) {
+    <app-association-navbar></app-association-navbar>
+  } @else {
+    <app-logged-in-navbar></app-logged-in-navbar>
+  }
+} @else {
+  <app-navbar></app-navbar>
+}
+
+@if (association) {
+<app-donation-modal
+  [isOpen]="isDonationModalOpen"
+  [associationId]="association.id"
+  [defaultType]="'association'"
+  (closed)="onDonationClosed()"
+  (donated)="onDonationCompleted($event)"
+></app-donation-modal>
+
+<section class="hero-section">
+  <div class="hero-image-wrapper">
+    <img
+      [src]="association.cover || '/assets/images/placeholders/association-cover-placeholder.svg'"
+      [alt]="association.name"
+      class="hero-image"
+      loading="eager"
+    />
+    <div class="hero-overlay"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="container">
+      <div class="hero-header">
+        <div class="logo-badge-large">
+          @if (association.logo) {
+            <img [src]="association.logo" [alt]="association.name" />
+          } @else {
+            <span>{{ getLogoInitial() }}</span>
+          }
+        </div>
+
+        <div class="hero-info">
+          <div class="hero-title-group">
+            <h1 class="hero-title">{{ association.name }}</h1>
+            <div *ngIf="association.verified" class="verified-badge-hero">
+              <i class="fas fa-check-circle"></i> Association vérifiée
+            </div>
+          </div>
+          <p class="hero-tagline">{{ association.tagline }}</p>
+          <div class="hero-meta">
+            @if (association.location) {
+              <span><i class="fas fa-map-marker-alt"></i> {{ association.location }}</span>
+            }
+            <span><i class="fas fa-users"></i> {{ association.stats.donorsCount | number }} donateurs</span>
+            <span><i class="fas fa-calendar"></i> Depuis {{ association.foundedYear }}</span>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button class="btn-primary" (click)="viewCampaigns()">
+            <i class="fas fa-list"></i> Voir les campagnes
+          </button>
+          <button class="btn-secondary" (click)="shareCampaign()">
+            <i class="fas fa-share-alt"></i> Partager
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-euro-sign"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ (association.stats.totalDonations / 1000) | number:'1.0-0' }}KDT</span>
+          <span class="stat-label">collectés</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ association.stats.campaignCount }}</span>
+          <span class="stat-label">campagnes</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ (association.stats.peopleHelped / 1000) | number:'1.0-0' }}K+</span>
+          <span class="stat-label">personnes aidées</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-calendar"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-value">{{ yearsActive }}+ ans</span>
+          <span class="stat-label">d'activité</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="main-content">
+  <div class="container">
+    <div class="content-layout">
+      <div class="content-left">
+        <section class="about-card">
+          <div class="section-heading">
+            <span>Profil</span>
+            <h2>À propos</h2>
+          </div>
+          <div class="about-content">
+            <p
+              *ngFor="let paragraph of association.fullDescription.split('\n')"
+              [class.paragraph-title]="paragraph.includes('•') === false && paragraph.trim().endsWith(':')"
+            >
+              {{ paragraph }}
+            </p>
+          </div>
+        </section>
+
+        <section class="campaigns-section">
+          <div class="section-heading section-heading--row">
+            <div>
+              <span>Actions</span>
+              <h2>Campagnes actives</h2>
+            </div>
+            <p class="section-subtitle">Découvrez les projets en cours</p>
+          </div>
+
+          <div class="campaigns-grid" *ngIf="association.campaigns.length > 0; else noCampaigns">
+            <div class="campaign-card" *ngFor="let campaign of association.campaigns">
+              <div class="campaign-image">
+                <img
+                  [src]="campaign.image || '/assets/images/placeholders/request-placeholder.svg'"
+                  [alt]="campaign.title"
+                  loading="lazy"
+                />
+                <span class="campaign-status" [ngClass]="getCampaignStatusClass(campaign.status)">
+                  {{ getCampaignStatusLabel(campaign.status) }}
+                </span>
+              </div>
+
+              <div class="campaign-content">
+                <h4 class="campaign-title">{{ campaign.title }}</h4>
+                <p class="campaign-category">{{ campaign.category || 'Campagne solidaire' }}</p>
+                <p class="campaign-description">{{ campaign.description }}</p>
+
+                <div class="campaign-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="getProgressPercent(campaign.progress, campaign.target)"></div>
+                  </div>
+                  <div class="progress-text">
+                    <span>{{ campaign.progress | number }}DT</span>
+                    <span>{{ getProgressPercent(campaign.progress, campaign.target) | number:'1.0-0' }}%</span>
+                  </div>
+                </div>
+
+                <a href="javascript:;" class="link-view-campaign">
+                  Voir la campagne <i class="fas fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <ng-template #noCampaigns>
+            <div class="empty-campaigns">
+              <i class="fas fa-folder-open"></i>
+              <h3>Aucune campagne active pour le moment</h3>
+              <p>Cette association n'a pas encore publié de campagne active. Vous pouvez tout de même soutenir directement son action.</p>
+              <button class="btn-inline" (click)="supportAssociation()">
+                <i class="fas fa-heart"></i> Soutenir l'association
+              </button>
+            </div>
+          </ng-template>
+        </section>
+      </div>
+
+      <aside class="content-right">
+        <div class="trust-panel" [ngClass]="{ 'is-sticky': sidebarSticky }">
+          <section class="verification-card">
+            <div class="verification-header">
+              <i class="fas fa-shield-alt"></i>
+              <h3>Vérification</h3>
+            </div>
+
+            <div class="verification-items">
+              <div class="verification-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Association vérifiée</span>
+              </div>
+              <div class="verification-item">
+                <i class="fas fa-lock"></i>
+                <span>Transparence garantie</span>
+              </div>
+              <div class="verification-item">
+                <i class="fas fa-certificate"></i>
+                <span>Reconnue depuis {{ association.foundedYear }}</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="contact-card">
+            <h3>Informations</h3>
+            <div class="contact-info">
+              <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <span>{{ association.email || 'Email non renseigné' }}</span>
+              </div>
+              <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ association.location || 'Localisation non renseignée' }}</span>
+              </div>
+              <div class="info-item">
+                <i class="fas fa-users"></i>
+                <span>{{ association.stats.donorsCount | number }} donateurs</span>
+              </div>
+            </div>
+          </section>
+
+          <div class="cta-buttons">
+            <button class="btn-primary-large" (click)="viewCampaigns()">
+              <i class="fas fa-list"></i> Voir les campagnes
+            </button>
+            <button class="btn-secondary-large" (click)="supportAssociation()">
+              <i class="fas fa-heart"></i> Soutenir
+            </button>
+          </div>
+
+          <div class="social-proof">
+            <div class="proof-item">
+              <span class="proof-number">{{ association.stats.donorsCount | number }}</span>
+              <span class="proof-label">Donateurs actifs</span>
+            </div>
+            <div class="proof-item">
+              <span class="proof-number">4.8/5</span>
+              <span class="proof-label">Évaluation moyenne</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="transparency-section">
+  <div class="container">
+    <div class="transparency-header">
+      <span>Traçabilité</span>
+      <h2>Transparence dans l'utilisation des fonds</h2>
+      <p>Une lecture simple de la répartition annoncée pour comprendre où va votre soutien.</p>
+    </div>
+
+    <div class="transparency-grid">
+      <div class="transparency-chart">
+        <div class="chart-circle">
+          <svg viewBox="0 0 120 120" class="pie-chart" aria-hidden="true">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#1d4ed8" stroke-width="30"
+              stroke-dasharray="155 250" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#3b82f6" stroke-width="30"
+              stroke-dasharray="45 250" stroke-dashoffset="-155" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#93c5fd" stroke-width="30"
+              stroke-dasharray="35 250" stroke-dashoffset="-200" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#bfdbfe" stroke-width="30"
+              stroke-dasharray="15 250" stroke-dashoffset="-235" transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="chart-center">100%</div>
+        </div>
+      </div>
+
+      <div class="transparency-breakdown">
+        <div class="breakdown-item">
+          <div class="breakdown-color" style="background: #1d4ed8;"></div>
+          <div class="breakdown-content">
+            <h4>Aide directe</h4>
+            <p>{{ getTransparencyAmount(association.transparency.directAid) | number:'1.0-0' }} DT ({{ association.transparency.directAid }}%)</p>
+            <span class="breakdown-desc">Distributions alimentaires, aide urgente, soutien direct</span>
+          </div>
+        </div>
+
+        <div class="breakdown-item">
+          <div class="breakdown-color" style="background: #3b82f6;"></div>
+          <div class="breakdown-content">
+            <h4>Programmes & formation</h4>
+            <p>{{ getTransparencyAmount(association.transparency.programsEducation) | number:'1.0-0' }} DT ({{ association.transparency.programsEducation }}%)</p>
+            <span class="breakdown-desc">Ateliers, formations, sensibilisation nutritionnelle</span>
+          </div>
+        </div>
+
+        <div class="breakdown-item">
+          <div class="breakdown-color" style="background: #93c5fd;"></div>
+          <div class="breakdown-content">
+            <h4>Coûts opérationnels</h4>
+            <p>{{ getTransparencyAmount(association.transparency.operatingCosts) | number:'1.0-0' }} DT ({{ association.transparency.operatingCosts }}%)</p>
+            <span class="breakdown-desc">Locaux, équipements, logistique</span>
+          </div>
+        </div>
+
+        <div class="breakdown-item">
+          <div class="breakdown-color" style="background: #bfdbfe;"></div>
+          <div class="breakdown-content">
+            <h4>Administration</h4>
+            <p>{{ getTransparencyAmount(association.transparency.adminOverhead) | number:'1.0-0' }} DT ({{ association.transparency.adminOverhead }}%)</p>
+            <span class="breakdown-desc">Gestion administrative, reporting</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="trust-message">
+      <i class="fas fa-handshake"></i>
+      <p>Transparence garantie. Chaque contribution compte.</p>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta-section">
+  <div class="container">
+    <h2>Contribuez à l'impact de {{ association.name }}</h2>
+    <p>Un don ou un simple partage peut aider cette association à mobiliser davantage de soutien.</p>
+    <button class="btn-cta-final" (click)="supportAssociation()">
+      <i class="fas fa-heart"></i> Soutenir maintenant
+    </button>
+  </div>
+</section>
+} @else if (loading) {
+  <div class="loading-state">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Chargement de l'association...</p>
+  </div>
+} @else if (error) {
+  <div class="error-state">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <a routerLink="/associations" class="btn-primary">Retour aux associations</a>
+  </div>
+}

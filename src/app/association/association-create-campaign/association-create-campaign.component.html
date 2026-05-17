@@ -1,0 +1,142 @@
+<app-association-navbar></app-association-navbar>
+
+<div class="page-container">
+  <section class="create-shell">
+    <header class="create-header">
+      <div class="header-content">
+        <div class="badge">{{ isEditMode() ? 'Mise à jour' : 'Nouvelle campagne' }}</div>
+        <h1>{{ isEditMode() ? 'Modifier votre campagne' : 'Lancer une campagne' }}</h1>
+        <p class="subtitle">{{ isEditMode() ? 'Ajustez les détails pour optimiser votre impact.' : 'Partagez votre projet avec la communauté et mobilisez des soutiens.' }}</p>
+      </div>
+    </header>
+
+    <form [formGroup]="form" class="modern-form">
+      @if (parentRequest()) {
+        <div class="derived-banner">
+          <div class="banner-icon"><i class="fas fa-link"></i></div>
+          <div class="banner-text">
+            <p class="banner-kicker">Basée sur une demande d'aide</p>
+            <h3>{{ parentRequest()?.title }}</h3>
+            <p>{{ parentRequest()?.description | slice:0:100 }}...</p>
+          </div>
+          <a class="btn-text" [routerLink]="['/request-detail', parentRequestId()]">Voir l'original</a>
+        </div>
+      }
+
+      <!-- Section 1: Content -->
+      <fieldset class="form-section">
+        <legend><i class="fas fa-info-circle"></i> Informations Générales</legend>
+        
+        <div class="field">
+          <label for="title">Titre de la campagne</label>
+          <div class="input-wrapper">
+            <i class="fas fa-heading"></i>
+            <input id="title" type="text" formControlName="title" placeholder="Ex: Soutien scolaire pour 50 enfants" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="description">Résumé accrocheur</label>
+          <textarea id="description" rows="3" formControlName="description" placeholder="Une courte phrase qui donne envie d'aider..."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="full_description">Description détaillée</label>
+          <textarea id="full_description" rows="6" formControlName="full_description" placeholder="Expliquez le contexte, les besoins précis et l'impact attendu..."></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Section 2: Parameters -->
+      <fieldset class="form-section">
+        <legend><i class="fas fa-sliders-h"></i> Paramètres & Objectifs</legend>
+        
+        <div class="grid">
+          <div class="field">
+            <label for="goal_amount">Objectif de collecte (DT)</label>
+            <div class="input-wrapper">
+              <i class="fas fa-coins"></i>
+              <input id="goal_amount" type="number" min="1" formControlName="goal_amount" placeholder="Montant cible" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="category_id">Domaine d'intervention</label>
+            <div class="input-wrapper">
+              <i class="fas fa-tag"></i>
+              <select id="category_id" formControlName="category_id">
+                <option [value]="null">Choisir une catégorie</option>
+                @for (category of categories(); track category.id) {
+                  <option [value]="category.id">{{ category.name }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="field">
+            <label for="location">Zone géographique</label>
+            <div class="input-wrapper">
+              <i class="fas fa-map-marker-alt"></i>
+              <select id="location" formControlName="location">
+                <option value="">Sélectionner une ville</option>
+                <option value="Tunis">Tunis</option>
+                <option value="Sfax">Sfax</option>
+                <option value="Sousse">Sousse</option>
+                <option value="Ariana">Ariana</option>
+                <option value="Ben Arous">Ben Arous</option>
+                <option value="Manouba">Manouba</option>
+                <option value="Bizerte">Bizerte</option>
+                <option value="Gabès">Gabès</option>
+                <option value="Kairouan">Kairouan</option>
+                <option value="Gafsa">Gafsa</option>
+                <option value="Monastir">Monastir</option>
+                <option value="Nabeul">Nabeul</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="urgency">Niveau d'urgence</label>
+            <div class="input-wrapper">
+              <i class="fas fa-bolt"></i>
+              <select id="urgency" formControlName="urgency">
+                <option value="low">Standard</option>
+                <option value="medium">Prioritaire</option>
+                <option value="high">Urgent (Critique)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="image">Visuel de la campagne</label>
+          <div class="file-drop" [style.background-image]="previewUrl() ? 'url(' + previewUrl() + ')' : null" [class.has-preview]="previewUrl()">
+            <input id="image" type="file" (change)="onFileSelected($event)" class="file-input" />
+            <div class="file-ui" [class.overlay]="previewUrl()">
+              <i class="fas" [class.fa-cloud-upload-alt]="!previewUrl()" [class.fa-camera]="previewUrl()"></i>
+              <p>{{ previewUrl() ? 'Changer l\'image' : 'Cliquez ou glissez une image ici' }}</p>
+              <span *ngIf="!previewUrl()">Format JPG, PNG (Max 5MB)</span>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      @if (error()) {
+        <div class="error-toast">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ error() }}
+        </div>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn-primary" (click)="submit()" [disabled]="submitting()">
+          @if (submitting()) {
+            <i class="fas fa-spinner fa-spin"></i> Traitement...
+          } @else {
+            <i class="fas fa-paper-plane"></i> {{ isEditMode() ? 'Sauvegarder les modifications' : 'Lancer la campagne' }}
+          }
+        </button>
+        <a class="btn-cancel" routerLink="/association/campaigns">Annuler</a>
+      </div>
+    </form>
+  </section>
+</div>
