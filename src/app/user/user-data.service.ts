@@ -25,9 +25,10 @@ export interface UserRequest {
 export interface UserDonation {
   id: number;
   amount: number;
-  donation_type: 'request' | 'association' | 'platform';
+  donation_type: 'request' | 'campaign' | 'association' | 'platform';
   target_name: string;
   request_id?: number;
+  campaign_id?: number;
   association_id?: number;
   association_name?: string;
   message?: string;

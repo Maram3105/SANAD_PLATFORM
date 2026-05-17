@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { UserDataService } from '../user/user-data.service';
@@ -67,19 +67,19 @@ import { UserDataService } from '../user/user-data.service';
             </span>
           </a>
 
-          <div class="profile-menu">
-            <button class="profile-trigger" type="button">
+          <div class="profile-menu" [class.open]="isProfileMenuOpen">
+            <button class="profile-trigger" type="button" (click)="toggleProfileMenu($event)" aria-haspopup="menu" [attr.aria-expanded]="isProfileMenuOpen">
               <span class="avatar">{{ getInitials() }}</span>
               <span class="profile-name">{{ getDisplayName() }}</span>
               <span class="chevron"><i class="fas fa-chevron-down"></i></span>
             </button>
-            <div class="dropdown">
-              <a routerLink="/profile" class="dropdown-item">Mon profil</a>
-              <a routerLink="/my-donations" class="dropdown-item">Mes dons</a>
-              <a routerLink="/my-requests" class="dropdown-item">Mes demandes</a>
-              <a routerLink="/activity" class="dropdown-item">Historique activite</a>
+            <div class="dropdown" role="menu" (click)="$event.stopPropagation()">
+              <button type="button" class="dropdown-item" role="menuitem" (click)="navigateTo('/profile')">Mon profil</button>
+              <button type="button" class="dropdown-item" role="menuitem" (click)="navigateTo('/my-donations')">Mes dons</button>
+              <button type="button" class="dropdown-item" role="menuitem" (click)="navigateTo('/my-requests')">Mes demandes</button>
+              <button type="button" class="dropdown-item" role="menuitem" (click)="navigateTo('/activity')">Historique activite</button>
               <div class="dropdown-divider"></div>
-              <button type="button" class="dropdown-item danger" (click)="logout()">
+              <button type="button" class="dropdown-item danger" role="menuitem" (click)="logout()">
                 Deconnexion
               </button>
             </div>
@@ -93,6 +93,7 @@ import { UserDataService } from '../user/user-data.service';
 export class LoggedInNavbarComponent implements OnInit {
   unreadCount = 0;
   currentUser = signal<any>(null);
+  isProfileMenuOpen = false;
 
   constructor(
     private auth: AuthService,
@@ -144,7 +145,23 @@ export class LoggedInNavbarComponent implements OnInit {
     return this.currentUser()?.fullName?.trim() || 'Utilisateur';
   }
 
+  toggleProfileMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
+
+  navigateTo(path: string) {
+    this.isProfileMenuOpen = false;
+    this.router.navigateByUrl(path);
+  }
+
+  @HostListener('document:click')
+  closeProfileMenu() {
+    this.isProfileMenuOpen = false;
+  }
+
   logout() {
+    this.isProfileMenuOpen = false;
     this.auth.clearToken();
     this.router.navigateByUrl('/auth/login');
   }

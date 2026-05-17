@@ -1,47 +1,91 @@
 <app-logged-in-navbar></app-logged-in-navbar>
 
 <main class="donations">
-  <header class="header">
-    <div>
+  <header class="page-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">
+        <i class="fas fa-wallet"></i>
+        Espace donateur
+      </span>
       <h1>Mes dons</h1>
-      <p>Historique detaille de vos contributions.</p>
+      <p>Suivez vos contributions, leurs beneficiaires et votre impact financier en un coup d'oeil.</p>
     </div>
-    <a class="primary" routerLink="/donate">Faire un don</a>
+    <a class="primary" routerLink="/donate">
+      <i class="fas fa-heart"></i>
+      Faire un don
+    </a>
   </header>
 
   <section class="stats" *ngIf="stats">
     <div class="stat-card">
-      <span>Total dons</span>
+      <span class="stat-icon"><i class="fas fa-receipt"></i></span>
+      <span class="stat-label">Total dons</span>
       <strong>{{ stats.total_donations }}</strong>
     </div>
     <div class="stat-card">
-      <span>Montant total</span>
+      <span class="stat-icon"><i class="fas fa-coins"></i></span>
+      <span class="stat-label">Montant total</span>
       <strong>{{ stats.total_amount | number:'1.0-0' }} DT</strong>
     </div>
     <div class="stat-card">
-      <span>Demandes soutenues</span>
+      <span class="stat-icon"><i class="fas fa-hand-holding-heart"></i></span>
+      <span class="stat-label">Demandes soutenues</span>
       <strong>{{ stats.requests_supported }}</strong>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
+      <span class="stat-label">Don moyen</span>
+      <strong>{{ getAverageDonation() }} DT</strong>
     </div>
   </section>
 
-  <div class="donation-list" *ngIf="!loading && donations.length > 0">
-    <article class="donation-card" *ngFor="let donation of donations">
+  <section class="panel" *ngIf="!loading && donations.length > 0">
+    <div class="panel-header">
       <div>
-        <h2>{{ donation.target_name }}</h2>
-        <p class="meta">
-          {{ donation.donation_type }} • {{ donation.created_at | date: 'dd MMM yyyy' }}
-        </p>
+        <h2>Historique des contributions</h2>
+        <p>{{ donations.length }} operation(s) retrouvee(s)</p>
       </div>
-      <div class="amount">{{ donation.amount }} DT</div>
-    </article>
-  </div>
+      <span class="panel-badge">A jour</span>
+    </div>
+
+    <div class="donation-list">
+      <article class="donation-card" *ngFor="let donation of donations">
+        <div class="donation-main">
+          <span class="donation-icon">
+            <i class="fas fa-hand-holding-heart"></i>
+          </span>
+          <div>
+            <div class="donation-title-row">
+              <h3>{{ donation.target_name }}</h3>
+              <span class="type-chip">{{ getDonationTypeLabel(donation.donation_type) }}</span>
+            </div>
+            <p class="meta">
+              <span *ngIf="donation.association_name">{{ donation.association_name }}</span>
+              <span>{{ donation.created_at | date: 'dd MMM yyyy' }}</span>
+            </p>
+            <p class="message" *ngIf="donation.message">{{ donation.message }}</p>
+          </div>
+        </div>
+        <div class="amount-block">
+          <span>Montant</span>
+          <strong>{{ donation.amount | number:'1.0-0' }} DT</strong>
+        </div>
+      </article>
+    </div>
+  </section>
 
   <div class="empty" *ngIf="!loading && donations.length === 0">
-    <p>Aucun don pour le moment.</p>
-    <a class="primary" routerLink="/donate">Faire un don</a>
+    <span class="empty-icon"><i class="fas fa-heart"></i></span>
+    <h2>Aucun don pour le moment</h2>
+    <p>Explorez les demandes actives et commencez a suivre votre impact depuis cet espace.</p>
+    <a class="primary" routerLink="/donate">
+      <i class="fas fa-heart"></i>
+      Faire un don
+    </a>
   </div>
 
   <div class="loading" *ngIf="loading">
+    <span class="loader"></span>
     <p>Chargement des dons...</p>
   </div>
 </main>

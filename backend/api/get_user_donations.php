@@ -39,7 +39,7 @@ try {
     }
 
     $sort = $_GET['sort'] ?? 'recent';
-    $limit = min((int)($_GET['limit'] ?? 20), 100);
+    $limit = min(max((int) ($_GET['limit'] ?? 20), 1), 100);
 
     // Récupérer les donations de l'utilisateur
     $query = '
@@ -56,6 +56,8 @@ try {
                 ELSE "platform"
             END as donation_type,
             d.request_id,
+            d.campaign_id,
+            d.association_id,
             COALESCE(camp.title, r.title, a.organization_name, "Don libre") as target_name,
             a.organization_name as association_name
         FROM donations d
@@ -66,8 +68,6 @@ try {
         AND d.status = "completed"
     ';
 
-    $params = [$userId];
-
     // Tri
     if ($sort === 'amount') {
         $query .= ' ORDER BY d.amount DESC';
@@ -76,10 +76,11 @@ try {
     }
 
     $query .= ' LIMIT ?';
-    $params[] = $limit;
 
     $stmt = $pdo->prepare($query);
-    $stmt->execute($params);
+    $stmt->bindValue(1, (int) $userId, PDO::PARAM_INT);
+    $stmt->bindValue(2, $limit, PDO::PARAM_INT);
+    $stmt->execute();
     $donations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Formater les données

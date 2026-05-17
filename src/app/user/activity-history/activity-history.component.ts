@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { LoggedInNavbarComponent } from '../../shared/logged-in-navbar.component';
 import { UserDataService, UserDonation, UserRequest, NotificationItem } from '../user-data.service';
@@ -22,7 +22,10 @@ export class ActivityHistoryComponent implements OnInit {
   activities: ActivityItem[] = [];
   loading = true;
 
-  constructor(private userData: UserDataService) {}
+  constructor(
+    private userData: UserDataService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     forkJoin({
@@ -70,9 +73,11 @@ export class ActivityHistoryComponent implements OnInit {
           new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

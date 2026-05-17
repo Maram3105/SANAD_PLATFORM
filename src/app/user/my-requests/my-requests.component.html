@@ -1,48 +1,105 @@
 <app-logged-in-navbar></app-logged-in-navbar>
 
 <main class="requests">
-  <header class="header">
-    <div>
+  <header class="page-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">
+        <i class="fas fa-file-alt"></i>
+        Espace demandeur
+      </span>
       <h1>Mes demandes</h1>
-      <p>Suivez l\'etat de vos demandes et gardez le controle.</p>
+      <p>Suivez l'etat de validation, la collecte et l'avancement de chaque demande publiee.</p>
     </div>
-    <a class="primary" routerLink="/requests/new">Publier une demande</a>
+    <a class="primary" routerLink="/requests/new">
+      <i class="fas fa-paper-plane"></i>
+      Publier une demande
+    </a>
   </header>
 
-  <div class="request-list" *ngIf="!loading && requests.length > 0">
-    <article class="request-card" *ngFor="let request of requests">
-      <div class="request-head">
-        <h2>{{ request.title }}</h2>
-        <span class="status" [class.complete]="request.status === 'completed'">
-          {{ request.status }}
-        </span>
-      </div>
+  <section class="stats" *ngIf="!loading">
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fas fa-layer-group"></i></span>
+      <span class="stat-label">Total demandes</span>
+      <strong>{{ requests.length }}</strong>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fas fa-check-circle"></i></span>
+      <span class="stat-label">Actives</span>
+      <strong>{{ getActiveCount() }}</strong>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fas fa-clock"></i></span>
+      <span class="stat-label">En attente</span>
+      <strong>{{ getPendingCount() }}</strong>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fas fa-flag-checkered"></i></span>
+      <span class="stat-label">Completees</span>
+      <strong>{{ getCompletedCount() }}</strong>
+    </div>
+  </section>
 
-      <div class="progress">
-        <div class="progress-bar">
-          <span [style.width.%]="getProgress(request)"></span>
-        </div>
-        <div class="progress-meta">
-          <span>{{ getProgress(request) }}% atteint</span>
-          <span>{{ request.donors_count }} donateurs</span>
-          <span>{{ getAmountLabel(request) }}</span>
-        </div>
+  <section class="panel" *ngIf="!loading && requests.length > 0">
+    <div class="panel-header">
+      <div>
+        <h2>Demandes publiees</h2>
+        <p>{{ requests.length }} demande(s) retrouvee(s)</p>
       </div>
+      <span class="panel-badge">Suivi en temps reel</span>
+    </div>
 
-      <div class="actions">
-        <button type="button" class="ghost">Modifier</button>
-        <button type="button" class="ghost">Supprimer</button>
-        <a routerLink="/request-detail" class="link">Voir</a>
-      </div>
-    </article>
-  </div>
+    <div class="request-list">
+      <article class="request-card" *ngFor="let request of requests">
+        <div class="request-main">
+          <span class="request-icon">
+            <i class="fas fa-file-alt"></i>
+          </span>
+          <div>
+            <div class="request-title-row">
+              <h3>{{ request.title }}</h3>
+              <span [class]="getStatusClass(request.status)">
+                {{ getStatusLabel(request.status) }}
+              </span>
+            </div>
+            <p class="request-date">Creee le {{ request.created_at | date: 'dd MMM yyyy' }}</p>
+          </div>
+        </div>
+
+        <div class="progress">
+          <div class="progress-top">
+            <span>{{ getProgress(request) }}% atteint</span>
+            <strong>{{ getAmountLabel(request) }}</strong>
+          </div>
+          <div class="progress-bar">
+            <span [style.width.%]="getProgress(request)"></span>
+          </div>
+          <div class="progress-meta">
+            <span><i class="fas fa-users"></i> {{ request.donors_count }} donateur(s)</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a [routerLink]="['/request-detail', request.id]" class="link">
+            Voir la demande
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </article>
+    </div>
+  </section>
 
   <div class="empty" *ngIf="!loading && requests.length === 0">
-    <p>Aucune demande disponible.</p>
-    <a class="primary" routerLink="/requests/new">Publier une demande</a>
+    <span class="empty-icon"><i class="fas fa-file-alt"></i></span>
+    <h2>Aucune demande publiee</h2>
+    <p>Publiez une demande avec vos justificatifs pour la soumettre a validation.</p>
+    <a class="primary" routerLink="/requests/new">
+      <i class="fas fa-paper-plane"></i>
+      Publier une demande
+    </a>
   </div>
 
   <div class="loading" *ngIf="loading">
+    <span class="loader"></span>
     <p>Chargement des demandes...</p>
   </div>
 </main>

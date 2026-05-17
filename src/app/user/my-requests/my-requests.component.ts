@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LoggedInNavbarComponent } from '../../shared/logged-in-navbar.component';
 import { UserDataService, UserRequest } from '../user-data.service';
@@ -15,7 +15,10 @@ export class MyRequestsComponent implements OnInit {
   requests: UserRequest[] = [];
   loading = true;
 
-  constructor(private userData: UserDataService) {}
+  constructor(
+    private userData: UserDataService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.userData.getMyRequests().subscribe({
@@ -24,9 +27,11 @@ export class MyRequestsComponent implements OnInit {
           this.requests = response.data;
         }
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -41,5 +46,32 @@ export class MyRequestsComponent implements OnInit {
     const collected = Math.round(Number(request.collected_amount) || 0);
     const target = Math.round(Number(request.target_amount) || 0);
     return `${collected} / ${target} DT`;
+  }
+
+  getActiveCount(): number {
+    return this.requests.filter((request) => request.status === 'active').length;
+  }
+
+  getPendingCount(): number {
+    return this.requests.filter((request) => request.status === 'paused').length;
+  }
+
+  getCompletedCount(): number {
+    return this.requests.filter((request) => request.status === 'completed').length;
+  }
+
+  getStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      active: 'Active',
+      paused: 'En attente',
+      completed: 'Completee',
+      cancelled: 'Refusee'
+    };
+
+    return labels[status] ?? status;
+  }
+
+  getStatusClass(status: string): string {
+    return `status status-${status}`;
   }
 }
