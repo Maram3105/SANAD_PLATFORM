@@ -42,6 +42,11 @@ testem.log
 /typings
 __screenshots__/
 
+# Local report rendering scratch files
+/.report-*-profile/
+/docs/.rapport-docx-staging*/
+/docs/Rapport_SANAD*.zip
+
 # System files
 .DS_Store
 Thumbs.db

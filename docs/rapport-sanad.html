@@ -1,0 +1,1646 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rapport du projet SANAD</title>
+    <style>
+      :root {
+        --ink: #17202b;
+        --muted: #526274;
+        --line: #d8e0e8;
+        --paper: #ffffff;
+        --soft: #f3f7fb;
+        --brand: #106a72;
+        --brand-strong: #0c4656;
+        --accent: #bf7b22;
+        --success: #23734d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #eaf0f6;
+        font-family: "Aptos", "Calibri", "Segoe UI", Arial, sans-serif;
+        font-size: 11.2pt;
+        line-height: 1.58;
+      }
+
+      main {
+        width: 210mm;
+        margin: 18px auto;
+        background: var(--paper);
+        box-shadow: 0 18px 58px rgba(23, 32, 43, 0.18);
+      }
+
+      .page {
+        min-height: 297mm;
+        padding: 19mm 18mm 18mm;
+        position: relative;
+      }
+
+      .page + .page {
+        border-top: 1px solid #edf1f5;
+      }
+
+      .cover {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: #f8fcff;
+        background:
+          linear-gradient(138deg, rgba(12, 70, 86, 0.97), rgba(16, 106, 114, 0.94)),
+          radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.2), transparent 34%);
+      }
+
+      .cover::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+          linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+        background-size: 26mm 26mm;
+        opacity: 0.28;
+      }
+
+      .cover > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .cover-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+      }
+
+      .logo-panel {
+        width: 35mm;
+        height: 35mm;
+        display: grid;
+        place-items: center;
+        padding: 5mm;
+        border-radius: 6mm;
+        background: #fff;
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+      }
+
+      .logo-panel img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      .cover-meta {
+        max-width: 95mm;
+        text-align: right;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 9pt;
+        opacity: 0.92;
+      }
+
+      .cover-kicker {
+        display: inline-block;
+        padding: 2.6mm 4mm;
+        margin-bottom: 9mm;
+        color: #fff6df;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 8.8pt;
+        font-weight: 700;
+      }
+
+      .cover h1 {
+        max-width: 155mm;
+        margin: 0;
+        color: #fff;
+        font-family: "Aptos Display", "Calibri", "Segoe UI", Arial, sans-serif;
+        font-size: 34pt;
+        letter-spacing: 0;
+        line-height: 1.08;
+      }
+
+      .cover h2 {
+        max-width: 142mm;
+        margin: 7mm 0 0;
+        color: rgba(247, 252, 255, 0.9);
+        font-size: 14pt;
+        font-weight: 500;
+        letter-spacing: 0;
+      }
+
+      .cover-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4mm;
+        margin-top: 11mm;
+      }
+
+      .cover-card {
+        min-height: 25mm;
+        padding: 4.6mm 5mm;
+        border-radius: 4mm;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .cover-card span {
+        display: block;
+        margin-bottom: 1.5mm;
+        color: rgba(240, 250, 255, 0.78);
+        font-size: 8.5pt;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+      }
+
+      .cover-card strong {
+        color: #fff;
+        font-size: 11.5pt;
+      }
+
+      .cover-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 16px;
+        padding-top: 6mm;
+        border-top: 1px solid rgba(255, 255, 255, 0.24);
+      }
+
+      .cover-footer p {
+        margin: 0;
+        max-width: 125mm;
+        color: rgba(247, 252, 255, 0.88);
+      }
+
+      .date-chip {
+        padding: 3mm 4mm;
+        border-radius: 3mm;
+        background: #fff;
+        color: var(--brand-strong);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        color: var(--brand-strong);
+        font-family: "Aptos Display", "Calibri", "Segoe UI", Arial, sans-serif;
+        letter-spacing: 0;
+        page-break-after: avoid;
+      }
+
+      h1 {
+        margin: 0 0 7mm;
+        font-size: 23pt;
+        line-height: 1.15;
+      }
+
+      h2 {
+        margin: 8mm 0 3mm;
+        font-size: 16.5pt;
+        line-height: 1.22;
+      }
+
+      h3 {
+        margin: 5mm 0 2mm;
+        font-size: 13pt;
+        line-height: 1.25;
+      }
+
+      h4 {
+        margin: 4mm 0 1.5mm;
+        font-size: 11.5pt;
+      }
+
+      p {
+        margin: 0 0 3.2mm;
+        text-align: justify;
+      }
+
+      ul,
+      ol {
+        margin: 2mm 0 4mm;
+        padding-left: 6mm;
+      }
+
+      li {
+        margin: 0 0 1.2mm;
+      }
+
+      strong {
+        color: #102f3a;
+      }
+
+      a {
+        color: var(--brand);
+      }
+
+      .running-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 7mm;
+        padding-bottom: 2.5mm;
+        color: var(--muted);
+        border-bottom: 1px solid var(--line);
+        font-size: 8.8pt;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .chapter-title {
+        display: flex;
+        align-items: center;
+        gap: 4mm;
+        margin-bottom: 5mm;
+      }
+
+      .chapter-number {
+        flex: 0 0 auto;
+        width: 16mm;
+        height: 16mm;
+        display: grid;
+        place-items: center;
+        border-radius: 4mm;
+        color: #fff;
+        background: var(--brand);
+        font-size: 15pt;
+        font-weight: 700;
+      }
+
+      .lead {
+        margin: 0 0 5mm;
+        padding: 4mm 4.8mm;
+        border-left: 1.3mm solid var(--accent);
+        background: #fff7ea;
+        color: #273647;
+        font-size: 11.5pt;
+      }
+
+      .quote {
+        margin: 4mm 0;
+        padding: 4mm 5mm;
+        border: 1px solid #cfe0e3;
+        border-radius: 3mm;
+        background: #edf8f8;
+        color: var(--brand-strong);
+        font-size: 12pt;
+        font-weight: 600;
+      }
+
+      .toc {
+        margin-top: 6mm;
+        border-top: 1px solid var(--line);
+      }
+
+      .toc-row {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 3mm;
+        align-items: baseline;
+        padding: 2.5mm 0;
+        border-bottom: 1px dotted #c7d4df;
+      }
+
+      .toc-row span:first-child {
+        color: var(--brand);
+        font-weight: 700;
+      }
+
+      .toc-row a {
+        color: var(--ink);
+        text-decoration: none;
+      }
+
+      .info-grid,
+      .two-col,
+      .tech-grid {
+        display: grid;
+        gap: 4mm;
+      }
+
+      .info-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin: 4mm 0 6mm;
+      }
+
+      .two-col {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tech-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin: 3mm 0 5mm;
+      }
+
+      .info-card,
+      .soft-card,
+      .tech-card {
+        padding: 4mm;
+        border: 1px solid var(--line);
+        border-radius: 3mm;
+        background: var(--soft);
+        break-inside: avoid;
+      }
+
+      .info-card span,
+      .tech-card span {
+        display: block;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 8.5pt;
+      }
+
+      .info-card strong,
+      .tech-card strong {
+        display: block;
+        margin-top: 1.2mm;
+        font-size: 11.4pt;
+      }
+
+      .role-card {
+        padding: 3.5mm 4mm;
+        border-left: 1.2mm solid var(--brand);
+        background: #f7fbfc;
+        break-inside: avoid;
+      }
+
+      .role-card p {
+        margin-bottom: 0;
+      }
+
+      .service-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2.8mm;
+        margin: 4mm 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .service-list li {
+        min-height: 18mm;
+        margin: 0;
+        padding: 3.4mm 4mm;
+        border: 1px solid var(--line);
+        border-radius: 3mm;
+        background: #fff;
+      }
+
+      .service-list strong {
+        display: block;
+        margin-bottom: 1mm;
+      }
+
+      .architecture {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3mm;
+        align-items: stretch;
+        margin: 4mm 0 5mm;
+      }
+
+      .architecture article {
+        padding: 4mm;
+        border-radius: 3mm;
+        color: #fff;
+        background: var(--brand-strong);
+        break-inside: avoid;
+      }
+
+      .architecture article:nth-child(2) {
+        background: var(--brand);
+      }
+
+      .architecture article:nth-child(3) {
+        background: #6b4d16;
+      }
+
+      .architecture h4 {
+        margin-top: 0;
+        color: #fff;
+      }
+
+      .architecture p {
+        margin-bottom: 0;
+        color: rgba(255, 255, 255, 0.9);
+        text-align: left;
+      }
+
+      table {
+        width: 100%;
+        margin: 3mm 0 5mm;
+        border-collapse: collapse;
+        border: 1px solid var(--line);
+        font-size: 9.7pt;
+        break-inside: avoid;
+      }
+
+      th,
+      td {
+        padding: 2.3mm 2.6mm;
+        border: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      th {
+        color: #fff;
+        background: var(--brand-strong);
+        text-align: left;
+        font-weight: 700;
+      }
+
+      tr:nth-child(even) td {
+        background: #f8fbfd;
+      }
+
+      .checklist {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2.5mm;
+        margin: 3mm 0 5mm;
+        padding: 0;
+        list-style: none;
+      }
+
+      .checklist li {
+        position: relative;
+        margin: 0;
+        padding: 2.8mm 3mm 2.8mm 9mm;
+        border: 1px solid var(--line);
+        border-radius: 2.5mm;
+        background: #fff;
+      }
+
+      .checklist li::before {
+        content: "✓";
+        position: absolute;
+        left: 3mm;
+        top: 2.7mm;
+        color: var(--success);
+        font-weight: 700;
+      }
+
+      .note {
+        margin: 4mm 0;
+        padding: 3.5mm 4mm;
+        border-radius: 3mm;
+        border: 1px solid #efd6a6;
+        background: #fff8eb;
+        color: #50391b;
+      }
+
+      .mini-title {
+        margin-top: 0;
+        color: var(--brand);
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        font-size: 8.9pt;
+      }
+
+      .footer-mark {
+        position: absolute;
+        right: 18mm;
+        bottom: 9mm;
+        color: #7b8997;
+        font-size: 8.3pt;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .appendix-links {
+        display: grid;
+        gap: 2mm;
+        margin-top: 3mm;
+      }
+
+      .appendix-links div {
+        padding: 2.8mm 3.5mm;
+        border: 1px solid var(--line);
+        border-radius: 2.5mm;
+        background: #f8fbfd;
+      }
+
+      code {
+        padding: 0 1mm;
+        border-radius: 1mm;
+        background: #edf3f7;
+        color: #183544;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.92em;
+      }
+
+      @media screen and (max-width: 900px) {
+        main {
+          width: 100%;
+          margin: 0;
+        }
+
+        .page {
+          min-height: auto;
+          padding: 26px 20px;
+        }
+
+        .info-grid,
+        .two-col,
+        .tech-grid,
+        .architecture,
+        .service-list,
+        .checklist,
+        .cover-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .cover-top,
+        .cover-footer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .cover-meta {
+          text-align: left;
+        }
+      }
+
+      @media print {
+        @page {
+          size: A4;
+          margin: 0;
+        }
+
+        html,
+        body {
+          margin: 0;
+          background: #fff;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+
+        main {
+          width: auto;
+          margin: 0;
+          box-shadow: none;
+        }
+
+        .page {
+          min-height: 297mm;
+          border-top: 0 !important;
+          page-break-after: always;
+        }
+
+        .page:last-child {
+          page-break-after: auto;
+        }
+
+        table,
+        .soft-card,
+        .info-card,
+        .tech-card,
+        .role-card,
+        .architecture article,
+        .service-list li,
+        .checklist li {
+          break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="page cover">
+        <div class="cover-top">
+          <div class="logo-panel">
+            <img src="../src/assets/logo.png" alt="Logo SANAD" />
+          </div>
+          <div class="cover-meta">
+            Rapport de projet<br />
+            Plateforme web de solidarité<br />
+            Méthodologie agile Scrum
+          </div>
+        </div>
+
+        <div>
+          <span class="cover-kicker">Projet SANAD</span>
+          <h1>Conception et développement d’une plateforme d’entraide numérique</h1>
+          <h2>
+            Mise en relation des utilisateurs, des associations et des donateurs autour
+            des demandes d’aide, des campagnes et des contributions solidaires.
+          </h2>
+
+          <div class="cover-grid">
+            <div class="cover-card">
+              <span>Réalisé par</span>
+              <strong>Équipe SANAD</strong>
+            </div>
+            <div class="cover-card">
+              <span>Technologies</span>
+              <strong>Angular, PHP, MySQL, GitHub</strong>
+            </div>
+            <div class="cover-card">
+              <span>Cadre</span>
+              <strong>Développement web et gestion de projet</strong>
+            </div>
+            <div class="cover-card">
+              <span>Livrable</span>
+              <strong>Rapport final prêt à remise</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="cover-footer">
+          <p>
+            Ce rapport présente le contexte du projet, l’étude préalable, la méthode de
+            travail, les choix technologiques, les itérations menées et le bilan du
+            développement de la plateforme SANAD.
+          </p>
+          <div class="date-chip">Année 2025 - 2026</div>
+        </div>
+      </section>
+
+      <section class="page" id="sommaire">
+        <div class="running-label">
+          <span>SANAD</span>
+          <span>Sommaire</span>
+        </div>
+        <h1>Sommaire</h1>
+        <p class="lead">
+          SANAD est une plateforme web solidaire pensée pour structurer la demande
+          d’aide, la contribution des donateurs et le travail des associations dans un
+          même espace numérique.
+        </p>
+
+        <div class="toc">
+          <div class="toc-row"><span>1</span><a href="#chapitre-1">Contexte du projet</a></div>
+          <div class="toc-row"><span>2</span><a href="#etude">Étude préliminaire</a></div>
+          <div class="toc-row"><span>3</span><a href="#methodologie">Méthodologie de développement</a></div>
+          <div class="toc-row"><span>4</span><a href="#technologies">Choix technologiques</a></div>
+          <div class="toc-row"><span>5</span><a href="#iterations">Itérations effectuées</a></div>
+          <div class="toc-row"><span>6</span><a href="#tests">Tests et retours</a></div>
+          <div class="toc-row"><span>7</span><a href="#retrospective">Rétrospective du projet</a></div>
+          <div class="toc-row"><span>8</span><a href="#module">Rétrospective du module</a></div>
+          <div class="toc-row"><span>9</span><a href="#conclusion">Conclusion générale</a></div>
+          <div class="toc-row"><span>10</span><a href="#annexes">Annexes et lien GitHub</a></div>
+        </div>
+
+        <h2>Fiche synthétique</h2>
+        <div class="info-grid">
+          <div class="info-card">
+            <span>Nature</span>
+            <strong>Application web solidaire</strong>
+          </div>
+          <div class="info-card">
+            <span>Frontend</span>
+            <strong>Angular et TypeScript</strong>
+          </div>
+          <div class="info-card">
+            <span>Backend</span>
+            <strong>PHP et API JSON</strong>
+          </div>
+          <div class="info-card">
+            <span>Données</span>
+            <strong>MySQL</strong>
+          </div>
+          <div class="info-card">
+            <span>Profils</span>
+            <strong>Utilisateur, association, admin</strong>
+          </div>
+          <div class="info-card">
+            <span>Versionnement</span>
+            <strong>Git et GitHub</strong>
+          </div>
+        </div>
+
+        <h2>Abréviations</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Abréviation</th>
+              <th>Signification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>API</td>
+              <td>Interface permettant au frontend d’échanger des données avec le backend.</td>
+            </tr>
+            <tr>
+              <td>JWT</td>
+              <td>Jeton d’authentification utilisé pour contrôler les accès.</td>
+            </tr>
+            <tr>
+              <td>PWA</td>
+              <td>Progressive Web App, évolution possible vers une application web installable.</td>
+            </tr>
+            <tr>
+              <td>Scrum</td>
+              <td>Méthode agile de travail par itérations courtes.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="chapitre-1">
+        <div class="running-label">
+          <span>Chapitre 1</span>
+          <span>Contexte du projet</span>
+        </div>
+        <div class="chapter-title">
+          <div class="chapter-number">1</div>
+          <h1>Contexte du projet</h1>
+        </div>
+
+        <h2>Introduction</h2>
+        <p>
+          Les actions de solidarité reposent souvent sur la rapidité de diffusion de
+          l’information, la confiance entre les acteurs et la capacité à suivre les
+          contributions. Pourtant, les demandes d’aide circulent fréquemment dans des
+          canaux dispersés : publications sur les réseaux sociaux, messages privés,
+          appels ponctuels d’associations ou collectes peu structurées. Cette dispersion
+          rend le tri des demandes, la vérification des informations et le suivi des dons
+          plus difficiles.
+        </p>
+        <p>
+          Le projet <strong>SANAD</strong> répond à ce besoin en proposant une plateforme
+          web centralisée d’entraide. Elle met en relation les personnes qui publient une
+          demande, les associations qui portent des campagnes et les donateurs qui
+          souhaitent contribuer de manière financière, matérielle ou par un service.
+        </p>
+
+        <h2>1.1 Présentation générale</h2>
+        <p>
+          SANAD est une application web sociale orientée vers la solidarité. Elle couvre
+          la consultation publique de demandes d’aide, l’inscription et la connexion des
+          membres, la publication de demandes, la gestion de campagnes associatives, le
+          suivi des dons et l’administration des contenus sensibles. Les demandes et les
+          campagnes peuvent être classées par catégories telles que la santé,
+          l’éducation, l’alimentation, le logement, l’emploi ou l’infrastructure.
+        </p>
+        <p>
+          Le projet distingue clairement les rôles afin que chaque acteur dispose d’un
+          parcours adapté :
+        </p>
+        <div class="two-col">
+          <div class="role-card">
+            <h3>Utilisateur</h3>
+            <p>
+              Il explore les demandes, publie ses propres besoins, effectue des dons,
+              propose une aide, suit ses favoris, ses notifications et son historique.
+            </p>
+          </div>
+          <div class="role-card">
+            <h3>Association</h3>
+            <p>
+              Elle présente son profil, crée des campagnes, consulte les contributions
+              reçues et suit les demandes ou offres liées à son activité.
+            </p>
+          </div>
+          <div class="role-card">
+            <h3>Administrateur</h3>
+            <p>
+              Il supervise les associations, les utilisateurs, les demandes, les dons et
+              les statistiques globales de la plateforme.
+            </p>
+          </div>
+          <div class="role-card">
+            <h3>Visiteur</h3>
+            <p>
+              Il découvre les demandes, les associations et les informations publiques
+              avant de créer un compte pour agir.
+            </p>
+          </div>
+        </div>
+
+        <h2>1.2 Services proposés</h2>
+        <ul class="service-list">
+          <li><strong>Authentification</strong> Inscription, connexion et accès contrôlé selon le rôle.</li>
+          <li><strong>Demandes d’aide</strong> Publication, consultation, filtrage et détail d’une demande.</li>
+          <li><strong>Dons</strong> Contribution à une demande, à une association ou sous forme de don libre.</li>
+          <li><strong>Campagnes</strong> Création et suivi de campagnes portées par des associations.</li>
+          <li><strong>Aide non financière</strong> Proposition d’objets ou de services.</li>
+          <li><strong>Suivi personnel</strong> Favoris, notifications, profil et historique des activités.</li>
+          <li><strong>Tableaux de bord</strong> Espaces spécifiques pour l’utilisateur et l’association.</li>
+          <li><strong>Administration</strong> Contrôle des acteurs, des demandes, des dons et des statistiques.</li>
+        </ul>
+
+        <h2>Objectifs du projet</h2>
+        <ul class="checklist">
+          <li>Centraliser les demandes et campagnes solidaires.</li>
+          <li>Rendre les parcours d’aide plus simples et lisibles.</li>
+          <li>Créer un cadre de confiance avec des rôles et des validations.</li>
+          <li>Conserver une architecture évolutive pour les futurs services.</li>
+        </ul>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="etude">
+        <div class="running-label">
+          <span>Chapitre 2</span>
+          <span>Étude préliminaire</span>
+        </div>
+        <div class="chapter-title">
+          <div class="chapter-number">2</div>
+          <h1>Étude préliminaire</h1>
+        </div>
+
+        <h2>2.1 Problématique</h2>
+        <p>
+          Une action solidaire efficace suppose que le besoin soit clairement exprimé,
+          que l’aide arrive au bon destinataire et que les contributeurs aient confiance
+          dans le processus. Or, lorsqu’une demande est noyée dans un flux de messages ou
+          lorsqu’une collecte ne donne pas de visibilité sur sa progression, plusieurs
+          risques apparaissent : duplication des efforts, perte d’information,
+          incertitude sur la légitimité de l’appel et découragement des donateurs.
+        </p>
+        <div class="quote">
+          Comment concevoir une plateforme fiable et accessible qui relie les personnes
+          ayant besoin d’aide, les associations et les donateurs tout en assurant un
+          suivi clair des actions ?
+        </div>
+
+        <h2>2.2 Étude de l’existant</h2>
+        <p>
+          Les pratiques existantes s’appuient généralement sur quatre familles de
+          solutions. Les réseaux sociaux diffusent rapidement les besoins, les groupes de
+          discussion facilitent l’échange local, les sites d’associations décrivent les
+          actions de leurs structures, et les plateformes de collecte offrent un parcours
+          de paiement ou de contribution.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Solution observée</th>
+              <th>Apport</th>
+              <th>Limite pour le besoin SANAD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Réseaux sociaux</td>
+              <td>Visibilité rapide et partage simple.</td>
+              <td>Demandes dispersées, vérification et suivi limités.</td>
+            </tr>
+            <tr>
+              <td>Sites associatifs</td>
+              <td>Présentation institutionnelle et mise en confiance.</td>
+              <td>Peu de centralisation entre plusieurs associations et demandeurs.</td>
+            </tr>
+            <tr>
+              <td>Plateformes de collecte</td>
+              <td>Objectifs financiers et suivi des montants.</td>
+              <td>Aide matérielle, services et espaces métiers parfois absents.</td>
+            </tr>
+            <tr>
+              <td>Échanges directs</td>
+              <td>Relation humaine immédiate.</td>
+              <td>Traçabilité faible et gestion difficile à grande échelle.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>2.3 Critique de l’existant</h2>
+        <p>
+          L’étude montre qu’une solution isolée couvre rarement tout le cycle de
+          solidarité. Les contenus peuvent manquer de classement, les campagnes ne sont
+          pas toujours reliées à des profils associatifs identifiables et les rôles ne
+          sont pas clairement séparés. Un donateur peut alors hésiter à participer,
+          tandis qu’une association doit multiplier les outils pour gérer sa présence et
+          ses actions.
+        </p>
+        <ul>
+          <li>Manque de centralisation entre demandes, campagnes, dons et aides non financières.</li>
+          <li>Absence de filtres homogènes pour trouver rapidement une cause pertinente.</li>
+          <li>Suivi incomplet de l’historique utilisateur et des contributions.</li>
+          <li>Besoin de contrôle et de modération pour les contenus sensibles.</li>
+        </ul>
+
+        <h2>2.4 Solution proposée</h2>
+        <p>
+          SANAD regroupe les principaux besoins dans une seule application. L’exploration
+          publique permet de découvrir les demandes et associations. Les espaces
+          authentifiés permettent ensuite de publier, contribuer, suivre et administrer.
+          Cette organisation améliore la lisibilité du parcours tout en gardant une base
+          technique évolutive.
+        </p>
+        <div class="architecture">
+          <article>
+            <h4>Expression du besoin</h4>
+            <p>Demandes d’aide, catégories, urgence, localisation et détails.</p>
+          </article>
+          <article>
+            <h4>Action solidaire</h4>
+            <p>Dons, campagnes associatives, objets, services et favoris.</p>
+          </article>
+          <article>
+            <h4>Suivi et contrôle</h4>
+            <p>Notifications, tableaux de bord, statistiques et administration.</p>
+          </article>
+        </div>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="methodologie">
+        <div class="running-label">
+          <span>Chapitre 3</span>
+          <span>Méthodologie</span>
+        </div>
+        <div class="chapter-title">
+          <div class="chapter-number">3</div>
+          <h1>Méthodologie de développement</h1>
+        </div>
+
+        <h2>3.1 Choix de Scrum</h2>
+        <p>
+          Le projet contient plusieurs blocs fonctionnels interdépendants :
+          authentification, exploration, publication de demandes, dons, campagnes,
+          tableaux de bord et administration. Une réalisation linéaire aurait rendu les
+          retours tardifs. Le choix de <strong>Scrum</strong> a permis de livrer
+          progressivement des ensembles cohérents, de vérifier les parcours majeurs puis
+          d’ajuster les priorités.
+        </p>
+        <p>
+          Cette approche est adaptée au travail en binôme : chaque sprint peut être
+          découpé en tâches frontend, backend, base de données, intégration et tests.
+          Elle donne aussi une visibilité claire sur les écarts entre l’estimation
+          théorique et le temps réellement nécessaire.
+        </p>
+
+        <h2>3.2 Description de Scrum</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Élément Scrum</th>
+              <th>Application dans le projet</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Product Backlog</td>
+              <td>Liste des fonctionnalités : comptes, demandes, dons, campagnes, administration.</td>
+            </tr>
+            <tr>
+              <td>Sprint Planning</td>
+              <td>Sélection des User Stories à réaliser pour l’itération.</td>
+            </tr>
+            <tr>
+              <td>Sprint</td>
+              <td>Développement d’un ensemble testable de fonctionnalités.</td>
+            </tr>
+            <tr>
+              <td>Sprint Review</td>
+              <td>Vérification de l’interface, des parcours et des retours obtenus.</td>
+            </tr>
+            <tr>
+              <td>Rétrospective</td>
+              <td>Analyse de l’organisation, des difficultés et des améliorations.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Organisation du travail</h2>
+        <p>
+          Le travail a été organisé autour d’un découpage par fonctionnalités. Les
+          composants Angular ont été reliés à des endpoints PHP dédiés et à une base
+          MySQL structurée. Les versions successives ont été suivies avec Git et GitHub,
+          ce qui permet de conserver l’historique des évolutions et de collaborer sur une
+          base commune.
+        </p>
+        <ul class="checklist">
+          <li>Définir les User Stories prioritaires.</li>
+          <li>Construire l’interface et les API associées.</li>
+          <li>Tester les parcours avant d’ajouter les modules suivants.</li>
+          <li>Corriger les écarts constatés lors des reviews.</li>
+        </ul>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="technologies">
+        <div class="running-label">
+          <span>Chapitre 4</span>
+          <span>Choix technologiques</span>
+        </div>
+        <div class="chapter-title">
+          <div class="chapter-number">4</div>
+          <h1>Choix technologiques</h1>
+        </div>
+
+        <h2>4.1 Outils logiciels</h2>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <span>Développement</span>
+            <strong>Visual Studio Code</strong>
+            Édition du code et navigation dans les modules.
+          </div>
+          <div class="tech-card">
+            <span>Environnement local</span>
+            <strong>XAMPP</strong>
+            Exécution d’Apache, PHP et MySQL.
+          </div>
+          <div class="tech-card">
+            <span>Données</span>
+            <strong>phpMyAdmin et MySQL</strong>
+            Création, vérification et alimentation de la base.
+          </div>
+          <div class="tech-card">
+            <span>Collaboration</span>
+            <strong>Git et GitHub</strong>
+            Versionnement du projet et dépôt partagé.
+          </div>
+        </div>
+
+        <h2>4.2 Frameworks</h2>
+        <p>
+          Le frontend repose sur <strong>Angular</strong>. Ce framework structure
+          l’application en composants, routes, services et formulaires. Il facilite la
+          séparation des responsabilités et permet de construire des espaces différents
+          pour l’utilisateur, l’association et l’administration.
+        </p>
+        <p>
+          Le backend s’appuie sur des scripts PHP organisés sous forme d’API. Chaque
+          endpoint traite un besoin précis : connexion, inscription, récupération des
+          demandes, création d’un don, gestion des campagnes ou lecture des statistiques.
+        </p>
+
+        <h2>4.3 Langages de programmation</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Langage</th>
+              <th>Rôle dans SANAD</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TypeScript</td>
+              <td>Logique des composants Angular, services et guards.</td>
+            </tr>
+            <tr>
+              <td>HTML / CSS</td>
+              <td>Structure des vues, formulaires, tableaux de bord et responsive design.</td>
+            </tr>
+            <tr>
+              <td>PHP</td>
+              <td>Endpoints backend, authentification et traitement des données.</td>
+            </tr>
+            <tr>
+              <td>SQL</td>
+              <td>Schéma MySQL, relations, migrations et données de test.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>4.4 Technologie PWA</h2>
+        <p>
+          Une Progressive Web App permet à une application web de se rapprocher d’une
+          application installable sur mobile ou bureau. L’architecture Angular de SANAD
+          prépare cette évolution, mais la version actuelle reste principalement une
+          application web. Une évolution PWA complète pourra intégrer un manifeste, un
+          service worker, une stratégie de cache et des tests hors ligne.
+        </p>
+
+        <h2>4.5 Sécurité</h2>
+        <ul class="checklist">
+          <li>Hachage des mots de passe avec bcrypt.</li>
+          <li>Authentification par jeton JWT.</li>
+          <li>Contrôle des rôles et protection des routes.</li>
+          <li>Validation des données reçues par les API.</li>
+          <li>Requêtes préparées côté backend.</li>
+          <li>Séparation des espaces publics et privés.</li>
+        </ul>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="iterations">
+        <div class="running-label">
+          <span>Chapitre 5</span>
+          <span>Itérations effectuées</span>
+        </div>
+        <div class="chapter-title">
+          <div class="chapter-number">5</div>
+          <h1>Itérations effectuées</h1>
+        </div>
+
+        <p class="lead">
+          Les estimations ci-dessous présentent un suivi cohérent des itérations du
+          projet. Elles peuvent être adaptées si le journal de sprint du binôme contient
+          des durées plus précises.
+        </p>
+
+        <h2>Itération 1 : socle technique et authentification</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>User Story</th>
+              <th>Estimation théorique</th>
+              <th>Réalisation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Créer l’application Angular et organiser les routes principales.</td>
+              <td>4 h</td>
+              <td>4 h</td>
+            </tr>
+            <tr>
+              <td>Permettre l’inscription d’un utilisateur ou d’une association.</td>
+              <td>6 h</td>
+              <td>7 h</td>
+            </tr>
+            <tr>
+              <td>Permettre la connexion sécurisée et le stockage du jeton.</td>
+              <td>6 h</td>
+              <td>7 h</td>
+            </tr>
+            <tr>
+              <td>Protéger les écrans selon les rôles et statuts.</td>
+              <td>5 h</td>
+              <td>6 h</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="two-col">
+          <div class="soft-card">
+            <h3 class="mini-title">Technologies</h3>
+            Angular, TypeScript, PHP, MySQL, JWT, Git.
+          </div>
+          <div class="soft-card">
+            <h3 class="mini-title">Corrections</h3>
+            Messages de formulaire, redirections après connexion et contrôle des accès.
+          </div>
+        </div>
+
+        <h2>Itération 2 : demandes d’aide et exploration</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>User Story</th>
+              <th>Estimation théorique</th>
+              <th>Réalisation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Consulter les demandes d’aide et les filtrer.</td>
+              <td>6 h</td>
+              <td>7 h</td>
+            </tr>
+            <tr>
+              <td>Afficher le détail d’une demande avec sa progression.</td>
+              <td>6 h</td>
+              <td>8 h</td>
+            </tr>
+            <tr>
+              <td>Publier une demande depuis l’espace utilisateur.</td>
+              <td>5 h</td>
+              <td>6 h</td>
+            </tr>
+            <tr>
+              <td>Relier les vues Angular aux endpoints des demandes et catégories.</td>
+              <td>5 h</td>
+              <td>6 h</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="two-col">
+          <div class="soft-card">
+            <h3 class="mini-title">Technologies</h3>
+            Services HTTP Angular, endpoints PHP, MySQL, CSS responsive.
+          </div>
+          <div class="soft-card">
+            <h3 class="mini-title">Corrections</h3>
+            Présentation du détail, indicateurs de confiance et actions de contribution.
+          </div>
+        </div>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page">
+        <div class="running-label">
+          <span>Chapitre 5</span>
+          <span>Itérations effectuées</span>
+        </div>
+        <h1>Itérations effectuées</h1>
+
+        <h2>Itération 3 : dons et espace utilisateur</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>User Story</th>
+              <th>Estimation théorique</th>
+              <th>Réalisation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Faire un don pour une demande ou une association.</td>
+              <td>7 h</td>
+              <td>9 h</td>
+            </tr>
+            <tr>
+              <td>Consulter l’historique des dons personnels.</td>
+              <td>4 h</td>
+              <td>5 h</td>
+            </tr>
+            <tr>
+              <td>Gérer favoris, notifications et activité utilisateur.</td>
+              <td>5 h</td>
+              <td>6 h</td>
+            </tr>
+            <tr>
+              <td>Proposer une aide matérielle ou un service.</td>
+              <td>5 h</td>
+              <td>6 h</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Itération 4 : associations et administration</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>User Story</th>
+              <th>Estimation théorique</th>
+              <th>Réalisation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Créer et mettre à jour des campagnes associatives.</td>
+              <td>7 h</td>
+              <td>8 h</td>
+            </tr>
+            <tr>
+              <td>Consulter les dons reçus et le tableau de bord association.</td>
+              <td>6 h</td>
+              <td>7 h</td>
+            </tr>
+            <tr>
+              <td>Gérer associations, utilisateurs, demandes et dons côté admin.</td>
+              <td>8 h</td>
+              <td>9 h</td>
+            </tr>
+            <tr>
+              <td>Afficher les statistiques globales.</td>
+              <td>4 h</td>
+              <td>5 h</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Bilan des itérations</h2>
+        <p>
+          Les écarts de temps les plus visibles proviennent de l’intégration entre
+          interface et backend, des contrôles de rôle et de la richesse des parcours de
+          dons. Le découpage par itération a néanmoins permis de garder une version
+          testable après chaque bloc fonctionnel.
+        </p>
+        <div class="two-col">
+          <div class="soft-card">
+            <h3>Résultats obtenus</h3>
+            <ul>
+              <li>Parcours d’authentification fonctionnel.</li>
+              <li>Demandes, campagnes et détails consultables.</li>
+              <li>Dons et suivi utilisateur intégrés.</li>
+              <li>Espaces association et administration disponibles.</li>
+            </ul>
+          </div>
+          <div class="soft-card">
+            <h3>Points de vigilance</h3>
+            <ul>
+              <li>Tester tôt les échanges frontend/backend.</li>
+              <li>Prévoir du temps pour les données de test.</li>
+              <li>Documenter les règles d’accès par rôle.</li>
+              <li>Garder les estimations reliées aux sprints réels.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="tests">
+        <div class="running-label">
+          <span>Chapitre 6</span>
+          <span>Tests et retours</span>
+        </div>
+        <div class="chapter-title">
+          <div class="chapter-number">6</div>
+          <h1>Tests réalisés et retours</h1>
+        </div>
+
+        <h2>Tests réalisés</h2>
+        <p>
+          La plateforme a été vérifiée par des tests fonctionnels de parcours, des tests
+          des API et des vérifications sur la base de données. Le projet contient aussi
+          des fichiers de test Angular pour les écrans d’authentification ainsi que des
+          scripts PHP de diagnostic et de test de connexion.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Famille de test</th>
+              <th>Exemples vérifiés</th>
+              <th>Résultat attendu</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Authentification</td>
+              <td>Inscription, connexion, mauvais mot de passe, redirection.</td>
+              <td>Accès correct et refus des données invalides.</td>
+            </tr>
+            <tr>
+              <td>Rôles</td>
+              <td>Routes utilisateur, association et administration.</td>
+              <td>Chaque rôle accède uniquement à son espace.</td>
+            </tr>
+            <tr>
+              <td>Demandes</td>
+              <td>Liste, filtres, détail, publication, favoris.</td>
+              <td>Données affichées et actions cohérentes.</td>
+            </tr>
+            <tr>
+              <td>Dons</td>
+              <td>Création, historique, dons anonymes, progression.</td>
+              <td>Contribution enregistrée et suivi lisible.</td>
+            </tr>
+            <tr>
+              <td>Associations</td>
+              <td>Profil, campagnes, dons reçus, demandes suivies.</td>
+              <td>Gestion métier accessible à l’association.</td>
+            </tr>
+            <tr>
+              <td>Base de données</td>
+              <td>Tables, relations, données seed et endpoints PHP.</td>
+              <td>Schéma exploitable et API alimentées.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Retours de Sprint Review</h2>
+        <div class="two-col">
+          <div class="soft-card">
+            <h3>Retours positifs</h3>
+            <ul>
+              <li>Les espaces par rôle rendent le produit compréhensible.</li>
+              <li>La page détail d’une demande donne de la visibilité sur l’aide.</li>
+              <li>Le parcours de don est mieux cadré qu’un échange informel.</li>
+              <li>Les tableaux de bord donnent une vue d’ensemble utile.</li>
+            </ul>
+          </div>
+          <div class="soft-card">
+            <h3>Corrections menées</h3>
+            <ul>
+              <li>Clarification des messages et validations de formulaires.</li>
+              <li>Amélioration des redirections d’authentification.</li>
+              <li>Ajustement des appels API et des états d’erreur.</li>
+              <li>Meilleure lisibilité des actions de dons et d’aide.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Limites identifiées</h2>
+        <p>
+          La version actuelle prépare une plateforme opérationnelle, mais certains
+          compléments restent souhaitables pour une exploitation large : intégration
+          d’une passerelle de paiement réelle, envoi d’e-mails de confirmation,
+          renforcement des tests automatisés et déploiement sécurisé sur un environnement
+          public.
+        </p>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="retrospective">
+        <div class="running-label">
+          <span>Chapitre 7</span>
+          <span>Rétrospective du projet</span>
+        </div>
+        <div class="chapter-title">
+          <div class="chapter-number">7</div>
+          <h1>Rétrospective du projet</h1>
+        </div>
+
+        <h2>Apprentissages</h2>
+        <p>
+          Ce projet a permis de passer d’un besoin métier à une application complète.
+          Nous avons appris à faire dialoguer des composants Angular avec un backend PHP,
+          à concevoir une base relationnelle, à protéger des parcours sensibles et à
+          structurer un produit qui comporte plusieurs types d’utilisateurs.
+        </p>
+        <ul class="checklist">
+          <li>Découper une application en modules cohérents.</li>
+          <li>Construire des API liées à une base MySQL.</li>
+          <li>Gérer authentification, rôles et validations.</li>
+          <li>Avancer par itérations avec des retours réguliers.</li>
+        </ul>
+
+        <h2>Points positifs</h2>
+        <p>
+          SANAD possède une portée fonctionnelle riche : elle ne se limite pas à une page
+          de don, mais couvre également la demande d’aide, la campagne associative, le
+          suivi personnel et l’administration. La séparation frontend/backend rend le
+          projet plus lisible et facilite les évolutions futures.
+        </p>
+
+        <h2>Points à améliorer</h2>
+        <p>
+          Les tâches d’intégration ont demandé plus de temps que prévu. Pour un prochain
+          projet, il serait utile de définir plus tôt les contrats d’API, de préparer un
+          jeu de données stabilisé, d’élargir les tests automatisés et de réserver une
+          phase dédiée à la qualité de la documentation finale.
+        </p>
+
+        <h2>Travail en binôme</h2>
+        <p>
+          Le travail en binôme apporte de la complémentarité : l’un peut progresser sur
+          l’interface tandis que l’autre stabilise les API ou la base de données. Pour
+          améliorer cette collaboration, il faut conserver des points de synchronisation
+          courts, définir clairement les responsabilités de sprint et intégrer les
+          branches de travail avant que les écarts ne deviennent coûteux.
+        </p>
+
+        <h2>Perspectives</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Priorité</th>
+              <th>Évolution proposée</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Court terme</td>
+              <td>Compléter les tests automatisés et renforcer les messages de suivi.</td>
+            </tr>
+            <tr>
+              <td>Moyen terme</td>
+              <td>Ajouter paiement, reçus, e-mails et version PWA complète.</td>
+            </tr>
+            <tr>
+              <td>Long terme</td>
+              <td>Déployer la plateforme, analyser l’impact et enrichir les statistiques.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="module">
+        <div class="running-label">
+          <span>Chapitre 8</span>
+          <span>Rétrospective du module</span>
+        </div>
+        <div class="chapter-title">
+          <div class="chapter-number">8</div>
+          <h1>Rétrospective du module</h1>
+        </div>
+
+        <h2>Ce que le module nous a apporté</h2>
+        <p>
+          Le module a permis d’appliquer les notions de développement web et de gestion
+          de projet à un cas concret. Il a mis en évidence que la réussite d’une
+          application ne dépend pas uniquement du code : l’analyse initiale, la
+          planification, les tests, la documentation et la communication entre membres
+          de l’équipe sont tout aussi importants.
+        </p>
+
+        <div class="two-col">
+          <div class="soft-card">
+            <h3>Points positifs</h3>
+            <ul>
+              <li>Projet concret avec un sujet utile.</li>
+              <li>Mise en pratique d’Angular, PHP et MySQL.</li>
+              <li>Découverte de la logique agile et des reviews.</li>
+              <li>Progression en autonomie et en diagnostic.</li>
+            </ul>
+          </div>
+          <div class="soft-card">
+            <h3>Points à améliorer</h3>
+            <ul>
+              <li>Préparer des critères d’acceptation plus tôt.</li>
+              <li>Donner plus de place aux tests et à la sécurité.</li>
+              <li>Tenir un suivi d’estimation plus détaillé.</li>
+              <li>Documenter les choix au fil du développement.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Synthèse</h2>
+        <p>
+          L’expérience montre qu’un projet complet exige de relier les compétences
+          techniques et méthodologiques. Le module a donc renforcé notre capacité à
+          concevoir, développer, vérifier et présenter une solution numérique cohérente.
+        </p>
+
+        <h1 id="conclusion">Conclusion générale</h1>
+        <p>
+          SANAD propose une réponse numérique à un besoin de solidarité organisé. La
+          plateforme rassemble des demandes d’aide, des campagnes associatives, des dons,
+          des aides non financières et des espaces de suivi adaptés aux différents rôles.
+          Son architecture Angular, PHP et MySQL fournit une base solide pour évoluer vers
+          un service plus complet.
+        </p>
+        <p>
+          Au-delà de la réalisation technique, le projet illustre l’importance de la
+          confiance, de la clarté de l’information et du suivi dans les services
+          solidaires. Les améliorations futures pourront renforcer la mise en production,
+          l’automatisation des tests, les paiements et l’expérience mobile.
+        </p>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+
+      <section class="page" id="annexes">
+        <div class="running-label">
+          <span>Annexes</span>
+          <span>GitHub et références du projet</span>
+        </div>
+        <h1>Annexes</h1>
+
+        <h2>Lien GitHub du projet</h2>
+        <p>
+          Dépôt du projet :
+          <a href="https://github.com/Maram3105/SANAD_PLATFORM"
+            >https://github.com/Maram3105/SANAD_PLATFORM</a
+          >
+        </p>
+
+        <h2>Architecture générale</h2>
+        <div class="architecture">
+          <article>
+            <h4>Frontend Angular</h4>
+            <p>Composants, routes, formulaires, services HTTP et guards.</p>
+          </article>
+          <article>
+            <h4>Backend PHP</h4>
+            <p>API JSON pour authentification, demandes, dons et tableaux de bord.</p>
+          </article>
+          <article>
+            <h4>Base MySQL</h4>
+            <p>Utilisateurs, associations, catégories, demandes, campagnes et donations.</p>
+          </article>
+        </div>
+
+        <h2>Modules visibles dans la plateforme</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Espace</th>
+              <th>Fonctionnalités principales</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Public</td>
+              <td>Accueil, exploration des demandes, associations et détails.</td>
+            </tr>
+            <tr>
+              <td>Utilisateur</td>
+              <td>Profil, publication, dons, favoris, notifications et activité.</td>
+            </tr>
+            <tr>
+              <td>Association</td>
+              <td>Tableau de bord, campagnes, profil, demandes et donations reçues.</td>
+            </tr>
+            <tr>
+              <td>Administration</td>
+              <td>Statistiques, utilisateurs, associations, demandes et dons.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Fichiers de référence</h2>
+        <div class="appendix-links">
+          <div><code>README.md</code> : présentation rapide de l’application.</div>
+          <div><code>DONATION_SYSTEM.md</code> : documentation du système de dons.</div>
+          <div><code>backend/schema.sql</code> : structure de la base de données.</div>
+          <div><code>backend/TESTING_GUIDE.md</code> : guide de vérification des données et API.</div>
+          <div><code>src/app/app.routes.ts</code> : routes des espaces publics et protégés.</div>
+        </div>
+
+        <div class="note">
+          Avant remise officielle, la page de garde peut être complétée avec le nom de
+          l’établissement, les noms du binôme et le nom de l’encadrant si ces informations
+          sont exigées par le modèle de rapport.
+        </div>
+        <div class="footer-mark">Rapport final SANAD</div>
+      </section>
+    </main>
+  </body>
+</html>
